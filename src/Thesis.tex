@@ -1,0 +1,135 @@
+% ============================================== %
+% Author: Simone Bianco
+%
+% Thesis Title: Efficient Parity Decision Trees and Their Connections to Logical Proofs and Total Search Problems in NP
+%
+% Bachelor of Science in Computer Science, Sapienza University of Rome.
+%
+% https://github.com/Exyss/bsc-thesis/
+%
+% ============================================== %
+
+% Document Class
+\documentclass[binding=0.6cm, noexaminfo, oneside]{styles/sapthesis}
+
+% Fundamental Packages
+\usepackage[dvipsnames]{xcolor}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[edges]{forest}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{geometry} 
+\usepackage{xspace}
+\usepackage{xargs}              
+\usepackage[
+  backend=biber,
+  style=alphabetic,
+  sorting=anyt,
+  minnames=3,
+  minalphanames=3
+]{biblatex}
+
+% Useful Packages
+\usepackage{chngcntr}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage[nameinlink]{cleveref}
+\usepackage{caption}  
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{float}    
+\usepackage[
+  colorinlistoftodos,
+  prependcaption,
+  textsize=tiny
+]{todonotes}
+
+% Other Packages
+\usepackage[Algoritmh]{algorithm}      
+\usepackage{algpseudocode}
+
+%%%% NOTE: Enable the following two lines if you want to use SapThesis' bibliography style
+
+% \bibliographystyle{sapthesis}
+% \bibliography{./references.bib}
+
+% ================== METADATA ==================
+\hypersetup{pdftitle={Master's Thesis}, pdfauthor={Simone Bianco}, colorlinks=true, urlcolor=black}
+\title{Impossibility of Automated Theorem Proving for Propositional Proof Systems by Analyzing Meta-Complexity Statements}
+\author{Simone Bianco}
+\IDnumber{1986936}
+\course{Master's Degree in Computer Science}
+\courseorganizer{Faculty of Information Engineering, Computer Science and Statistics}
+\AcademicYear{2025/2026}
+\advisor{Prof. Nicola Galesi\\Prof. Massimo Lauria}
+% \coadvisor{}
+\authoremail{bianco.simone@outlook.it}
+\copyyear{2026}
+\thesistype{Master's Thesis}
+
+% ================== CUSTOM ELEMENTS ==================
+\usepackage{./styles/custom}
+
+% ================== DOCUMENT ==================
+
+\addbibresource{./references.bib}
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+% ================== DEDICATION ==================
+\dedication{
+  % \say{idk something said by someone smarter than me}\\--- not me
+  something said by someone smarter than me\\--- not me
+}
+
+% ================== ABSTRACT ==================
+
+\input{./chapters/abstract}
+\cleardoublepage
+
+% ================== TABLE OF CONTENTS ==================
+
+\hypersetup{linkcolor=black} % Print ToC in black
+\setlength{\parskip}{4pt} % Vertical Spacing between elements of the ToC
+\tableofcontents
+
+\let\cleardoublepage\clearpage
+\mainmatter
+
+% ================== TYPESETTING ==================
+
+\hypersetup{linkcolor=SapienzaRed, citecolor=SapienzaRed}          % Link colors
+\counterwithout{figure}{chapter}                    % Remove chapter number from figure counter
+\setlength{\parskip}{2pt}                           % Vertical spacing between paragraphs
+% \setlength{\parindent}{0pt}                       % Horizontal spacing at the start of a paragraph
+
+% ================== CHAPTERS ==================
+\input{./chapters/0}
+\input{./chapters/1}
+\input{./chapters/2}
+\input{./chapters/3}
+\input{./chapters/4}
+
+% % ================== NOTES ==================
+% \input{./chapters/notes}
+
+% ================== CONCLUSIONS ==================
+\input{./chapters/conclusions}
+
+% ================== ACKNOWLEDGMENTS ==================
+\input{./chapters/acknowledgements}
+
+\backmatter
+\phantomsection
+
+% ================== BIBLIOGRAPHY ==================
+
+\addcontentsline{toc}{chapter}{Bibliography}  % Add Bibliography to ToC
+\printbibliography
+
+\end{document}

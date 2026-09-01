@@ -1,0 +1,72 @@
+% This LaTeX Style file contains custom commands and envidonments used in my thesis.
+% I suggest you keep and use the notes command, they are very useful
+
+\ProvidesPackage{custom}[Custom Styles]
+
+% ================== CUSTOM COLORS ==================
+\definecolor{SapienzaRed}{HTML}{dd2333}
+
+% ================== CUSTOM TODO NOTES COMMANDS ==================
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+% ================== CUSTOM ENVIRONMENTS ==================
+
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}{Conjecture}[chapter]
+\newtheorem{claim}{Claim}[theorem]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ================== CUSTOM MACROS ==================
+
+% Parenthesis
+\newcommand{\soe}[2]{\left\{\begin{array}{#1} #2 \end{array}\right.}               % System of equations
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}     % Norm ||x||
+\newcommand{\floor}[1]{\left \lfloor #1 \right \rfloor}
+\newcommand{\ceil}[1]{\left \lceil #1 \right \rceil}
+\newcommand{\abk}[1]{\left\langle#1\right\rangle}
+\newcommand{\rbk}[1]{\left ( #1 \right )}
+
+% Quotes
+\newcommand{\curlyquotes}[1]{\textquotedblleft #1\textquotedblright}    % Curly quotes
+\newcommand{\say}[1]{\flqq\textit{#1}\frqq}
+
+% Number sets and Fields
+\newcommand{\N}{\mathbb{N}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+
+% TM Tape blank character
+\newcommand\blankchar[1][1.25ex]{\mbox{\kern.06em\vrule height1ex}\vbox{\hrule width#1}\hbox{\vrule height1ex}}         
+
+
+\newcommand{\Res}{\mathrm{Res}}
+\newcommand{\PC}{\mathrm{PC}}
+\newcommand{\PCR}{\mathrm{PCR}}
+\newcommand{\NS}{\mathrm{NS}}
+\newcommand{\CP}{\mathrm{CP}}
+\newcommand{\eF}{e\mathcal{F}}
+\newcommand{\TAUT}{\mathrm{TAUT}}
+\newcommand{\SAT}{\mathrm{SAT}}
+\newcommand{\UNSAT}{\mathrm{UNSAT}}
+\newcommand{\Vars}{\mathrm{Vars}}
+\newcommand{\PHP}{\mathrm{PHP}}
+
+\DeclareMathOperator{\size}{size}
+\DeclareMathOperator{\LenOp}{len}
+\DeclareMathOperator{\wdt}{w}
+\DeclareMathOperator{\dg}{deg}
