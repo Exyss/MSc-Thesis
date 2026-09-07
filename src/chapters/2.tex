@@ -90,6 +90,8 @@ For any fixed natural number $k \in \N$, we define an extension of the Resolutio
 \end{array}\]
 where $\mathcal{D}_1$ and $\mathcal{D}_2$ are $k$-DNF formulas.
 
+For standard Resolution, it can be proven that the weakening rule is actually not necessary. In particular, for each Resolution refutation $\pi$ there is an equivalent refutation $\pi'$ for the same formula $\varphi$ such that $\pi'$ never uses the weakening rule and such that $\pi'$ uses at most the same number of steps of $\pi$. This property will be useful to manipulate refutations by making assumptions on how and when the weakening steps are applied inside them.
+
 \subsection{Frege systems}
 
 \textit{Frege systems} are a more classical type of propositional proof system, whose proofs are intended to infer tautologies. These proof systems are well known in the classical Logic literature and, furthermore, they work not only with CNF formulas, but also with general Boolean formulas.
@@ -158,9 +160,9 @@ where $\alpha,\beta \in \F$ and $x \in \{x_1, \ldots, x_n\}$. A PC-proof of the 
 
 For the last polynomial $f_t$, it must hold that $f_t = 1$. The soundness of PC can be proven in way similar to Resolution: if we assume that the system of equations $\Pi$ has a solution, the equality with 0 can be propagated down to the last polynomial $f_t = 1$, raising a contradiction. Completeness follows similarly.
 
-\subsection{Optimization-based systems}
+\subsection{Geometric systems}
 
-\textit{Optimization-based proof systems} are proof systems based on linear programming. All such proof systems are variants of the \textit{Cutting Planes} (CP) proof system, a refutational method derived from 0-1 integer programming. In CP, any CNF formula $\varphi$ is converted into an equivalent system of linear inequalities (similar to how algebraic systems convert them into equations) whose integer binary solutions correspond directly to the satisfying assignments of $\varphi$. Each clause of a formula $\varphi$ is mapped to an inequality in the following way:
+\textit{Geometric proof systems} are proof systems based on linear programming. All such proof systems are variants of the \textit{Cutting Planes} (CP) proof system, a refutational method derived from 0-1 integer programming. In CP, any CNF formula $\varphi$ is converted into an equivalent system of linear inequalities (similar to how algebraic systems convert them into equations) whose integer binary solutions correspond directly to the satisfying assignments of $\varphi$. Each clause of a formula $\varphi$ is mapped to an inequality in the following way:
 \[\bigvee_{i \in I} x_i \lor \bigvee_{j \in J} \lnot x_j \mapsto \sum_{i \in I} x_i + \sum_{j \in J} (1-x_j) \geq 1\] 
 
 For each clause $C$, its corresponding inequality is denoted with $E(C)$. Interpreting truthness as 1 and falseness as 0, the formula $\varphi$ is unsatisfiable if and only if the system $\Phi  = \{E(C)\}_{C \in \varphi} \cup \{x_i \geq 0; x_i \leq 1\}_{i \in [n]}$ has no an integer solution. The set of all feasible solutions for this system yield a polytope $P$. While any Boolean point in $P$ yields a satisfying assignment for $F$, an unsatisfiable formula $F$ may still leave non-integer (fractional) points within $P$. CP eliminates these fractional solutions using the \textit{Chvátal-Gomory cut rule}. In particular, CP is based on the two following rules:

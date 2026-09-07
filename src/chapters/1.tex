@@ -115,6 +115,72 @@ Finally, we introduce the concept of reductions between problems. Let $A$ and $B
 
 It's easy to see that the relation $\leq_m$ forms a partial order over the power set $2^{\Sigma^*} = \{S \subseteq \Sigma^*\}$, corresponding to the set of all decision problems. When $A \leq_m B$ holds, we say that $B$ is \curlyquotes{at least as hard as} $A$ since a solving $B$ implies solving $A$. If the reduction is computable in polynomial time, we say that $A$ \textit{p-reduces} to $B$, written as $A \leq_p B$. In a two seminal papers, Cook and Levin \todo{add reference} independently showed that every problem that lies in $\mathsf{NP}$ is reducible to the \textit{satisfiability problem} $\mathrm{SAT} = \{\abk{\varphi} \mid \varphi \text{ a satisfiable CNF}\}$, where $\abk{\cdot}$ is the binary encoding. Problems with this property are referred to as $\mathsf{NP}$-hard and, under the assumption that $\mathsf{P} \neq \mathsf{NP}$, they cannot be solved in polynomial time. Therefore, showing the hardness of a problem comes as a tool of showing that it cannot be efficiently solved.
 
+\section{Decision trees}
+
+\textit{Decision trees} are a common simple computational model used in many areas of Computer Science. In our case, we'll consider decision trees as a way to compute Boolean functions $f : \{0,1\}^n \to \{0,1\}$ or, more generally, for search problems based on such functions. Informally, decision trees are graphical representations of algorithms for computing a function of an unknown input. Each node of the tree is labeled by a variable $x_i$, $i \in [n]$, and the branches from that node are labeled by the possible values of the variable ($0$ or $1$ in our case). The leaves are labeled by the output of the function. The process starts at the root, knowing nothing, works down the tree, choosing to learn the values of some of the variables based on those already known and eventually reaches a decision.
+
+\begin{definition}[\cite{search_problems_dt_model}]
+ A decision tree is a rooted directed binary tree whose nodes are associated with either an output value or an input Boolean variable. Each internal node is labeled by a variable and the two outgoing edges are labeled by the two possible values of that variable. Each leaf is labeled with an output $b \in \{0,1\}$.
+\end{definition}
+
+
+\begin{figure}[H]
+    \centering
+
+    \begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=1.75cm, thick,main node/.style={scale=0.9,circle,draw,font=\sffamily\normalsize}]
+
+        \node[circle, draw] (1)[] {$x_1$};
+
+        \node[circle, draw] (2) [below left of=1, xshift=-50, ]{$x_2$};
+        \node[circle, draw] (3) [below right of=1, xshift=50, ]{$x_3$};
+
+        \node[circle, draw] (4) [below left of=2, xshift=-10, ]{$x_3$};
+        \node[circle, draw] (5) [below right of=2, xshift=10, ]{$x_3$};
+        \node[circle, draw] (6) [below left of=3, ]{$x_2$};
+        \node[rectangle, draw] (7) [below right of=3]{$0$};
+
+        \node[rectangle, draw] (8) [below left of=4, xshift=10]{$0$};
+        \node[rectangle, draw] (9) [below right of=4, xshift=-10]{$0$};
+        \node[rectangle, draw] (10) [below left of=5, xshift=10]{$1$};
+        \node[rectangle, draw] (11) [below right of=5, xshift=-10]{$1$};
+        \node[rectangle, draw] (12) [below left of=6, xshift=10]{$0$};
+        \node[rectangle, draw] (13) [below right of=6, xshift=-10]{$1$};
+
+        \path[every node/.style={font=\sffamily\small}]
+          (1) edge[swap, color=Green]  node{0} (2)
+          (1) edge node{1}(3)
+
+          (2) edge[swap]  node{0} (4)
+          (2) edge[color=Green]  node{1}(5)
+
+          (3) edge[swap]  node{0} (6)
+          (3) edge  node{1}(7)
+                      
+          (4) edge[swap]  node{0} (8)
+          (4) edge  node{1}(9)
+
+          (5) edge[swap]  node{0} (10)
+          (5) edge[color=Green]  node{1}(11)
+
+          (6) edge[swap]  node{0} (12)
+          (6) edge  node{1}(13)
+          ;
+    \end{tikzpicture}
+
+    \caption{An example of a decision tree of size 13 and depth 3. The green path shows the computation made for the input $x = 011$.}
+    \label{fig:decision_tree}
+\end{figure}
+
+A Boolean function $f$ is said to be computed by a decision tree $\mathcal{T}$ when for each input $x$ it holds that $f(x) = \mathrm{T}(x)$. The \textit{depth} of a decision tree is the number of edges in a longest path from the root to a leaf, or equivalently, the maximum number of bits tested on such a path. Generally, for a Boolean function $f$ we denote with $D(f)$ the minimum depth across all decision trees computing $f$.
+
+An interesting property of decision trees is their possibility to be represented as as propositional formulas. In particular, a depth-$d$ decision tree $\mathcal{T}$ computing $f$ gives rise to both a $d$-DNF and a $d$-CNF representation for $f$.
+
+Let $\mathrm{Leaves}(\mathcal{T})$ be the set of all leaves in $\mathcal{T}$ and let $\mathrm{out}(\ell)$ be the output value associated with a leaf $\ell \in \mathcal{T}$. Then, the associated $d$-DNF $\mathrm{DNF}(\mathcal{T})$ is given by 
+\[\mathrm{DNF}(\mathcal{T}) := \bigvee_{\substack{\ell \in \mathrm{Leaves}(\mathcal{T}) :\\ \mathrm{out}(\ell) = 1}} C_\ell\]
+where $C_\ell$ is the conjunction of all the literals corresponding to the query outcomes on the path from the root of $\mathcal{T}$ to the leaf $\ell$. If the query $x_i$ has outcome 1, the corresponding literal is $x_i$, otherwise it is $\lnot x_i$. The associated $d$-CNF, instead, is obtained by negating the $d$-DNF formula associated with the negated decision tree $\lnot \mathcal{T}$, corresponding to the tree $\mathcal{T}$ with inverted output values, computing $\lnot f$. For instance, the decision tree shown in \Cref{fig:decision_tree} can be represented as the DNF formula
+\[(\lnot x_1 \land x_2 \land \lnot x_3) \lor (\lnot x_1 \land x_2 \land x_3) \lor (x_1 \land \lnot x_3 \land x_2)\]
+
+
 % \subsection*{Propositional formulas}
 
 % We fix once and for all a countable set of propositional variables

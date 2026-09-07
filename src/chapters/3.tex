@@ -1,3 +1,455 @@
 \chapter{Automatability} \label{chap:automatability}
 
+\section{The quest for Automated Theorem Proving (TODO)}
+
+\section{Quasi-automatability of Tree-like Resolution (TODO)}
+
+For the case of Tree-like Resolution, there is a non-trivial quasi-polynomial time automating algorithm. The algorithm is based on two simple property of tree-like refutations in Resolution, formalized by the next two lemmas.
+
+\begin{lemma}
+    Let $\varphi$ be any CNF formula. If $\varphi$ has a tree-like Resolution refutation of size $s$ then $\varphi \cup \{\ell\}$ has a tree-like Resolution refutation of size at most $s/2$ for some literal $\ell$.
+\end{lemma}
+
+\begin{proof}
+    Let $\pi : \mathrm{Res} \vdash \lnot \varphi$. In $\pi$, the empty clause $\bot$ is obtained through a resolution step between two clauses equal to $x_i$ and $\lnot x_i$, , respectively. Let $\pi_{x_i}$ and $\pi_{\lnot x_i}$ be the two subtrees of $\pi$ that have $x_i$ and $\lnot x_i$ as roots. Notice that $\abs{\pi} = \abs{\pi_{x_i}} + \abs{\pi_{\lnot x_i}} + 1$. W.l.o.g, assume that $\pi_{x_i}$ is the smallest of the two subtrees. Then, it holds that $\abs{\pi_{x_i}} < s/2$ since $\pi$ is a binary tree. Thus, the refutation $\pi_{x_i}'$ obtained by resolving the root of $\pi_{x_i}$ with $\lnot x_i$ is a refutation for $\varphi \cup \{\lnot  x\}$ of size at most $s/2$. 
+\end{proof}
+
+\begin{lemma}
+    Let $\varphi$ be any CNF formula. If $\varphi \cup \{\ell\}$ for some literal $\ell$ has a tree-like Resolution refutation of size $s$ then $\lnot \ell$ can be derived in tree-like Resolution starting from $\varphi$ with at most $s$ steps.
+\end{lemma}
+
+\begin{proof}
+    Let $\pi$ be a tree-like refutation of $\varphi \cup \{\ell\}$ of size $s$. We construct a new derivation $\pi'$ from $\pi$ in the following way: for each clause $C$ in $\pi$ derived by resolving $C \lor \ell$ and $\ell$, we substitute $C$ with $C \lor \ell$ (in other words, we skip the resolution step). Repeating this process down the whole tree of $\pi$ transforms the root clause $\bot$ into $\ell$.
+\end{proof}
+
+The idea behind the algorithm is to use these two lemmas to apply a smart brute force approach where wrong paths are discarded. For any formula $\varphi$, let $s = \mathrm{size}_{\mathrm{Res}^*}(\varphi)/2$. We start by searching for a literal $\ell$ such that there is a tree-like Resolution refutation for $\varphi_{|_{\ell = 0}}$ of size $s/2$. Once one is found, we recursively search for a proof of $\varphi_{|_{\ell = 1}}$ of size $s$. If no such literal is found, we output \curlyquotes{no proof exists}.
+
+
+
+
+Theorem 15.2 There is an algorithm that on input an unsatisfiable CNF formula 𝑁 with 𝑄
+variables, finds a Tree-like Resolution refutation for it in time 𝑄𝐿(log 𝑀)
+, where 𝑃 is the minimal
+size of a Tree-like Resolution refutation of 𝑁.
+
+\section{Non-automatability of Resolution}
+
+\subsection{The $\mathrm{Ref}$ formula}
+
+Given a CNF formula $\varphi$ and a parameter $s \in \N$, we define a formula $\mathrm{Ref}_s(\varphi)$ representing the statement \curlyquotes{$\varphi$ has a Resolution refutation consisting of $s$ clauses}. The simplicity of Resolution allows us to encode this meta-complexity statement through a natural encoding. The idea is to formalize $\mathrm{Ref}_s(\varphi)$ as a blueprint for a generic Resolution refutation for $\varphi$ with at most $s$ clauses. Each clause is represented by a \textit{block}, a set of variables that describe the literals that appear in the clause, how it was obtained (resolved or weakened from another clause) and two (or one) pointer variables that keep track of the parent blocks it was derived from. The axioms of the formula are formal descriptions of coherence rules between these variables. For instance, if the variable saying that a block $B$ was derived through a resolution step is set to true then all the other variables that talk about the derivation itself (parent pointers, resolving literal, \dots) must also be set.
+
+The initial standard encoding of this idea was the one used in Pudlák [Pud03], referred to in the literature as the \textit{unary encoding}. This encoding uses unary pointers, meaning that for every block $B \in [s]$ there are up to $2(s-1)$ variables that point at the blocks from which $B$ may be derived. Pudlák proved the easiness of $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is satisfiable through this encoding, but the proof can be adapted for other encodings.
+
+In order to prove their result, Atserias and Müller [AM20] adapted this encoding by introducing \textit{enable variables}. When the enable variable is true, the block is considered as part of the underlying refutation described by the blueprint (as if we're forcing the refutation to use this block). When this isn't the case, instead, the block gets completely ignored by the refutation, automatically satisfying all the axioms that mention it. This encoding is known as the \textit{relativized unary encoding}. This encoding was first introduced to prove the hardness of $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is unsatisfiable due to failure of achieving such result with the non-relativized encoding. Nonetheless, Garlik [G19] proved that the hardness of this formula doesn't come from the introduction of this variables by proving that the size lower bound also holds for the non-relativized encoding. 
+
+Finally, the last common encoding is the \textit{relativized binary encoding}, first defined in [dRGN+21]. This encoding describes the parent pointers of each block in binary, meaning that for each block $B \in [s]$ there are only $O(\log s)$ variables describing its pointers. This encoding drastically reduces the width of the formula, making it possible to prove the size lower bound simply by using a size-width tradeoff.
+
+In this work we'll use the relativized unary encoding as it is both the most natural one for the problem and the easiest to work with (see Arteche [A25] for a more in depth comparison behind the encodings). Given $n$ variables $x_1, \ldots, x_n$, let $\mathrm{Lit}_n = {x_1, \ldots, x_n, \lnot x_1, \ldots, \lnot x_n }$. We define the variables of the formula $\mathrm{Ref}_s(\phi)$, parametrized over a generic formula $\phi$ with $n$ variables and $m$ clauses, as follows:
+\begin{align*}
+    \text{a-lit}_\ell^A \quad & : \quad \text{literal } \ell \in \text{Lit}_n \text{ is present in the clause } A \in [m] \text{ of } \phi; \\
+    \text{enable}^B \quad & : \quad \text{block } B \in [s] \text{ is enabled}; \\
+    \text{derived}^B \quad & : \quad \text{block } B \in [s] \text{ was obtained by a Resolution step}; \\
+    \text{weak}_A^B \quad & : \quad \text{block } B \in [s] \text{ is obtained by weakening from clause } A \in [m] \text{ of } \phi; \\
+    \text{lit}_\ell^B \quad & : \quad \text{literal } \ell \in \text{Lit}_n \text{ is present in the block } B \in [s]; \\
+    \text{res}_{x_i}^B \quad & : \quad \text{block } B \in [s] \text{ was obtained by resolving over the variable } x_i; \\
+    \text{lpoint}_{B'}^B \quad & : \quad \text{block } B \in [s] \text{ was resolved on the left from block } B' \in [s], B' < B; \\
+    \text{rpoint}_{B'}^B \quad & : \quad \text{block } B \in [s] \text{ was resolved on the right from block } B' \in [s], B' < B.
+\end{align*}
+
+When working with a specific formula $\varphi$, we restrict $\mathrm{Ref}_s(\phi)$ to the formula $\mathrm{Ref}_s(\varphi) := \mathrm{Ref}_s(\phi)_{|_{\alpha_\varphi}}$ through a partial assignment $\alpha_\varphi$ that sets the values of all the variables $\text{a-lit}_\ell^A$ in a way that describes the clauses of $\varphi$, i.e. $\alpha_\varphi(\text{a-lit}_\ell^A)$ is set to 1 if $\ell$ is part of the $A$-th clause of $\varphi$, otherwise we set it to 0. 
+Moreover, we also observe that the weakening variables $\text{weak}_A^B$ are defined only for axiom clauses. Of course, this can be extended to non-axiom clauses but, for the purpose of making proofs easier and shorter, we'll assume that the weakening step can be used only on axioms. The clauses of $\mathrm{Ref}_s(\varphi)$ are then defined as follows:
+
+\begin{figure}[H]
+    \resizebox{1\textwidth}{!}{
+        $\begin{array}{llc}
+            \left(\text{enable}^B \wedge \text{res}_{x_i}^B \wedge \text{lpoint}_{B'}^B \wedge \text{lit}_\ell^{B'}\right) \to \text{lit}_\ell^B & \text{for } B, B' \in [s], B' < B, i \in [n], \ell \in \text{Lit}_n \setminus \{x_i\}, & \text{(REF-1)} \\
+            \left(\text{enable}^B \wedge \text{res}_{x_i}^B \wedge \text{rpoint}_{B'}^B \wedge \text{lit}_\ell^{B'}\right) \to \text{lit}_\ell^B & \text{for } B, B' \in [s], B' < B, i \in [n], \ell \in \text{Lit}_n \setminus \{\neg x_i\}, & \text{(REF-2)} \\
+            \left(\text{enable}^B \wedge \text{weak}_A^B \wedge \text{a-lit}_\ell^A\right) \to \text{lit}_\ell^B & \text{for } B \in [s], A \in [m], \ell \in \text{Lit}_n, & \text{(REF-3)} \\
+            \left(\text{enable}^B \wedge \text{derived}^B\right) \to \displaystyle\bigvee_{i \in [n]} \text{res}_{x_i}^B & \text{for } B \in [s], & \text{(REF-4)} \\
+            \left(\text{enable}^B \wedge \text{derived}^B\right) \to \displaystyle\bigvee_{\substack{B' \in [s] \\ B' < B}} \text{lpoint}_{B'}^B & \text{for } B \in [s], & \text{(REF-5)} \\
+            \left(\text{enable}^B \wedge \text{derived}^B\right) \to \displaystyle\bigvee_{\substack{B' \in [s] \\ B' < B}} \text{rpoint}_{B'}^B & \text{for } B \in [s], & \text{(REF-6)} \\
+            \left(\text{enable}^B \wedge \neg\text{derived}^B\right) \to \displaystyle\bigvee_{A \in [m]} \text{weak}_A^B & \text{for } B \in [s], & \text{(REF-7)} \\
+            \left(\text{enable}^B \wedge \text{lpoint}_{B'}^B\right) \to \text{enable}^{B'} & \text{for } B, B' \in [s], B' < B & \text{(REF-8)} \\
+            \left(\text{enable}^B \wedge \text{rpoint}_{B'}^B\right) \to \text{enable}^{B'} & \text{for } B, B' \in [s], B' < B & \text{(REF-9)} \\
+            \neg\text{lit}_\ell^s & \text{for } \ell \in \text{Lit}_n, & \text{(REF-10)} \\
+            \text{enable}^s. & & \text{(REF-11)}
+        \end{array}$
+    }
+\end{figure}
+
+The above clauses have been written as implications for the sake of readability. This encoding of $\mathrm{Ref}_s(\phi)$ is defined over $N = \Theta(s^2 + sm + sn + nm)$ variables and $M = \Theta(s^2n^2 + smn)$ clauses, meaning that $\abs{\mathrm{Ref}_s(\phi)} = \mathrm{poly}(s,n,m)$. The values of $N$ and $M$ will be crucial for our proofs. 
+
+\begin{proposition}
+    $\varphi$ has a Resolution refutation of length at most $s$ if and only if $\mathrm{Ref}_s(\varphi)$ is satisfiable.
+\end{proposition}
+
+\begin{proof}
+    Let $\pi$ be a refutation of $\varphi$ of length $s' \leq s$. We can easily define a satisfying assignment for $\mathrm{Ref}_s(\varphi)$ by enabling exactly $s'$ blocks to then set all their variables by following the description of $\pi$.
+
+    Vice versa, let $\alpha$ be a satisfying assignment for $\mathrm{Ref}_s(\varphi)$. Since the clauses of $\mathrm{Ref}_s(\varphi)$ acts as a blueprint for a resolution refutation, we can read the contents of $\alpha$ starting from the root block $s$ down to the axioms to obtain the steps of a refutation $\pi'$ of $\varphi$. Since $\mathrm{Ref}_s(\varphi)$ has at most $s$ enabled blocks, we get a refutation of length at most $s$ for $\varphi$.  
+\end{proof}
+
+\begin{figure}[H]
+    \resizebox{1\textwidth}{!}{
+        \begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=2.5cm, thick,main node/.style={scale=0.9,circle,draw,font=\sffamily\normalsize},
+        block/.style={rectangle, draw, minimum width = 50, minimum height = 20, rounded corners = 6pt}]
+            \node [block](1) []{$x_1 \lor x_2$};
+            \node [block](2) [right of = 1]{$x_1 \lor \lnot x_2$};
+            \node [block, dashed](3) [right of = 2]{};
+            \node [block](4) [right of = 3]{$x_1$};
+            \node [block, dashed](5) [right of = 4]{};
+            \node [block](6) [right of = 5]{$\lnot x_1$};
+            \node [block](7) [right of = 6]{$\bot$};
+
+            \node[] (x0) [above of = 4]{a-lit$^1_{x_1}$ a-lit$^1_{x_2}$ \qquad a-lit$^2_{x_1}$ a-lit$^2_{\lnot x_2}$ \qquad a-lit$^3_{\lnot x_1}$};
+
+            \node[align=center] (x1) [below of = 1]{
+                enable$^1$ \\ weak$^1_1$ \\ lit$^1_{x_1}$ \\ lit$^1_{x_2}$
+            };
+            \node[align=center] (x2) [below of = 2]{
+                enable$^2$ \\ weak$^2_2$ \\ lit$^2_{x_1}$ \\ lit$^2_{\lnot x_2}$
+            };
+            \node[align=center] (x4) [below of = 4]{
+                enable$^4$ \\ derived$^4$ \\ res$^4_{x_2}$ \\ lpoint$^4_2$ \\ rpoint$^4_1$ \\ lit$^4_{x_1}$
+            };
+            \node[align=center] (x6) [below of = 6]{
+                enable$^6$ \\ weak$^6_3$ \\ lit$^6_{\lnot x_1}$ 
+            };
+            \node[align=center] (x4) [below of = 7]{
+                enable$^7$ \\ derived$^7$ \\ res$^7_{x_1}$ \\ lpoint$^7_6$ \\ rpoint$^7_4$
+            };
+        
+            \path[every node/.style={font=\sffamily\small}]
+                (1) [bend left]edge (4)
+                (2) [bend right]edge (4)
+                (4) [bend left]edge (7)
+                (6) [bend right]edge (7)
+                ;
+        \end{tikzpicture}
+    }
+    \caption{Mapping between a refutation of $\varphi = (x_1 \lor x_2) \land (x_1 \lor \lnot x_2) \land \lnot x_1$ and a satisfying assignment for $\mathrm{Ref}_7(\varphi)$. Displayed variables are set to 1, the remaining ones are set to 0.}
+\end{figure}
+
+The above proposition not only formalizes the soundness of the formula $\mathrm{Ref}_s(\varphi)$, but it also shows that, when it is a tautology, the minimum size of a $Q$-proof $\pi$ of $\lnot \mathrm{Ref}_s(\varphi)$ determines the ability of a proof system to reason efficiently or not about Resolution lower bounds. In particular, when $\mathrm{Ref}_s(\varphi)$ is unsatisfiable one of two cases may hold: either $\varphi$ is unsatisfiable but it requires refutations of length at least $s+1$ or $\varphi$ is satisfiable, thus it has no refutations at all. This second case may also be seen as if $\varphi$ requires \curlyquotes{refutations of infinite length}.
+
+A fundamental concept that will be used in our proofs is \textit{block-width}. Consider any formula $\varphi$ whose variables $x_1, \ldots, x_n$ can be partitioned into distinct blocks, similar to what is done in $\mathrm{Ref}_s(\phi)$. When a variable $x$ is part of a block $B$, we say that $x$ \textit{mentions} $B$. The Resolution block-width of a clause $C$ over the variables of $\varphi$, written $\mathrm{bw}_{\varphi}$, is defined as the number of different blocks mentioned by the variables of the literals in $C$, without counting the mentions of the root block $s$. The block-width $\mathrm{bw}_{\mathrm{Res}}(\pi)$ of a Resolution refutation $\pi$ for $\mathrm{Ref}_s(\varphi)$ the maximum block-width over all the clauses in $\pi$. By extension, the block-width $\mathrm{bw}(\varphi)$ of a formula $\varphi$ is the minimum block-width across all refutations.
+
+Our first goal is to prove that refutation formulas can act as a discriminator between satisfiability and unsatisfiability. This will later be used to show that if Resolution is automatable then $\mathrm{SAT}$ can be solved in polynomial time, implying that $\mathsf{P} = \mathsf{NP}$.
+
+\begin{theorem}
+    \label{thm:ref_bounds}
+    Let $\varphi$ be a formula with $n$ variables and $m$ clauses. Then:
+    \begin{enumerate}[label={(\arabic*)}]
+        \item If $\varphi$ is satisfiable then $\mathrm{Ref}_s(\varphi)$ has a Resolution refutation of size $N^{O(1)}$ and block-width $\Theta(1)$.
+        \item If $\varphi$ is unsatisfiable then $\mathrm{Ref}_s(\varphi)$ requires Resolution refutation of block-width $N^{\Omega(1)}$.
+    \end{enumerate}
+\end{theorem}
+
+We split the proof of this theorem in two lemmas (\Cref{lem:pudlak_upper_bound} and \Cref{lem:am_lower_bound}), proven respectively in the next two sub-sections. 
+
+\subsection{Upper bound on $\mathrm{Ref}$ for satisfiable formulas}
+
+We prove that when $\varphi$ is satisfiable the formula $\mathrm{Ref}_s(\varphi)$ admits a short Resolution refutation, corresponding to part (1) of \Cref{thm:ref_bounds}. This result was first proven by Pudlák [Pud03] for the unary encoding of $\mathrm{Ref}_s(\varphi)$ to show that the canonical $\mathsf{NP}$-pair of Resolution is \textit{symmetrical}, i.e. that the pair $(\mathrm{Sat}, \mathrm{Ref}^{\mathrm{Res}})$ is polynomial time reducible to the pair $(\mathrm{Ref}^{\mathrm{Res}}, \mathrm{Sat})$. Atserias an Müller showed that such upper bound is preserved in the relativized unary encoding, while de Rezende [dR20] showed it for the binary encoding. Here, we use an adaptation of the proof for the relativized unary encoding shown in [Arteche25].
+
+\begin{lemma}
+    Let $\varphi$ be a satisfiable CNF formula with $n$ variables and $m$ clauses. Then, for all $s \in \N$ the formula $\mathrm{Ref}_s(\varphi)$ has a Resolution refutation of length $O(s(m+sn^2))$.
+    \label{lem:pudlak_upper_bound}
+\end{lemma}
+
+\begin{proof}
+    Let $\alpha$ be a satisfying assignment for $\varphi$. We'll construct a refutation for $\mathrm{Ref}_s(\varphi)$ using $\alpha$ as a guide. For all $B \in [s]$, we'll derive (in increasing order of $B$) the following clause $\mathrm{True}(B,\alpha)$ asserting that \curlyquotes{if block $B$ is enabled then $\alpha$ satisfies it}:
+    \[\mathrm{True}(B,\alpha) := \lnot \text{enable}^B \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}\]
+
+    After deriving $\mathrm{True}(s,\alpha)$, the proof concludes by resolving it sequentially against all clauses REF-10 and REF-11 defined for $s$.
+
+    We start by deriving the clause $Z_1(B) := \mathrm{derived}^B \lor \mathrm{True}(B,\alpha)$ for each $B \in [s]$. Since $\alpha(\varphi) = 1$, for each clause $C_j \in \varphi$ there is at least one literal $\ell_j^\alpha \in C_j$ such that $\alpha(\ell) = 1$. Now, consider the following auxiliary clause $W(B,j)$:
+    \[W(B,j) := \lnot \text{enable}^B \lor \lnot \text{weak}^B_i \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}\]
+    Notice that $W(B,j)$ is a weakening of the axiom clause REF-3$(B,j,\ell_j^\alpha)$ since the variable a-lit$^j_{\ell_j^\alpha}$ gets deleted by the restriction once $\varphi$ has been fixed inside $\mathrm{Ref}_s(\phi)$. This accounts for a total of $m$ weakening steps.
+
+    By resolving axiom REF-7$(B)$ sequentially, for all $j \in [m]$, with each $W(B,j)$ over the variable $\mathrm{weak}_{j}^B$, obtaining the clause $Z_1(B)$. This accounts for a total of $m-1$ resolution steps. Since this procedure has to be applied for each block $B \in [s]$, we get a total of $O(sm)$ steps to obtain $Z_1(1), \ldots, Z_1(s)$.
+    
+    Next, we'll derive $\mathrm{True}(B,\alpha)$ for each $B \in [s]$ through an inductive procedure. When $B = 1$, the axiom REF-5$(1)$ degenerates to $\lnot \mathrm{enable}^1 \lor \lnot \mathrm{derived}^1$ since no block comes before it. Therefore, by resolving REF-5$(1)$ with $Z_1(1)$ over the variable $\mathrm{derived}^1$ we obtain $\mathrm{True}(1,\alpha)$
+    
+    Fix $B \in [s]$ with $B > 1$ and assume that for each $B' \in [B-1]$ we have already derived $\mathrm{True}(B',\alpha)$. Fix a block $B' \in [B-1]$ and an index $i \in [n]$. Suppose that $\alpha(x_i) = 0$ (we omit the dual case since it can be constructed similarly by following the right-hand pointers). For each $k \in [n]$, set $\ell_k = x_k$ if $\alpha(x_k) = 1$ and $\ell_k = \lnot x_k$ if $\alpha(x_k) = 0$.
+
+    By resolving $\mathrm{True}(B',\alpha)$ sequentially, for all $k \in [n]$, with each axiom REF-1$(B,B',i,\ell_{k})$ over the variable $\text{lit}^{B'}_{\ell_{k}}$ we get the auxiliary clause $Z(B,B',i)$ defined as:
+    \[U_1(B,B',i) := \lnot \mathrm{enable}^{B} \lor \lnot \mathrm{enable}^{B'} \lor \lnot \mathrm{res}^{B}_{x_i} \lor \lnot \mathrm{lpoint}^{B}_{B'} \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}\]
+
+    This requires $O(n)$ steps. By resolving each $U_1(B,B',i)$ with REF-8$(B,B')$ over the variable enable$^{B'}$, we obtain the clauses $U_2(B,B',i)$ of the form
+    \[U_2(B,B',i) := \lnot \mathrm{enable}^{B} \lor \lnot \mathrm{res}^{B}_{x_i} \lor \lnot \mathrm{lpoint}^{B}_{B'} \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}\]
+
+    This requires another $O(n)$ steps. Bu repeating above process across all $i \in [n]$, we derive the clauses $\{U_2(B,B',i)\}_{i \in [n]}$ for a fixed $B'$ with $O(n^2)$ steps. Now, we cut REF-4$(B)$ sequentially, for all $i \in [n]$, with $U_2(B,B',i)$ over the variable res$^{B}_{x_i}$ to obtain the clauses $U_3(B,B')$ of the form
+    \[U_3(B,B') := \lnot \mathrm{enable}^{B} \lor \lnot \mathrm{derived}^{B} \lor \lnot \mathrm{lpoint}^{B}_{B'} \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}\]
+
+    Repeating this over all $B' \in [B-1]$, we obtain all the clauses $\{U_3(B,B')\}_{B' \in [B-1]}$ with $O(sn^2)$ steps. Finally, by cutting REF-5$(B)$ sequentially, for all $B' \in [B-1]$, with $U_3(B,B')$ over the variable lpoint$^B_C$ we get the clause $\lnot \mathrm{derived}^B \lor \mathrm{True}(B,\alpha)$, which can then be resolved with the corresponding clause $\mathrm{derived}^B \lor \mathrm{True}(B,\alpha)$ to get $\mathrm{True}(B,\alpha)$. By applying this whole inductive procedure across all block $B \in [s]$, we get a total of $O(sm + s^2n^2)$ steps.
+\end{proof}
+
+\subsection{Block-width lower bound for $\mathrm{Ref}$}
+
+We prove part (2) of \Cref{thm:ref_bounds}, first proven by Atserias and Müller  [AM20]. Their original proof is based on a very complex restriction argument. Here, we shall show the easier proof given by de Rezende [dR21]. This simplified approach is based on \textit{decision tree reductions}. Informally, a decision tree reduction between formulas $\varphi$ and $\psi$ is a reduction relating the variables of $\psi$ to the variables of $\varphi$ via shallow decision trees, and moreover, showing that the axioms of $\varphi$ imply those of $\psi$.
+
+\begin{definition}
+    Let $\varphi$ and $\psi$ be, respectively, CNF formulas over the variables $x_1, \ldots, x_n$ and $y_1, \ldots, y_s$. A depth-$d$ decision tree reduction between $\varphi$ and $\psi$, written as $\varphi_{d}^{dt} \psi$ is a function $f : \{0,1\}^n \to \{0,1\}^t$
+    \begin{itemize}
+        \item Each output bit $f_i$ is computed by an independent depth-$d$ decision tree $\mathcal{T}_i : \{0,1\}^n \to \{0,1\}$
+        \item For each axiom $C$ of $\psi$, viewed as a function $C : \{0,1\}^t \to \{0,1\}$, the composition $C \circ f$ can be computed by a depth-($d \cdot \abs{C})$ decision tree $\mathcal{T}_C$
+        \item For each axiom $C$ of $\psi$, every clause of $\mathcal{T}_C$ is a weakening of an axiom of $\varphi$ 
+    \end{itemize}
+\end{definition}
+
+The key idea behind these reduction is to use the CNF representation property of decision trees to get a formula that is equal to $\psi$ but where each variable $y_i$ is replaced by the corresponding decision tree. This idea naturally translates to a relationship between the widths of the two formulas. To formally prove this, we can use the Prover-Delayer game defined in \todo{add ref}.
+
+\begin{proposition}
+    \label{prop:width_reduction}
+    If $\varphi \leq^{dt}_d \psi$ then $\mathrm{width}_{\mathrm{Res}}(\varphi) \leq d \cdot \mathrm{width}_{\mathrm{Res}}(\psi)$.
+\end{proposition}
+
+\begin{proof}
+    Let $f$ be the function witnessing $\varphi \leq_d^{dt} \psi$. Given a width-$w$ Prover strategy $\mathcal{G}$ for $\psi$, we define a width-$dw$ Prover strategy $\mathcal{F}$ for $\varphi$ by simulating $\mathcal{G}$ round-by-round through $f$.
+
+    We'll use the following invariant during each round of the game: if the game state for $\mathcal{G}$, i.e. the partial assignment to $y$, records a value $y_i = b$ for some $b \in \{0, 1\}$, then the current game state $\rho$ for $\mathcal{F}$, i.e. the partial assignment to $x$, satisfies $f_i(\rho) = b$ while having at most $d$ values of $x_j$ recorded in $\rho$.
+    
+    On each round, if $\mathcal{G}$ queries a variable $y_i$ then $\mathcal{F}$ computes $f_i(x) = b$ and simulates $\mathcal{G}$ by responding $y_i = b$ -- in other words, $\mathcal{F}$ acts as the Adversary for $\mathcal{G}$. When $\mathcal{G}$ forgets a variable $y_i$, instead, $\mathcal{F}$ forgets all the variables $x_j$ that aren't required to know the values of $f_j(x)$ for all those $j \in [t]$ such that the value of $y_j$ is not forgotten by $\mathcal{G}$.
+
+    This simulation ensures that the strategy of $\mathcal{F}$ is at most $dw$. Moreover, when the game ends for $\mathcal{G}$ it will also end for $\mathcal{F}$: if $\mathcal{G}$'t game state falsifies an axiom of $G$, it will also falsify an axiom of $\mathcal{F}$ through the definition of $f$.
+\end{proof}
+
+The idea in the above proof can be easily extended to block-width. To do so, we consider the so-called \textit{block-aware reductions}. The idea is to parallelize the decision trees that compute the reduction for the variables of a block into a single decision tree for the whole block.
+
+\begin{definition}
+    Let $f$ be a depth-$d$ decision tree reduction witnessing $\varphi \leq_d^{dt} \psi$. Suppose that the variables $y_1, \ldots y_s$ of $\psi$ are partitioned into blocks. We say that the reduction $f$ is block-aware if for each block $B \leq [t]$ there is a depth-$d$ decision tree that computes all the values $f_{B}(x) := (f_i(x) : \{0,1\}^n \to \{0,1\}^{\abs{B}})_{i \in B}$ simultaneously.
+\end{definition}
+
+Prover-Adversary games can equally well characterize block-width, defined for a game state as the number of blocks that the state records values from.
+
+\begin{proposition}
+    \label{prop:block_reduction}
+    If $\varphi \leq^{dt}_d \psi$ via a block-aware reduction then $\mathrm{width}_{\mathrm{Res}}(\varphi) \leq d \cdot \mathrm{bw}_{\mathrm{Res}}(\psi)$.
+\end{proposition}
+
+\begin{proof}
+    The proof is similar to that of \Cref{prop:width_reduction}, assuming an additional invariant: for each block $B$ such that $\mathcal{G}$ records the value of some $y_i$ with $i \in B$, the simulation $\mathcal{F}$ knows $f_B(x)$ by recording at most $d$ values of the $x_j$ variables. From this new constraint it follows that if $\mathcal{G}$ has block-width $w$ then $\mathcal{F}$ has width at most $dw$.
+\end{proof}
+
+The above proposition is the main tool behind the proof of our desired block-width lower bound for $\mathrm{Ref}_s(\varphi)$. Now, all we require is a final ingredient: it suffices to find a proper initial propositional formula from which we can obtain a nice width lower bound and a nice block-aware reduction. It turns out that this ingredient is the \textit{Retraction Weak Pigeonhole Principle} $\mathrm{rPHP}_{m}^{2m}$, a variant of the standard Pigeonhole Principle formula.
+
+This variant uses $2m$ pigeons and $m$ holes, while also providing an efficient way to invert the mapping. This is achieved through two functions
+$f : [2m] \to [m]$ and $g : [m] \to [2m]$, where the addressing of the mappings is given in binary:
+\begin{itemize}
+    \item \textit{Pigeon mapping}: for every pigeon $i \in [2m]$ there are $\log m$ variables $f_{i,k}$, $k \in [\log m]$, that describe the binary encoding of the hole $f(i)$ that will be occupied by the $i$-th pigeon.
+    \item \textit{Hole mapping}: for every hole $j \in [m]$ there are $\log 2m$ variables $g_{i,h}$, $h \in [\log 2m]$, that describe the binary encoding of the pigeon $g(j)$ that will occupy the $j$-th hole.
+\end{itemize}
+
+The axioms of $\mathrm{rPHP}^{2m}_m$ state for every $i \in [2m]$, $j \in [m]$ if $f(i) = j$ then $g(j) = i$ -- equivalently, $g$ is a left-inverse of $f$. To encode this idea, for each pair $(i,j) \in [2m] \times [m]$ we define the formula $\lnot[f(i) = j]$ as:
+\[\lnot[f(i) = j] := \bigvee_{\substack{k \in [\log m] : \\ }} \ell(i,j,k)\]
+
+where $\ell(i,j,k) = f_{i,j_k}$ if $j_k = 1$, otherwise $\ell(i,j,k) = \lnot f_{i,j_k}$ -- recall that $j_k$ is the $k$-bit of $j$'s binary encoding. Then, the condition $f(i) = j \to g(j) = i$ is described by:
+\[\bigwedge_{h \in [\log m] } \lnot[f(i) = j] \lor \gamma(j,i,h)\]
+
+where $\gamma(j,i,h) = g_{j, i_h}$ if $i_h = 1$, otherwise $\gamma(j,i,h) = \lnot g_{j,i_h}$. Ranging across all pairs, the formula $\mathrm{rPHP}^{2m}_m$ has $O(m^2\log m)$ clauses, each containing $O(\log m)$ literals. We observe that such axioms imply all the standard pigeonhole axioms, hence no other axioms are required.
+
+
+We start by proving the width lower bound on the $\mathrm{rPHP}^{2m}_m$ formula using the Spoiler-Duplicator game defined in \todo{add section}.
+
+\begin{lemma}
+    \label{lem:rPHP_lower_bound}
+    $\mathrm{width}_{\mathrm{Res}}(\mathrm{rPHP}^{2m}_m) = \Omega(m)$.
+\end{lemma}
+
+\begin{proof}
+    We use a Duplicator strategy similar to the classical one used for the standard pigeonhole principle. Set $w = \lfloor m/2 \rfloor$. The Duplicator maintains a family $\mathcal{H}$ of partial assignments $\alpha$ with $|\text{dom}(\alpha)| \le w$. Each $\alpha \in \mathcal{H}$ is associated with a partial injective mapping $q_\alpha: P_\alpha \to H_\alpha$, where $P_\alpha \subseteq [2m]$ and $H_\alpha \subseteq [m]$ with $|P_\alpha| = |H_\alpha| \le |\text{dom}(\alpha)| \le w$, such that $\alpha$ is consistent with $q_\alpha$.
+
+    Let $\alpha$ be the Duplicator's assignment of the current game state, where $|\mathrm{dom}(\alpha)| < w$. Suppose that the Spoiler queries a variable $f_{i,k}$ (analogous argument for variables $g_{j,h}$, where pigeons and holes are inverted). The idea is to associate each of the $\log m$ hole bits to a different pigeon. In particular, if $i \notin P_\alpha$ then $\abs{H_\alpha} \leq k < m$ guarantees that at least one hole $j' \in [m]\setminus H_\alpha$ is unassigned. Hence, the Duplicator answers with $j'_k$ to then set $\alpha' = \alpha \cup \{f_{i,k} \mapsto j'_k\}$ and $q_{\alpha'} = q_\alpha \cup \{i \mapsto j'\}$ to keep track of progress.
+    
+    When the Spoiler forgets a variable $f_{i,k}$ (or $g_{j,h}$), the Duplicator removes the mappings in $\alpha$ and $q_\alpha$ associated with pigeon $i$ (or hole $j$). 
+    
+    This strategy guarantees that the Duplicator preserves local consistency without exhausting available pigeons or holes for at least $w$ rounds.
+\end{proof}
+
+All that is left now is to prove that, when $\varphi$ is unsatisfiable, $\mathrm{rPHP}^{2m}_m$ can be reduced to $\mathrm{Ref}_{s}(\varphi)$, for a suitable choice of $s$, through (relatively) small decision trees, while also being block-aware. We give a generalization of the argument shown in de Rezende [dR21] while also sharpening the exact values used in the proof.
+
+Let $T_n$ be the following full tree-like Resolution refutation of the formula $\varphi$, defined on the variables $x_1, \ldots, x_n$. We assume that the weakening rule is applied only on the leaves and that at each layer $i \in [n]$ of the tree the resolution rule is always applied on the variable $x_i$. Therefore, $T_n$ has $2n$ cleaves corresponding to all the possible width-$n$ clauses, each being a weakening of some axiom of $\varphi$.
+For any assignment $\alpha$ to $\mathrm{rPHP}_m^{2m}$, the reduction is going to produce an assignment $\beta$ to $\mathrm{Ref}_{s}(\varphi)$ that represents a purported refutation of $\varphi$ isomorphic to a subtree $T_\alpha \subseteq T_n$ of the full tree $T_n$.
+
+The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T_n$ is referred to as the \textit{boundary} of $T_\alpha$. Clearly, $T_\alpha$ is not a valid refutation of $\varphi$ since the boundary nodes have at least one missing child, but the non-boundary nodes will be indistinguishable from the corresponding neighborhoods of $T_n$. For this reason, the only axiom violations of $\mathrm{Ref}_{s}(\varphi)$ will be a result of the boundary nodes.
+
+\begin{lemma}
+    \label{lem:rPHP_to_Ref}
+    $\mathrm{rPHP}^{2m}_{m} \leq^{dt}_{O(n\log m)} \mathrm{Ref}_{m(n+1)-1}(\varphi)$ via a block-aware reduction when $\varphi$ is an unsatisfiable CNF formula.
+\end{lemma}
+
+\begin{proof}
+    Let $s = m(n+1) -1$. Given a total assignment $\alpha$ to $\mathrm{rPHP}^{2m}_m$, consider the subtree $T_\alpha \subseteq T_n$ defined as above. We'll use $\alpha$ to identify each block $B$ of $\mathrm{Ref}_{s}(\varphi)$ with some node in $T_n$. Once the position of the node is known, the values of the variables in block $B$ will be completely defined. To achieve this, we define the following partial mapping $h : [2m] \to [m] \cup \{*\}$:
+    \[h(i) = \left \{ \begin{array}{ll}
+        f(i) & \text{if } g(f(i)) = i \\
+        * & \text{otherwise}
+    \end{array}\right .\]
+
+    Observe that even if $\alpha$ is a total assignment to $\mathrm{rPHP}_m^{2m}$, the function $h$ is still necessarily undefined for some pigeons. The below claim explains the reason why we're using the retraction pigeonhole principle instead of the standard one.
+    
+    \begin{claim}
+        $h$ and its inverse can be computed by a decision tree of depth $O(\log m)$
+    \end{claim} 
+
+    \begin{proof}[Proof of the claim.]
+        Fix $i \in [2m]$. By querying the variables $\{f_{i,k}\}_{k \in [\log m]}$, we get the full decision tree $\mathcal{T}_f$ computing $f(i)$. Then, on each leaf $j$ of $\mathcal{T}_f$ we attach the full decision tree $\mathcal{T}_g$ computing $g(j)$ by querying the variables $\{g_{j,h}\}_{h \in [\log 2m]}$. Let $\mathcal{T}_h$ be the decision tree obtained after attaching each $\mathcal{T}_g$. Every leaf of $\mathcal{T}_h$ such that $g(j) = i$ outputs $j$, while all the others output $*$. This decision tree computes $h$ with depth $\log m + \log 2m$. For the inverse of $h$, a similar approach can be used by inverting the roles of $\mathcal{T}_f$ and $\mathcal{T}_g$.
+    \end{proof}
+
+    Consider now the graph $G_\alpha$ with $n+1$ layers $\ell \in \{0, \ldots, n\}$, each containing $\min\{2^{\ell}, m\}$ nodes. Notice that this implies that the first $\floor{\log m}$ layers make up a complete binary tree structure, while all the remaining layers contain $m$ nodes, for a total of $m-1+mn = s$ nodes. This hardcoded part of the graph will be used to force the isomorphism previously discussed. It is highly suggested to read the rest of this proof while looking at \Cref{fig:rphp_to_ref}.
+
+
+    \begin{figure}[t]
+        \resizebox{1\textwidth}{!}{
+            \begin{tikzpicture}[<-,>=stealth,shorten >=1pt,auto,node distance=2cm, thick,main node/.style={scale=0.9,circle,draw,font=\sffamily\normalsize},
+            block/.style={rectangle, draw, minimum width = 60, minimum height = 20, rounded corners = 6pt}, small circle/.style={circle, draw, inner sep=0pt, minimum size=4pt}]
+
+
+                % Add two small circles below each block
+                \foreach \l [
+                    evaluate = \l as \lprev using {int(\l-1)},
+                    evaluate = \l as \firstb using {int(32 - (\l-3)*8)},
+                ] in {3,4,5,6} {
+                    \ifnum\l=3
+                        \node [block, fill=green!30](\l0) []{$B_{\firstb}$};
+                    \else
+                        \node [block, fill=yellow!30](\l0) [below of = \lprev0]{$B_{\firstb}$};
+                    \fi
+
+                    \foreach \b [
+                        evaluate = \b as \bprev using {int(\b-1)},
+                        evaluate = \b as \bnum using {int(32 - (\l-3)*8 - \b)}
+                    ] in {1,2,3,4,5,6,7}{
+                        \ifnum\l=3
+                            \node [block, fill=green!30](\l\b) [right of = \l\bprev, xshift = 10]{$B_{\bnum}$};
+                        \else
+                            \node [block, fill=yellow!30](\l\b) [right of = \l\bprev, xshift = 10]{$B_{\bnum}$};
+                        \fi
+                    }
+                }
+
+                % Hardcoded blocks %
+
+                \node [block](20) [above right of = 30, yshift = 15, xshift=-5, fill=green!30]{$B_{36}$};
+                \node [block](21) [above right of = 32, yshift = 15, xshift=-5, fill=green!30]{$B_{35}$};
+                \node [block](22) [above left of = 35, yshift = 15, xshift=7.5, fill=green!30]{$B_{34}$};
+                \node [block](23) [above left of = 37, yshift = 15, xshift=7.5, fill=green!30]{$B_{33}$};
+
+                \node [block](10) [above of = 21, fill=green!30]{$B_{38}$};
+                \node [block](11) [above of = 22, fill=green!30]{$B_{37}$};
+
+                \node [block](00) [above of = 10, xshift = 67.5, fill=green!30]{$B_{39}$};
+                
+                % Disabled blocks % 
+                \node [block, fill=gray!20] at (53.center){$B_{13}$};
+                \node [block, fill=gray!20] at (63.center){$B_{5}$};
+
+                \node [block, fill=gray!20] at (44.center){$B_{28}$};
+                \node [block, fill=gray!20] at (54.center){$B_{12}$};
+                \node [block, fill=gray!20] at (64.center){$B_{4}$};
+
+                \node [block, fill=gray!20] at (55.center){$B_{11}$};
+                \node [block, fill=gray!20] at (65.center){$B_{3}$};
+                
+                \node [block, fill=gray!20] at (46.center){$B_{18}$};
+                \node [block, fill=gray!20] at (56.center){$B_{10}$};
+                \node [block, fill=gray!20] at (66.center){$B_{2}$};
+                
+                \node [block, fill=gray!20] at (67.center){$B_{1}$};
+                
+                % Block pointers
+                \foreach \l in {3,4,5,6} {
+                    \foreach \b in {0,1,2,3,4,5,6,7} {
+                        \unless\ifnum\l=3
+                            \node [small circle] at (\l\b.north) [yshift=1.5pt] {};
+                        \fi
+
+                        \unless\ifnum\l=6
+                            \node [small circle] at (\l\b.south) [xshift=-4pt, yshift=-1.5pt] {};
+                            \node [small circle] at (\l\b.south) [xshift=4pt, yshift=-1.5pt] {};
+                        \fi
+                    }
+                }
+
+                % Pigeons
+
+
+                \path[every node/.style={font=\sffamily\small}]
+                        (00) edge[left] node[xshift = -5pt]{\color{black}$x_{1}$} ($(10.north)$)
+                        (00) edge[right] node[xshift = 2pt]{\color{black}$\lnot x_{1}$}($(11.north)$)
+
+                        (10) edge[left] node[xshift = -10pt]{\color{black}$x_{2}$}($(20.north)$)
+                        (10) edge[right] node[xshift = 0pt]{\color{black}$\lnot x_{2}$}($(21.north)$)
+                        (11) edge[left] node[xshift = 0pt]{\color{black}$x_{2}$}($(22.north)$)
+                        (11) edge[right] node[xshift = 5pt]{\color{black}$\lnot x_{2}$}($(23.north)$)
+
+                        (20) edge[left] node[xshift = -2pt]{\color{black}$x_{3}$} ($(30.north)$)
+                        (20) edge[right] node[xshift = 0pt]{\color{black}$\lnot x_{3}$}  ($(31.north)$)
+                        (21) edge[left] node[xshift = -2pt]{\color{black}$x_{3}$}  ($(32.north)$)
+                        (21) edge[right] node[xshift = 0pt]{\color{black}$\lnot x_{3}$} ($(33.north)$)
+                        (22) edge[left] node[xshift = -2pt]{\color{black}$x_{3}$}  ($(34.north)$)
+                        (22) edge[right] node[xshift = 0pt]{\color{black}$\lnot x_{3}$} ($(35.north)$)
+                        (23) edge[left] node[xshift = -2pt]{\color{black}$x_{3}$}  ($(36.north)$)
+                        (23) edge[right] node[xshift = 0pt]{\color{black}$\lnot x_{3}$} ($(37.north)$)
+                        
+                        \foreach \l [
+                            evaluate = \l as \lnext using {int(\l+1)},
+                        ] in {3,4,5,6} {
+                            \unless\ifnum\l=6
+                                ($(\l0.south) + (-4pt,-2pt)$) edge[color=blue, left] node{\color{black}$x_{\lnext}$} ($(\lnext0.north) + (0,1.5pt)$)
+                                ($(\l0.south) + (5pt,-2pt)$) edge[color=blue, right] node{\color{black}$\lnot x_{\lnext}$}($(\lnext1.north) + (0,1.5pt)$)
+
+                                ($(\l1.south) + (5pt,-2pt)$) edge[color=blue, right] node{\color{black}$\lnot x_{\lnext}$} ($(\lnext2.north) + (0,1.5pt)$)
+
+                                ($(\l4.south) + (-5pt,-2pt)$) edge[color=blue, left] node[xshift=-5pt]{\color{black}$x_{\lnext}$} ($(\lnext3.north) + (0,1.5pt)$)
+                                ($(\l4.south) + (5pt,-2pt)$) edge[color=blue, right] node{\color{black}$\lnot x_{\lnext}$}($(\lnext5.north) + (0,1.5pt)$)
+
+                                ($(\l5.south) + (5pt,-2pt)$) edge[color=blue, right] node[xshift=5pt]{\color{black}$\lnot x_{\lnext}$}($(\lnext7.north) + (0,2pt)$)
+                            \fi
+                        }
+                    ;
+            \end{tikzpicture}
+        }
+        \caption{Reduction from $\mathrm{rPHP}^{2m}_m$ to $\mathrm{Ref}_{m(n+1)-1}(\varphi)$ with $n = 7$ and $m = 8$. The copies of the partial matching defined by $h : [2m] \to [m]$ are represented by \textcolor{blue!70!black}{\textbf{blue}} arrows. Hardcoded nodes are represented in \textcolor{green!60!black}{\textbf{green}}. Derived nodes that survive the walk-up phase are represented in \textcolor{yellow!80!black}{\textbf{yellow}}, while disabled blocks are represented in \textcolor{gray!70}{\textbf{gray}}. The subtree isomorphic to $T_\alpha$ is given by green and yellow nodes.}
+        \label{fig:rphp_to_ref}
+    \end{figure}
+    
+    The idea is to map each block of $\mathrm{Ref}_{s}(\varphi)$ to a node of $G_\alpha$. In particular, the last block $B_{s}$ is placed at the root of $G_\alpha$, the node on layer 0, and the rest of the blocks are mapped to the graph decreasing order from left to right across all layers.
+    
+    Next, we consider the block pointers given by the total assignment $\alpha$. For each of these pointers, we'll add an edge to $G_\alpha$ corresponding to it. For the first $\floor{\log m}$ layers, we hardcode the edges in $G_\alpha$ in a way that they represents a full binary tree. Notice that this part of the pointer assignment doesn't depend on the variables $\alpha$.
+    
+    Now, for each of the remaining layers $\ell \in [n] \setminus [\log m]$, we think of the $2m$ pointers going from the $m$ blocks of layer $\ell$ to those of layer $\ell+1$ as the $2m$ pigeons going to the $m$ holes. More precisely, we define the left pointer of the $i$-th block on layer $\ell$ as the $h(2i-1)$-th block on layer $\ell+1$. Similarly, the right pointer is the $h(2i)$-th block on layer $\ell+1$. When $h(i)$ is undefined, which can happen only when an axiom of $\mathrm{rPHP}_{m}^{2m}$ associated with $i$ is violated, we define the corresponding pointer as \textit{null} and we point it directly to the root block $B_{s}$, which automatically results in an axiom violation for $\mathrm{Ref}_{s}(\varphi)$.
+    
+    We observe that the resulting topology (ignoring null pointers) is a forest of binary trees: it is constructed by stitching together a binary tree at the top with a layered sequence of copies of the same partial matchings where we have identified pairs of pigeons. Now that the topology of $G_\alpha$ has been defined, we'll show that one of its subtrees is isomorphic to $T_\alpha \subseteq T_n$.
+    
+    Consider the following procedure to construct a decision tree that computes the literal set for a block $B$. Starting from $B$, we walk up $G_\alpha$ to its unique parent in the binary forest by computing the inverse of $h$ using $O(\log m)$. Then, we repeat this process walking upwards for at most $n$ steps until we reach a block $B^*$ without a parent. We have two cases:
+    \begin{itemize}
+        \item $B^* = B_{s}$. Consider the reverse path $p$ from $B^*$ to $B$, viewed as a sequence of left and right turns. The path $p$ identifies a node $v$ of $T_\alpha$ obtained by following the same sequence of turns described by $p$. Once $v$ is found, we copy all the local structure of $v$ into $B$. In particular, the literal set of $B$ is made equal to that of $v$, where a left turn at layer $\ell$ is associated with $x_\ell$ and a right turn is associated with $\lnot x_\ell$. If $v$ is derived in $T_\alpha$ by resolving on $x_k$, we make $B$ a derived block and set its resolved variable to $x_k$. Similarly, if $v$ is a leaf of $T_\alpha$ that is a weakening of some axiom $C_A \in \varphi$, we make $B$ an axiom block and set its weakening index to $A$.
+        
+        \item $B^* \neq B_{s}$. In this case, the block $B$ is set as disabled since it is not part of the subtree isomorphic to $T_\alpha$. All of the other variables of $B$ are randomly assigned since they're not needed.
+    \end{itemize}
+
+    Through this procedure, the whole contents of a particular block can be computed by a single decision tree of depth $O(n \log m)$.
+
+    To conclude the proof it remains to show that every axiom in $\mathrm{Ref}_{s}(\varphi)$ (composed with the reduction) is implied by some axiom of $\mathrm{rPHP}^{2m}_m$. We argue the contrapositive statement. Since the reduction produces a purported refutation isomorphic to a subtree $T_\alpha \subseteq T$ together with some disabled blocks which do not violate axioms of $\mathrm{Ref}_{m(n+1)-1}(\varphi)$, the only possible axiom violations in $\mathrm{Ref}_{m(n+1)-1}(\varphi)$ are caused by a block on a non-hardcoded layer $\ell \in [n]\setminus [\log m]$ containing a null pointer. Any null pointer is caused by the decision tree querying a pigeon $i$ with $h(i) = *$, which means that the decision tree has witnessed an axiom violation of the form $f(i) = j \to g(j) = i$ for $\mathrm{rPHP}_{m}^{2m}$.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:am_lower_bound}
+    Let $\varphi$ be an unsatisfiable CNF formula with $n$ variables and $m$ clauses. Then, for all $s \in \N$ with $s \geq n^2$, the formula $\mathrm{Ref}_s(\varphi)$ requires Resolution refutations of block-width $\Omega \rbk{\frac{s}{n^2\log(s/n)}}$.
+\end{lemma}
+
+\begin{proof}
+    Set $m = (s-1)/(n+1)$. By \Cref{lem:rPHP_to_Ref} we know that $\mathrm{rPHP}^{2m}_{m} \leq^{dt}_{O(n\log m)} \mathrm{Ref}_{s}(\varphi)$ via a block-aware reduction. Therefore,by \Cref{lem:rPHP_lower_bound} and \Cref{prop:block_reduction} we conclude that:
+    \[\mathrm{bw}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \geq \Omega \rbk{\dfrac{\mathrm{width}_{\mathrm{Res}}(\mathrm{rPHP}^{2m}_{m})}{n \log m}} \geq \Omega \rbk{\frac{s}{n^2\log(s/n)}}\]
+\end{proof}
+
+\subsection{Tradeoffs between block-width and size}
+
+\section{Extending non-automatability up to Cutting Planes}
+
+\section{Automatability and Feasible interpolation}
+
+\subsection{Non-automatability of $AC^0$-Frege}
+
+
 \cleardoublepage
