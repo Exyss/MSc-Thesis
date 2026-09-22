@@ -187,7 +187,7 @@ FUNCTION {output.nonnull}
     'skip$
   if$
   bracket.state outside.brackets =
-    { % We're outside all brackets -- this is the normal situation.
+    { % We're outside all brackets --- this is the normal situation.
       % Write out what's currently at the top of the stack, using the
       % original output.nonnull function.
       s
@@ -1133,7 +1133,7 @@ FUNCTION {format.url}
 { inlinelinks #1 = url empty$ or
    { "" }
    { hrefform #1 =
-       { % special case -- add HyperTeX specials
+       { % special case --- add HyperTeX specials
          urlintro "\url{" url * "}" * url make.href.hypertex * }
        { urlintro "\url{" * url * "}" * }
      if$

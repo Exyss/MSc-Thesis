@@ -135,7 +135,7 @@ formulas, while Extended Frege proofs as proofs that reason about polynomial siz
 
 \subsection{Algebraic systems}
 
-\textit{Algebraic proof systems} are proof systems based on polynomials. 
+\textit{Algebraic proof systems} are based on algebraic polynomial rings. 
 These systems can be used to witness the fact that a system of polynomial equations over a the polynomial ring $\F[x_1, \ldots, x_n]$ is unsolvable; equivalently, that the polynomials do not have a common root.
 
 Consider a CNF formula $\varphi$ defined over $x_1, \ldots, x_n$. The formula can be easily encoded as a set of polynomials such that the formulas is unsatisfiable if and only if such set of polynomials has no solution. We map each clause of $\varphi$ to an equation in the following way:
@@ -162,7 +162,7 @@ For the last polynomial $f_t$, it must hold that $f_t = 1$. The soundness of PC 
 
 \subsection{Geometric systems}
 
-\textit{Geometric proof systems} are proof systems based on linear programming. All such proof systems are variants of the \textit{Cutting Planes} (CP) proof system, a refutational method derived from 0-1 integer programming. In CP, any CNF formula $\varphi$ is converted into an equivalent system of linear inequalities (similar to how algebraic systems convert them into equations) whose integer binary solutions correspond directly to the satisfying assignments of $\varphi$. Each clause of a formula $\varphi$ is mapped to an inequality in the following way:
+\textit{Geometric proof systems} are based on linear programming and optimization routines. All such proof systems are variants of the \textit{Cutting Planes} (CP) proof system, a refutational method derived from 0-1 integer programming. In CP, any CNF formula $\varphi$ is converted into an equivalent system of linear inequalities (similar to how algebraic systems convert them into equations) whose integer binary solutions correspond directly to the satisfying assignments of $\varphi$. Each clause of a formula $\varphi$ is mapped to an inequality in the following way:
 \[\bigvee_{i \in I} x_i \lor \bigvee_{j \in J} \lnot x_j \mapsto \sum_{i \in I} x_i + \sum_{j \in J} (1-x_j) \geq 1\] 
 
 For each clause $C$, its corresponding inequality is denoted with $E(C)$. Interpreting truthness as 1 and falseness as 0, the formula $\varphi$ is unsatisfiable if and only if the system $\Phi  = \{E(C)\}_{C \in \varphi} \cup \{x_i \geq 0; x_i \leq 1\}_{i \in [n]}$ has no an integer solution. The set of all feasible solutions for this system yield a polytope $P$. While any Boolean point in $P$ yields a satisfying assignment for $F$, an unsatisfiable formula $F$ may still leave non-integer (fractional) points within $P$. CP eliminates these fractional solutions using the \textit{Chvátal-Gomory cut rule}. In particular, CP is based on the two following rules:
@@ -280,7 +280,7 @@ When each copy of a clause is used only once as premise in the whole proof, we s
 
 This sub-system of Resolution is called \textit{tree-like Resolution}, denoted with $\mathrm{Res}^*$. The same idea can also be applied to other dynamic systems, obtaining sub-systems like $\mathrm{Res}^*(k), \mathrm{F}^*$ and $\mathrm{PC}^*$. Generally, tree-like sub-system require longer proofs due to the impossibility of reusing derived clauses.
 
-\section{Simulations between proof systems}
+\section{Simulations between proof systems (FIX)}
 
 To compare the relative strength of different propositional proof systems, we introduce the notion of efficient simulation. This notion comes in a natural way by adapting the idea of polynomial time reduction.
 
@@ -297,7 +297,7 @@ Intuitively, this means that there is an efficient algorithms transforming $P$-p
 
 It's easy to see that for any dynamic proof system $Q$ it holds that $Q^* \leq_p Q$ since any $Q^*$-proof is also a $Q$-proof. Vice versa, however, it commonly holds that $Q \not\leq_p Q^*$, making tree-like systems typically weaker than their DAG-like counterpart. For instance, standard techniques can prove that the Ordering Principle formula $\mathrm{OP}_n$ is an hard formula for tree-like Resolution but an easy one for Resolution, implying that $\mathrm{Res} \not\leq_p \mathrm{Res}^*$.
 
-When it comes to comparing Resolution with Nullstellensatz and Polynomial Calculus, they're both incomparable with it. This is due to the fact that negative literals easily blow up the size of the proof due to the increase in the number of monomials when expanded. To fix this, we can consider a variant of Polynomial Calculus referred to as \textit{Polynomial Calculus with Resolution} (PCR) -- a name that pretty much says it all -- where for each variable $x_i$ we add a new variable $\overline{x_i}$ in order to map negative literals $\lnot x_i$ directly to this new variable.
+When it comes to comparing Resolution with Nullstellensatz and Polynomial Calculus, they're both incomparable with it. This is due to the fact that negative literals easily blow up the size of the proof due to the increase in the number of monomials when expanded. To fix this, we can consider a variant of Polynomial Calculus referred to as \textit{Polynomial Calculus with Resolution} (PCR) --- a name that pretty much says it all --- where for each variable $x_i$ we add a new variable $\overline{x_i}$ in order to map negative literals $\lnot x_i$ directly to this new variable.
 \[\bigvee_{i \in I} x_i \lor \bigvee_{j \in J} \lnot x_j \mapsto \prod_{i \in I} x_i \prod_{j \in J} \overline{x_j} = 0\]
 
 All the other standard simulations and separations between proof systems are omitted and summarized in \Cref{fig:simulations}.
@@ -339,12 +339,13 @@ All the other standard simulations and separations between proof systems are omi
         \end{tikzpicture}
     }
     
-    \caption{Simulations between standard proof systems.}
+    \caption{Hierarchy of common proof systems.}
     \label{fig:simulations}
 \end{figure}
 \todo{add references for simulations (also inside the image)}
 
 \section{Complexity measures for proof systems}
+\label{sec:measures}
 
 Complexity measures lie at the heart of proof complexity. These measures provide a rigorous language to measure if a minimal proof must be short or long, allowing us to evaluate how different systems perform on proving a common statement. Different measures highlight different facets of a proof, often interlinking them. By analyzing these measures, we gain a deeper understanding of the inherent difficulty of logical reasoning, even from an algorithmic prospective.
 
@@ -358,7 +359,7 @@ A natural complexity measure related with size is the \textit{length} of a proof
 Another complexity measure inspired by Haken's proof is the \textit{width} of a proof $\pi$, defined as the maximum number of literals across all clauses of $\pi$, i.e. $\max_{D_i \in \pi} \abs{D_i}$. The Resolution width of $\varphi$, written as $\mathrm{width}_{\mathrm{Res}}(\varphi)$, is defined as the minimum across all proofs. Ben-Sasson and Widgerson \todo{add ref} proved that Resolution size and width are related one another through the trade-off.
 
 \begin{theorem}
-    $\mathrm{size}_{\mathrm{Res}}(\varphi) = \exp \left (\Omega \left (\frac{(\mathrm{width}_{\mathrm{Res}}(\varphi) - \mathrm{width}(F))^2}{n}\right ) \right )$
+    $\mathrm{size}_{\mathrm{Res}}(\varphi) = \exp \left (\Omega \left (\frac{(\mathrm{width}_{\mathrm{Res}}(\varphi) - \mathrm{width}(\varphi))^2}{n}\right ) \right )$ where $\mathrm{width}(\varphi)$ is the maximum width of any axiom of $\varphi$.
 \end{theorem}
 
 We observe that in the exponent of the right hand side of the equation we have the difference between the Resolution width and the width of the axioms in $\varphi$. Because of this, for the case of families of formulas with large initial clauses, like the Pigeonhole Principle formula $\mathrm{PHP}^{n+1}_n$, this method can prove only trivial size lower bounds (in fact, Haken's proof uses width of \textit{monotone} clauses).
@@ -381,9 +382,90 @@ In particular, for a NS-proof $\pi = \{g_1, \ldots, g_m, h_1, \ldots, h_n\}$ ove
 For a PC-proof $\pi' = (f_1, \ldots, f_t)$, instead, the size of $\pi'$ is defined as $\norm{\pi'}_{\mathrm{PC}} = \sum_{i = 1}^t \norm{f_i}$ and the degree is $\max_{i \in [t]} (\deg(f_i))$.
 
 \section{Game characterizations of Resolution measures}
+\label{sec:resolution_games}
 
-\subsection{The Prover-Delayer Game (TODO)}
+To simplify working with Resolution measures, we're often interested in characterizing them through \textit{games}. Besides being useful for proving width bounds, these characterizations depend only on the structure of the formula and can be defined independently of the concept of Resolution. This approach allows us to not only simplify proofs, but it also allows us to get insight not only on \textit{how} hard the formula is, but also \textit{why} it is hard. 
 
-\subsection{The Spoiler-Duplicator Game (TODO)}
+The first example that we're going to see is the so called \textit{Prover-Delayer game}. The game is played by two entities, a Prover and a Delayer, over a fixed CNF formula $\varphi$. The \textit{Prover} wants to prove that $\varphi$ is unsatisfiable and wants to do so as quickly as possible, while the \textit{Delayer} wants to slow down the Prover as much as possible.
+
+The game is played as follows. On each round, the Prover queries a variable $x$ of $\varphi$ (which may or may not be a variable never queries before) and the Delayer has to answer with one of three options: \curlyquotes{it's true}, \curlyquotes{it's false} or \curlyquotes{you choose}. These options are represented by the values $1, 0$ and $*$. Whenever the Delayer answers with the third option, the Prover chooses an answer $b \in \{0,1\}$ and, if they are not yet able to prove that the formulas is unsatisfiable, the Delayer scores a \textit{point}.
+
+The objective of the Delayer is to define a general strategy that allows them to score as many points as possible for any possible strategy of the Prover. We denote by $\mathrm{Del}(\varphi)$ the maximum number of points that Delayer can score while playing the game on $\varphi$ against an optimal Prover strategy. We notice that, since the formulas used in the game are unsatisfiable, the Prover can always win by querying each variable of $\varphi$, thus $\mathrm{Del}(\varphi) \leq \abs{\mathrm{Vars}(\varphi)}$ always holds. Any Delayer strategy corresponds to a lower bound on $\mathrm{Del}(\varphi)$, while any Prover strategy corresponds to an upper bound. In their strategies, both parties usually keep track of the game through some data structure, typically a partial assignment.
+
+
+To show how the game works, we give an optimal Delayer strategy and an optimal Prover strategy for the Pigeonhole Principle formula, $\mathrm{PHP}^{m}_{n}$.
+
+\begin{proposition}
+    $\mathrm{Del}(\mathrm{PHP}^{m}_n) = n$ when $m > n$.
+\end{proposition}
+
+\begin{proof}
+    We start by giving the lower bound, corresponding to an optimal strategy for the Delayer. On each round, the Delayer keeps track of the game through a partial assignment $\alpha$. When the Prover queries a variable $p_{i,j}$, the Delayer checks if $\alpha(p_{i,j}) \neq *$. If this holds, the Delayer answers with $\alpha(p_{i,j})$ in order to be consistent with their previous answer. Otherwise, the Delayer searches for a pigeon $i' \in [m] \setminus \{i\}$ such that $\alpha(p_{i,j}) = 1$. If such pigeon exists, the Delayer answers with $0$, otherwise they let the Prover decide the value $b \in \{0,1\}$, to then update $\alpha \gets \alpha \cup \{p_{i,j} \mapsto b\}$.
+
+    It's easy to see that this Delayer strategy guarantees that no Hole Axiom $\lnot p_{i,j} \lor \lnot p_{i',j}$ is violated, thus the Prover can win only by violating a Pigeon Axiom $p_{i,1} \lor \ldots \lor p_{i,n}$. In order for this to happen, there must be a pigeon $i$ such that $\alpha(p_{i,j}) = 0$ for all holes $j \in [n]$. Each of these values must have been assigned either by the Prover or by the Delayer.
+
+    Let $P = \{j_1, \ldots,j_t\}$ be the holes for which the Prover answered with $0$ and let $D = \{k_1, \ldots, k_s\}$ be those for which the Delayer answered with $0$, where $P \cup D = [n]$. All the holes of the first type imply that the Delayer scored $k$ points. For each hole $j \in D$ of the second type, instead, the Delayer answered with $0$ only because there is another pigeon $i^{(j)} \neq i$ such that $\alpha(p_{i^{j},j}) = 1$, but this is possible only if the Prover chose this value since the Delayer never actively assigns the value $1$. Therefore, these holes give the Delayer $s$ additional points, for a total of $k+s = n$ points. 
+
+    For the upper bound, the following Prover strategy suffices. The Prover keeps track of the game through a partial assignment $\beta$ and a counter variable $z$. We denote with $\mathrm{Free}(\beta)$ the set of holes that are still unmapped by $\beta$. The Prover's strategy is based on sets of rounds, played as follows. On each set, the Prover subsequently queries the variables $\{p_{i,j}\}_{[n]\setminus \mathrm{Free}(\beta)}$ until the Delayer answers with 1. Whenever the Delayer answers with $b \in {0,1}$, the Prover updates $\beta$ with $\{p_{i,j} \mapsto b\}$. Whenever the Delayer lets the Prover decide, instead, the latter always chooses the value $1$ and updates $\beta$ with $\{p_{i,j} \mapsto 1\}$. If $\beta(p_{i,j}) =1$ holds after value is assigned (independently of which answer was given by the Delayer), the Prover increases $z$ by one and then starts a new set of rounds.
+
+    In order to not violate any Pigeon Axiom, the Delayer has to eventually either answer with 1 or let the Prover decide, who also answers with 1. After $n$ queried variables are answered with 1 by one of the parties, $\beta$ describes a perfect matching between $n$ pigeons and $n$ holes. Thus, the next time one of them answers with 1 on a new variable, a Hole Axiom is guaranteed to be violated. Therefore, the Delayer can let the Prover choose for at most $n$ times, scoring at most $n$ points.
+\end{proof}
+
+The Prover-Delayer game perfectly characterizes the size of tree-like Resolution refutation. In particular, a lower bound on the number of points the Delayer scores in the game played on a formula $\varphi$ corresponds to a lower bound on the tree-like Resolution size of $\varphi$. 
+
+\begin{theorem}
+    \label{thm:prover_delayer}
+    Let $\varphi$ be an unsatisfiable CNF formula. Then, $\mathrm{size}_{\mathrm{Res}^*}(\varphi) \leq s$ if and only if $\mathrm{Del}(\varphi) \leq \ceil{\log s}$. 
+\end{theorem}
+
+\begin{proof}
+    We prove only one direction (left to right) since it suffices for our purposes (the other direction can be proven similarly). Let $\pi$ be a minimum size tree-like Resolution refutation of $\varphi$, where $\mathrm{size}_{\mathrm{Res}^*}(\varphi) \leq s$. Without loss of generality, we assume that the weakening rule is never applied and that each variable of $\varphi$ is resolved only once on each path in $\pi$ from the root to an axiom. The idea is for the Prover to use $\pi$ as a template for the strategy. In particular, the strategy can be seen as a walk in the Resolution tree, going from the empty clause to some axiom. On each round, we keep track of the game state through a partial assignment $\beta$.
+
+    Starting from the empty clause, at each round the Prover checks a clause $C$ in $\pi$. If $C$ was obtained by resolving two clauses $C_{0} := C \lor x_i$ and $C_1 := C \lor \lnot x_i$, the Prover queries $x_i$. If the Delayer answers with $b \in \{0,1\}$, the Prover updates $\beta$ with $\{x_i \mapsto b\}$ and moves to the clause $C_b$. When the Delayer lets the Prover answers, instead, they will do so with the value $b' \in \{0,1\}$ such that $\abs{\pi_{b'}} \leq \abs{\pi_{1-b'}}$, where $\pi_0$ and $\pi_1$ are the subtrees of $\pi$ with root $C_0$ and $C_1$, respectively, to then move to the clause $C_{b'}$.
+
+    Assuming that the Delayer never contradicts themselves, i.e. they play optimally, the Prover will eventually reach an axiom $D$ of $\varphi$. When this happens, the partial assignment $\beta$ will falsify $D$ since we walked up the tree following the values opposite to those contained in $D$. Moreover, we notice that each time the Delayer lets the Prover answer at least half of the remaining clauses of $\pi$ get discarded. Therefore, the Delayer can let the Prover answer for at most $\ceil{\log s}$ times before they win.
+\end{proof}
+
+\begin{corollary}
+    $\mathrm{size}_{\mathrm{Res}^*}(\mathrm{PHP}^{m}_n) \geq 2^n$ when $m > n$.
+\end{corollary}
+
+We now move to another game characterization of Resolution measures, this time focusing on width. The \textit{Spoiler-Duplicator game} is also played by two entities, the Spoiler and the Duplicator, who take roles similar to the Prover and the Delayer, respectively. This game is also played by answering queries on each round, but the setup differs.
+
+Both players construct a common partial assignment $\alpha$ for a fixed CNf formula $\varphi$. The goal of Spoiler is to falsify one of the axioms of $\varphi$ with the constructed assignment, while keeping a partial assignment small. The Duplicator, instead, tries to keep this from happening by deciding the values of the variables. Starting from the empty assignment $\alpha = \varnothing$, each round of the game is made of a query phase and a deletion phase. In the \textit{query phase}, the Spoiler choses a variable $x$ that is unassigned in $\alpha$ and queries its value to the Duplicator, who has to answer with either 0 or 1 (there is no third option in this game). After extending the assignment $\alpha$ with the answer of the Duplicator, the \textit{deletion phase} is played. Here, the Spoiler chooses a subset of variables $y_1, \ldots, y_k$ that is assigned in $\alpha$ and \curlyquotes{forgets them} by removing them from $\alpha$. In particular, if a variable is queried again after it has been forgotten by the Spoiler, the Duplicator is not forced to answer with the previous value.
+
+The Spoiler wins the $w$-game if the number of variables assigned in $\alpha$ at the end of each round is always at most $w$ and, at some point of the game, some axiom in $\varphi$ is falsified by $\alpha$. If there is a strategy for Duplicator that prevents this from happening, they win the game.
+
+We delay a practical example of how the game can be played to \todo{add section}. For now, we focus on showing that the characterization holds. To do this conveniently, we introduce the concept of \textit{extensible family} of partial assignments. Intuitively, a $w$-extensible family for $\varphi$ is a downwards closed set of partial assignments which do not falsify $\varphi$ and can be extended to any variable as long as they assign at most $w-1$ variables. 
+
+\begin{definition}
+    Let $\varphi$ be an unsatisfiable CNF formula and let $w \in \N$ be some parameter. A set of partial assignments $\mathcal{H}$ is a $w$-extensible family for $\varphi$ if all of the following properties hold:
+    \begin{itemize}[nosep]
+        \item $\mathcal{H} \neq \varnothing$
+        \item if $\alpha \in \mathcal{H}$ then $\alpha$ doesn't falsify the axioms of $\varphi$
+        \item if $\alpha \in \mathcal{H}$ and $\beta \subseteq \alpha$ then $\beta \in \mathcal{H}$
+        \item if $\alpha \in \mathcal{H}$ and $\abs{\mathrm{Dom}(\alpha)} < w$ then forall $x \notin \mathrm{Dom}(\alpha)$ it holds that $\alpha \cup \{x \mapsto 0\} \in \mathcal{H}$ or $\alpha \cup \{x \mapsto 1\} \in \mathcal{H}$.
+    \end{itemize}
+\end{definition}
+
+\begin{theorem}
+    Let $\varphi$ be an unsatisfiable CNF formula and let $w_F > 0$ be the maximum width of the axioms of $\varphi$. Then, for any $w > w_F$ the following are equivalent:
+    \begin{enumerate}[label={(\roman*)}, nosep]
+        \item $\mathrm{width}_{\mathrm{Res}}(\varphi) \geq w$;
+        \item There is a $w$-extensible family for $\varphi$;
+        \item Duplicator wins the $(w-1)$-game on $\varphi$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    $(i) \Rightarrow (ii)$ Let $\mathcal{F}_{w-1}$ be the conjunction of all the clauses that can be derived from $\varphi$ by Resolution using only clauses of width at most $w-1$. We observe that $\mathcal{F}_{w-1}$ includes all the axioms of $F$ due to them having width smaller than $w$ by assumption, making $\mathcal{F}_{w-1}$ unsatisfiable, but it does not contain the empty clause $\bot$.
+
+    Let $\mathcal{H}$ be the set of all partial assignments over $\varphi$ that have at most $w$ variables assigned and that do not falsify any clause of $\mathcal{F}_{w-1}$. We show that $\mathcal{H}$ is a $w$-extensible family for $\varphi$. By construction, the first three properties are already satisfied. By way of contradiction, suppose that there is a partial assignment $\alpha \in \mathcal{H}$ with $\abs{\mathrm{Dom}(\alpha)} < w$ such that $\alpha_0 := \alpha \cup \{x \mapsto 0\} \notin \mathcal{H}$ and $\alpha_1 := \alpha \cup \{x \mapsto 1\} \notin \mathcal{H}$ for some variable $x \notin \mathrm{Dom}(\alpha)$. Since the domains of $\alpha_0$ and $\alpha_1$ contain at most $w$ variables, the only way for which they both don't lie in $\mathcal{H}$ is that they each falsify some clause $C = C' \lor x$ and $D = D' \lor \lnot x$ of $\mathcal{F}_{w-1}$, respectively. Moreover, $\alpha$ must falsify both $C'$ and $D'$, implying that $C' \lor D'$ is also falsified by $\alpha$. However, this latter clause can be derived by resolving $C$ and $D$, meaning that $C' \lor D' \in \mathcal{F}_{w-1}$, contradicting the fact that $\alpha \in \mathcal{H}$.
+
+    $(ii) \Rightarrow (iii)$ Let $\mathcal{H}$ be an extensible $w$-family of partial assignments for $\varphi$. We give a simple strategy that allows the Duplicator to win the $(w-1)$-game. On each round, the Duplicator uses a partial assignment $\alpha \in \mathcal{H}$ being constructed during the game. By the properties of $\mathcal{H}$, this guaranties that $\alpha$ does not falsify $\varphi$. Starting from the empty assignment, when the Spoiler queries a variable $x \notin \mathrm{Dom}(\alpha)$, the Duplicator only needs to extend $\alpha$ to one of the two extension with $x$ that is guaranteed to be in $\mathcal{H}$.
+
+
+    $(iii) \Rightarrow (i)$ We prove the contrapositive statement. A Spoiler strategy can be easily constructed by copying the Prover strategy in the proof of \Cref{thm:prover_delayer}, ignoring the case where the Delayer answers with $*$. Since each round adds one variable to the assignment and since an axiom of $\varphi$ is reached after $w-1$ rounds, the Spoiler wins the $(w-1)$-game.  
+\end{proof}
 
 \cleardoublepage
