@@ -1,17 +1,471 @@
-\chapter{Analyzability (TODO)} \label{chap:analyzability}
+\chapter{Analyzability} \label{chap:analyzability}
 
-\section{Do proofs of $\lnot \mathrm{Ref}$ leak information?}
+\section{Do proofs of lower bounds leak information?}
 
-\section{Analyzability of Resolution}
+Pudlák's upper bound (\Cref{thm:ref_bounds_final}(i)) shows that satisfiable assignments can be used to construct short proofs of Resolution lower bounds. Atserias and Müller showed through their lower bound (\Cref{thm:ref_bounds_final}(ii)) that these two concepts are also connected in the opposite direction: if one such proof has sub-exponential size then the formula must be satisfiable. However, their lower bound argument is non-constructive, meaning that it doesn't extract a satisfying assignment from sub-exponential proofs. Therefore, it seems natural to ask if this is also possible.
 
-\subsection{Reducing block-width in $\mathrm{Ref}$ proofs}
+\textcite{pap} investigated this possibility by introducing a new concept somewhat dual to automatability, referred to as \textit{analyzability}. Informally, the \textit{Proof Analysis Problem} (PAP) for a proof system $Q$ asks to establish if a formula $\varphi$ is satisfiable or not by looking at a $Q$-proof of the Resolution lower bound $\lnot \mathrm{Ref}_s(\varphi)$ (always recall that the refutation statement is defined for Resolution when no proof system is specified).
 
-\subsection{Extracting assignments from narrow $\mathrm{Ref}$ proofs}
+\begin{definition}
+    Let $Q$ be a proof system. The Proof Analysis Problem over $Q$ is for formulas of size at least $S(n)$ is defined as the language
+    \[\mathrm{PAP}_Q[S(n)] = \{(\varphi, \pi, 1^s) \mid \varphi \in \mathrm{SAT}, \pi : Q \vdash \lnot \mathrm{Ref}_s(\varphi), s \geq S(\abs{\varphi})\}\]
 
-\section{Extending analyzability up to PCR}
+    \noindent
+    The search version of the problem $\mathrm{FPAP}_Q[S(n)]$ is defined analogously, asking to return a satisfying assignment (if one exists).
+\end{definition}
 
-\section{Analyzability and feasible interpolation}
+We observe that the restriction imposed by $S(n)$ on the size of the lower bounds is necessary. For most reasonable proof systems, lower bounds that are too small admit some degenerate instances that make the problem trivially $\mathsf{NP}$-hard. For instance, each $\varphi \in \mathrm{SAT}$ can be mapped to the triple $(\varphi, \pi, 1)$ of $\mathrm{PAP}_{\mathrm{Res}}[1]$ where $\pi$ is a trivial Resolution refutation of $\mathrm{Res}_1(\varphi)$. To avoid this issues, we'll work with values $S(n) \geq n^2$.
 
+\begin{definition}
+    Let $Q$ be a proof system. Given two functions $S,t : \N \to \N$, we say that $Q$ is analyzable in time $t$ for lower bounds of size $S$ if $\mathrm{PAP}_Q[S(n)]$ is decidable in time $t$.
+\end{definition}
 
+When both $S$ and $t$ are polynomial functions, we simply say that the proof system is analyzable. We notice that, by definition, analyzability acts as a bridge from automatability to solving $\mathrm{SAT}$. This follows from an argument very similar to what is used to show the  $\mathsf{NP}$-hardness of weak proof systems (\Cref{lem:res_nphard}).
+
+\begin{proposition}
+    Let $Q$ be a proof system. If $\mathrm{Res} \leq_p Q$ then $Q$ cannot be both automatable and analyzable, unless $\mathsf{P} = \mathsf{NP}$.
+\end{proposition}
+
+\begin{proof}
+    Suppose that $Q$ has an automating algorithm $\mathcal{A}$ and an analyzing algorithm $\mathcal{B}$, both with polynomial runtime. Since $\mathrm{Res} \leq_p Q$, by \Cref{thm:ref_bounds_final}(i) we know that when $\varphi$ is satisfiable there is a $Q$-proof of size $O(n^c)$ for some $c > 0$.
+    
+    We define a new algorithm $\mathcal{C}$ that solves $\mathrm{SAT}$ using this time bound. Given an input formula $\varphi$, $\mathcal{C}$ constructs $\mathrm{Ref}_s(\varphi)$ and executes $\mathcal{A}$ for at most $N^c$ steps, where $N = \abs{\mathrm{Ref}_s(\varphi)}$ and $s = n^d$, for $d > 0$. If this time bound is exceeded, $\mathcal{C}$ immediately rejects. Otherwise, $\mathcal{C}$ outputs $\mathcal{B}(\varphi, \pi, 1^s)$, where $\pi$ is the proof returned by $\mathcal{A}$.
+\end{proof}
+
+We observe that the above argument differs from the one of \Cref{lem:res_nphard} only by one thing: instead of using the lower bound in the case of unsatisfiable formulas, we directly use PAP to compute SAT once the proof is computed. Of course, the Resolution lower bound can be used to prove that Resolution is indeed analyzable, obtaining a simplified argument for its $\mathsf{NP}$-hardness.
+
+\begin{proposition}
+    \label{prop:res_analyz}
+    $\mathrm{PAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$
+\end{proposition}
+
+\begin{proof}
+    Consider any refutation $\pi$ of $\mathrm{Ref}_{s}(\varphi)$, with $s \geq n^3$ and $n = \abs{\varphi}$. By \Cref{thm:ref_bounds_final}(ii), there is a constant $\varepsilon > 0$ such that if $\abs{\pi} < 2^{\varepsilon n/\log n}$ then $\varphi$ is satisfiable.
+    
+    We use this to construct the following algorithm $\mathcal{A}$. On input $(\varphi, \pi, 1^s)$, $\mathcal{A}$ computes the length of $\pi$. If it stands below $2^{\varepsilon n/\log n}$, $\mathcal{A}$ immediately accepts. Otherwise, $\mathcal{A}$ bruteforces $\mathrm{SAT}$ on $\varphi$ using the standard algorithm with runtime $O(2^n)$. Observe that the input size of $\mathcal{A}$ is $M = \abs{\varphi} + \abs{\pi} + s$, thus $\mathcal{A}$ runs in polynomial time.
+\end{proof}
+
+In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatability of other weak systems can be obtained through variants of $\mathrm{Ref}_s(\varphi)$. However, due to the fact that analyzability is strictly defined over this exact formula, those similar arguments decay completely in this context: one would have to prove that the lower bounds for the variants also holds for the standard formula $\mathrm{Ref}_s(\varphi)$. Furthermore, it turns out that lower bounds on the standard refutation statement is not only sufficient but also necessary for most proof systems, as proven in \cite{pap}.
+
+\begin{theorem}
+    Let $Q$ be a proof system that $p$-simulates Resolution, is constructively closed under modus ponens and contrapositions and proves that Resolution is closed under restrictions. Under some standard complexity assumption, the following are equivalent:
+    \begin{itemize}[nosep]
+        \item $Q$ is analyzable;
+        \item There are constants $c, \varepsilon > 0$ such that for every unsatisfiable CNF formula $\varphi$ every $Q$-proof of the formula $\lnot \mathrm{Ref}_{nc} (\varphi)$ requires size at least $2^{\varepsilon n}$.
+    \end{itemize}
+\end{theorem}
+
+\begin{proof}
+    Omitted. The reader is referred to \Cite{pap}.
+\end{proof}
+
+In \Cref{sec:analyzability_pcr} we'll show that a lower bound can be obtained Polynomial Calculus with Resolution, proving that PCR is analyzabile.
+
+Another important property to observe is that analyzability is downward closed under $p$-simulations. This comes by trivially mapping a PAP triple in the first proof system to the PAP triple in the second proof system, substituting the old proof with the one obtained through the simulation. 
+
+\begin{proposition}
+    Let $P,Q$ be two proof systems such that $Q \leq_p P$. Then, if $P$ is (search-)analyzable $Q$ also is.
+\end{proposition}
+
+As a corollary, we'll obtain that Polynomial Calculus and Nullstellensatz are also analyzable. However, this doesn't act as another proof of the $\mathsf{NP}$-hardness of their automatability since they are incomparable with Resolution.
+
+In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version. This non-analyzability result shows that the meta-complexity technique of using upper bounds and lower bounds for $\mathrm{Ref}_s(\varphi)$ fails for Frege Systems and above. This result comes from a some-what similar result of non-automatability under cryptographic assumptions (see \cref{sec:auto_strong}): some $\mathsf{NP}$-hard problems can be encoded as propositional statements with short proofs.
+
+\section{Search-analyzability of Resolution}
+
+In this section we discuss the main result of \cite{pap}, which showed that satisfying assignments can be algorithmically extracted from short Resolution proofs of refutation statements, settling the question regarding a constructive proof for the contrapositive of the Atserias-Müller lower bound.
+
+The extraction algorithm is subdivided in two phases: a \textit{block-width reduction} phase and a \textit{proof-analysis} phase. In the first phase, a deterministic version of the block-width restriction of \Cref{lem:tradeoff_bw_size} is applied to to the given $\mathrm{Ref}_s(\varphi)$ proof $\pi$, obtaining a smaller proof with a known block-width lower bound for $\mathrm{Ref}_{s'}(\varphi)$ with $s' < s$. This deterministic version gives a slightly worse lower bound, it suffices for the extraction argument. Then, the second phase analyzes the restricted proof by traversing it from the root to the axioms, arriving at one of three conclusions: a satisfying assignment is found, a clause with large block-width is found or an error in the proof is found. It's easy to see that by first checking the soundness of the proof to the apply the first phase of the algorithm, only the first conclusion is left as an option.
+
+We start by giving a more precise definition of the type restrictions that we're going to use for $\mathrm{Ref}_s(\varphi)$.
+
+\begin{definition}
+    Let $\rho$ be an assignment to the $N$ variables of $\mathrm{Ref}_s(\varphi)$. We say that $\rho$ is $d$-disabling when:
+    \begin{enumerate}[label={(\roman*)}, nosep]
+        \item exactly $d$ blocks of $\mathrm{Ref}_s(\varphi)$ are disabled by $\rho$ and all remaining ones are enabled;
+        \item every variable belonging to a disabled block as a value assigned in $\rho$;
+        \item no other variables are assigned.
+    \end{enumerate}
+\end{definition}
+
+It's easy to see that the argument in \Cref{lem:tradeoff_bw_size} can be easily extended to yield a $1/2$-disabling restriction. After disabling one block of each pair, we set all the remaining blocks as enabled. Moreover, for each disabled block we randomly assign all its remaining variables. Notice that this never falsifies the formula since all axioms involving a disabled block are satisfied independently of the values assumed by its variables. 
+
+\begin{corollary}
+    Let $\varphi$ be an unsatisfiable formula. For each probability $0 < p < 1$, there is a randomized algorithm $\mathcal{R}$ that given $1^N$ as input, where $N$ is the number of variables in $\mathrm{Ref}_s(\varphi)$, returns a $\floor{s/2}$-disabling restriction $\rho$ such that for each Resolution-refutation $\pi$ of $\mathrm{Ref}_s(\varphi)$ the following holds:
+    \begin{itemize}
+        \item $\rho$ doesn't falsify $\mathrm{Ref}_s(\varphi)$;
+        \item with probability at least $p$ the block width of $\pi_{\upharpoonright_\rho}$ is at most $O(\log \abs{\pi} - \log(1-p))$
+        \item $\mathcal{R}(1^N)$ runs in $O(N)$.
+    \end{itemize}
+\end{corollary}
+
+To make this restriction deterministic, we use a greedy assignment policy based on killing the remaining clauses with the highest block-degree. Given a set $W$ of clauses and a literal $\ell$ mentioning block $B_i$, the \textit{frequency} of $\ell$ in $X$, let $\nu(X, \ell)$ be the number of times $\ell$ appears in clauses of $W$ divided by $\abs{X}$. By extension, let $\nu(X, B_i)$ the sum of all the frequencies of the variables of block $B_i$, i.e. the number of times block $B_i$ is mentioned in clauses of $X$. Consider the following algorithm.
+
+\begin{breakablealgorithm}
+    \caption{A deterministic algorithm $\mathcal{A}$ that reduces block-width}
+    \label{algo:algo_block_width}
+    \begin{algorithmic}
+        \Require A triple $(\varphi, \pi, 1^s)$ where $\pi$ is a $\mathrm{Res}$-refutation of $\mathrm{Ref}_s(\varphi)$
+        \Ensure A $d$-disabling restriction
+        \State $\rho \gets \varnothing$
+        \State $\mathrm{Active} \gets [s]$
+        \State $\mathrm{Disabled} \gets \varnothing$
+        \State $W \gets \{C \in \pi \mid \mathrm{bwidth}(C) \geq w\}$
+        \Comment $w$ is a parameter to be specified later
+
+        \While{$W \neq \varnothing$ and $\exists i \in \mathrm{Active}$ with $B_i$ mentioned in $W$}
+            \State Find $i \in \mathrm{Active}$ that maximizes $\nu(W, B_i)$
+            \State $W_{B_i} \gets \{C \in W \mid C \text{ mentions } B_i\}$
+            \If{$\nu(W_{B_i}, \mathrm{enable}^{B_i}) \geq 1/3$}
+                \State $\rho \gets \rho \cup \{\mathrm{enable}^{B_i} \mapsto 1\}$
+                \State $\mathrm{Active} \gets \mathrm{Active} \setminus \{i\}$
+                \State $W \gets W_{\upharpoonright_{\rho}}$
+            \Else
+                \State $\rho \gets \rho \cup \{\mathrm{enable}^{B_i} \mapsto 0\}$
+                \State $\mathrm{Disabled} \gets \mathrm{Disabled} \cup \{i\}$
+                \State $W \gets W_{\upharpoonright_{\rho}}$
+                \For{every variable $x$ of block $B_i$}
+                    \If{$\nu(W, x) \geq \nu(W, \lnot x)$}
+                        \State $\rho \gets \rho \cup \{x \mapsto 1\}$
+                    \Else
+                        \State $\rho \gets \rho \cup \{x \mapsto 0\}$
+                    \EndIf
+                \EndFor
+            \EndIf
+        \EndWhile
+        \State Update $\rho$ by enabling all blocks that weren't mentioned in $W$
+        \State Return $\rho$
+    \end{algorithmic}
+\end{breakablealgorithm}
+
+We argue that the above algorithm is quite dense in notation, but its workings are quite intuitive. The set $W$ corresponds to the set of clauses with initial block width exceeding a to-be-fixed parameter. On each iteration, we search for the active block that maximizes its frequency in $W$. If the enable variable of $B_i$ appears in at least $1/3$ of the clauses in $W$ that mention it, we enable block $B_i$ and update $W$ accordingly. Otherwise, we disable block $B_i$ to then set as true all of its variables that appear more positively than negatively in $W$, while setting all its other variables to false.
+
+\begin{lemma}
+    Let $\pi$ be a Resolution refutation for $\mathrm{Ref}_s(\varphi)$. For an adequate choice of $w$, \Cref{algo:algo_block_width} $\mathcal{A}$ returns a $d$-disabling restriction $\rho$ in $O(O(s \abs{\pi}))$ such that:
+    \begin{itemize}
+        \item $\rho$ doesn't falsify $\mathrm{Ref}_s(\varphi)$;
+        \item $d \leq \frac{c}{2} \sqrt{s \log\abs{\pi}}$
+        \item the block-width of $\pi_{\upharpoonright_\rho}$ is at most $c \sqrt{s \log\abs{\pi}}$
+    \end{itemize}
+\end{lemma}
+
+\begin{proof}
+    By construction, the procedure terminates once $W$ is either empty or when all clauses in $W$ mention blocks that are no longer active. Once it terminates, exactly $\abs{D}$ blocks have been disabled, while all the others have been set as enabled. The algorithm runs for at most $s$ iterations, each computable in at most $O(\abs{\pi})$ steps.
+
+    We want to choose a value $w$ so that after $\ell \leq s$ iterations, the set $W$ is guaranteed to be empty. Once $W$ gets emptied by the procedure, all clauses left in $\pi_{{\upharpoonright_{\rho_\ell}}}$ will have block-width at most $w$. Since each iteration enables or disables exactly one block, on each iteration $j$ there are at least $s-{j-1}$ active blocks, at most $j-1$ disabled blocks and the block width might have decreased up to $w - (j - 1)$. Through an averaging argument, we know that the most frequent block is mentioned in at least a $(w-(j-1))/(s-(j-1))$ fraction of the clauses left in $W$.
+    
+    Moreover, if block $B_i$ is chosen in iteration $j$, the procedure doesn't guarantee that all the clauses mentioning $B_i$ are killed, but we are guaranteed to kill at least $1/3$ of them. Indeed, if block $B_i$ gets enabled this is possible only if at least $1/3$ of all the clauses in $W$ mention it. Otherwise, if it gets disabled, we are guaranteed to restrict at least $1/2$ of the remaining at least $2/3$ fraction of the clauses in $W$ mentioning $B_i$, which amounts to at least $1/3$ of clauses.Therefore, after $\ell$ iterations we have that:
+    \[\begin{split}
+        \abs{W_{\upharpoonright_{\rho_\ell}}} &\leq \abs{W} \rbk{1 - \frac{w}{3s}} \rbk{1 - \frac{w-1}{3(s-1)}} \cdots \rbk{1 - \frac{w-(\ell-1)}{3(s-(\ell-1))}} \\
+        & \leq \abs{W} \rbk{1 - \frac{w-\ell}{3s}}^{\ell} \\
+        & < \abs{W} e^{-\ell \cdot \frac{w}{3s}}
+    \end{split}\]
+
+    \noindent
+    where the last inequality comes from the fact that $\rbk{1+\frac{1}{x}}^x < e^x$. To ensure that $W$ is eventually emptied, it suffices to choose a value of $\ell$ such that $\abs{W_{\upharpoonright_{\rho_\ell}}} < 1$, which is true for $\ell = \floor{w/2}$ and $w > \sqrt{12 \ln \abs{\pi}} > \sqrt{12s \ln \abs{W}}$. By choosing a constant $c > 0$ such that $w = c \sqrt{s \log \abs{\pi}} > \sqrt{12 \ln \abs{\pi}}$, all constraints are satisfied. This concludes that $\mathrm{bwidth}(\pi_{\upharpoonright_{\rho_\ell}}) \leq c \sqrt{s \log \abs{\pi}}$ and $\abs{D} \leq \ell = \frac{c}{2} \sqrt{s \log \abs{\pi}}$.
+\end{proof}
+
+We now move to the proof-analysis phase. We start by observing that this phase can be used after both the randomized and deterministic algorithms, obtaining improved results for the randomized one. The idea behind the algorithm is to traverse the restricted refutation in a fashion inspired by the Spoiler-Duplicator game defining block-width (see \Cref{sec:resolution_games} and \Cref{sec:dt_reductions}). In particular, we assume that $s-d$ blocks in the restricted formula $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho}$ are arranged in $n$ layers, each containing $\floor{(s-d)/n}$ blocks, plus one additional top layer containing the root node $s$, labeled as layer 0. Similarly to what is done in the reduction from $\mathrm{rPHP}$ to $\mathrm{Ref}_s(\varphi)$ (see \Cref{sec:rPHP_Ref}), we assume that each block on layer $0 < i < n$ is used to resolve on variable $x_i$. Blocks on layer $n$ are assumed to describe a clause that is a weakening of some axiom of $\varphi$.
+
+Throughout the traversal, we'll build a partial assignment $\alpha$ on the variables of $\mathrm{Ref}_s(\varphi)$, referred to as the \textit{reservation}. This assignment keeps track of the information needed to continue traversal, mimicking what the Duplicator has in mind while playing against the Spoiler. In particular, since $\mathrm{Ref}_s(\varphi)$ encodes a potential refutation, the reservation $\alpha$ will encode information about how blocks are connected. Just like the proof of \Cref{thm:rPHP_to_Ref}, we suggest the reader to look at \Cref{fig:extraction} while reading what comes next.
+
+Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_s(\varphi)$ with $y_1, \ldots, y_N$ and the variables of $\varphi$ with $x_1, \ldots, x_n$. Similarly, clauses of $\mathrm{Ref}_s(\varphi)$ and $\pi$ are denoted with capital font $C$, while clauses of $\varphi$ are denoted with script font $\mathscr{C}$. Blocks are labeled with fraktur font $\mathfrak{B}$. We say that a block $\mathfrak{B}$ is \textit{reserved} in $\alpha$ if the variables defining the clause described by $\mathfrak{B}$ are assigned in $\alpha$.
+
+\begin{breakablealgorithm}
+    \caption{The extraction algorithm for Resolution}
+    \label{algo:algo_extraction}
+    \begin{algorithmic}
+        \Require A quadruple $(\varphi, \pi, 1^s, \rho)$ where $\pi$ is a $\mathrm{Res}$-refutation of $\mathrm{Ref}_s(\varphi)$ and $\rho$ is a $d$-disabling restriction
+        \Ensure A satisfying assignment, an illegal derivation or a large clause
+        \State $\pi \gets \pi_{\upharpoonright_{\rho}}$
+        \State $\alpha \gets \rho$
+        \State Set $D$ as the set of blocks disabled by $\rho$ 
+        \State Set $C$ as the root of $\pi$
+        \While{a leaf of $\pi$ is not reached}
+            \If{$C$ is obtained from an illegal derivation step}
+                \State Output $C$ with message \curlyquotes{illegal step}
+            \ElsIf{$C$ is the weakening of a clause $C'$}
+                \State $C \gets C'$
+            \ElsIf{$C$ is derived by resolving $A \lor y$ and $B \lor \lnot y$}
+                \If{$y$ belongs to a block $\mathfrak{B}$ on layer $0 \leq \ell < n$}
+                    \If{$\mathfrak{B}$ is not reserved in $\alpha$}
+                        \State Search two unreserved blocks $\mathfrak{B}_1, \mathfrak{B}_2$ on layer $\ell+1$
+                        \State If the above search fails, output $C$ with message \curlyquotes{large clause}
+                        \State Update $\alpha$ so that $\mathfrak{B}$ describes the clause $\bigvee_{j \in [\ell]} x_j$
+                        \State Update $\alpha$ so that $\mathfrak{B}_1$ describes the clause $x_{\ell+1} \lor \bigvee_{j \in [\ell]} x_j$
+                        \State Update $\alpha$ so that $\mathfrak{B}_2$ describes the clause $\lnot x_{\ell+1} \lor \bigvee_{j \in [\ell]} x_j$
+                        \State Update $\alpha$ so that $\mathfrak{B}$ is derived by resolving $\mathfrak{B}_1$ and $\mathfrak{B}_2$
+                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its children aren't}
+                        \State Let $\mathscr{C}$ be the clause described by $\mathfrak{B}$
+                        \State Search two unreserved blocks $\mathfrak{B}_1, \mathfrak{B}_2$ on layer $\ell+1$
+                        \State If the above search fails, output $C$ with message \curlyquotes{large clause}
+                        \State Update $\alpha$ so that $\mathfrak{B}_1$ describes the clause $x_{\ell+1} \lor \mathscr{C}$
+                        \State Update $\alpha$ so that $\mathfrak{B}_2$ describes the clause $\lnot x_{\ell+1} \lor \mathscr{C}$
+                        \State Update $\alpha$ so that $\mathfrak{B}$ is derived by resolving $\mathfrak{B}_1$ and $\mathfrak{B}_2$
+                    \EndIf
+                \ElsIf{$y$ belongs to a block $\mathfrak{B}$ on layer $n$}
+                    \If{$\mathfrak{B}$ is reserved in $\alpha$}
+                        \State Search an axiom $\mathscr{A}$ of $\varphi$ such that $\bigvee_{j \in [n]}$ is a weakening of it
+                        \State If the above search fails, output $\lnot \bigvee_{j \in [n]}$ with message \curlyquotes{satisfies}
+                        \State Update $\alpha$ so that $\mathfrak{B}$ describes the clause $\bigvee_{j \in [n]} x_j$
+                        \State Update $\alpha$ so that $\mathfrak{B}$ is derived by weakening $\mathscr{A}$
+                        
+                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its child isn't}
+                        \State Let $\mathscr{C}$ be the clause described by $\mathfrak{B}$
+                        \State Search an axiom $\mathscr{A}$ of $\varphi$ such that $\mathscr{C}$ is a weakening of it
+                        \State If the above search fails, output $\lnot \mathscr{C}$ with message \curlyquotes{satisfies}
+                        \State Update $\alpha$ so that $\mathfrak{B}$ is derived by weakening $\mathscr{A}$
+                    \EndIf
+                \EndIf
+                \State Set $C \gets A$ if $\alpha(y) = 0$ or $C \gets B$ if $\alpha(y) = 1$.
+            \EndIf
+            \State Clean-up $\alpha$ by forgetting information regarding blocks that aren't disabled, that aren't mentioned in $C$ or that aren't a child of a block mentioned in $C$
+        \EndWhile
+    \end{algorithmic}
+\end{breakablealgorithm}
+
+\begin{lemma}
+    Let $\pi$ be a Resolution refutation for $\mathrm{Ref}_s(\varphi)$ and let $\rho$ be a $d$-disabling restriction. Let also $N$ be the number of variables of $\mathrm{Ref}_s(\varphi)$. \Cref{algo:algo_extraction} $\mathcal{A}$ returns in $O(N \abs{\pi})$ exactly one of the following possible outputs:
+    \begin{itemize}
+        \item an incorrect derivation step in $\pi$;
+        \item a large $C$ in $\pi_{\upharpoonright_{\rho}}$ such that $\mathrm{bwidth}(C) \geq \frac{1}{3} \floor{(s-d-n)/n}$;
+        \item a total satisfying assignment for $\varphi$.
+    \end{itemize}
+\end{lemma}
+
+\begin{proof}
+    The algorithm traverses a path in $\pi_{\upharpoonright_{\rho}}$, where each step assigns the variables of at most 3 blocks. This amounts to a total of $O(N \abs{\pi})$ steps. To justify the correctness of the algorithm, we state the following invariant and prove that it holds throughout the traversal.
+
+    \begin{claim}
+        At the beginning of each iteration of $\mathcal{A}$ it holds that:
+        \begin{enumerate}[label={(\roman*)}]
+            \item the reservation $\alpha$ falsifies $C$;
+            \item a non-disabled block $\mathfrak{B}$ is reserved in $\alpha$ only if it is either mentioned by $C$ or one of its parents is mentioned by $C$. In particular, $\mathrm{bwidth}(\alpha) - d \leq 3 \cdot \mathrm{bwidth}(C)$;
+            \item if $\alpha$ contains any information about a non-disabled block $\mathfrak{B}$ from a layer $\ell$ then $\alpha$ also exactly determines that $\mathfrak{B}$ contains exactly $\ell$ literals over $x_1, \ldots, x_\ell$;
+            \item the reservation $\alpha$ doesn't falsify any axiom of $\mathrm{Ref}_s(\varphi)$ 
+        \end{enumerate}
+    \end{claim}
+    
+
+\begin{figure}[t]
+    \resizebox{1\textwidth}{!}{
+        \begin{tikzpicture}[<-,>=stealth,shorten >=1pt,auto,node distance=2cm, thick,main node/.style={scale=0.9,circle,draw,font=\sffamily\normalsize},
+        block/.style={rectangle, draw, minimum width = 90, minimum height = 30, rounded corners = 6pt}, small circle/.style={circle, draw, inner sep=0pt, minimum size=4pt}]
+            % Hardcoded blocks %
+
+            \node [block](10) []{};
+            \node [block](11) [right of = 10, xshift = 40]{};
+            \node [block, fill=green!30](12) [right of = 11, xshift = 40]{$x_1$};
+            \node [block, fill=green!30](13) [right of = 12, xshift = 40]{$\lnot x_1$};
+            \node [block](14) [right of = 13, xshift = 40]{};
+            \node [block, fill=pink!30](15) [right of = 14, xshift = 40]{$x_1$};
+
+            \node [block](20) [below of = 10]{};
+            \node [block, fill=green!30](21) [right of = 20, xshift = 40]{$x_1 \lor x_2$};
+            \node [block](22) [right of = 21, xshift = 40]{};
+            \node [block, fill=green!30](23) [right of = 22, xshift = 40]{$x_1 \lor \lnot x_2$};
+            \node [block](24) [right of = 23, xshift = 40]{};
+            \node [block](25) [right of = 24, xshift = 40]{};
+
+            \node [block, fill=yellow!30](30) [below of = 20]{$\bigvee_{i = 1}^3 x_i$};
+            \node [block](31) [right of = 30, xshift = 40]{};
+            \node [block](32) [right of = 31, xshift = 40]{};
+            \node [block, fill=green!30](33) [right of = 32, xshift = 40]{$x_1 \lor \lnot x_2 \lor x_3$};
+            \node [block, fill=green!30](34) [right of = 33, xshift = 40]{$x_1 \lor \lnot x_2 \lor \lnot x_3$};
+            \node [block, fill=pink!30](35) [right of = 34, xshift = 40]{$\bigvee_{i = 1}^3 x_i$};
+
+            \node [block, fill=yellow!30](40) [below of = 30]{$\bigvee_{i = 1}^3 x_i \lor x_4$};
+            \node [block, fill=yellow!30](41) [right of = 40, xshift = 40]{$\bigvee_{i = 1}^3 x_i \lor \lnot x_4$};
+            \node [block](42) [right of = 41, xshift = 40]{};
+            \node [block, fill=pink!30](43) [right of = 42, xshift = 40]{$\bigvee_{i = 1}^4 x_i$};
+            \node [block](44) [right of = 43, xshift = 40]{};
+            \node [block](45) [right of = 44, xshift = 40]{};
+
+            \node [block](50) [below of = 40]{};
+            \node [block, fill=yellow!30](51) [right of = 50, xshift = 40]{$\bigvee_{i = 1}^3 x_i \lor x_4 \lor x_5$};
+            \node [block, fill=yellow!30, draw=red](52) [right of = 51, xshift = 40]{$\bigvee_{i = 1}^3 x_i \lor x_4 \lor \lnot x_5$};
+            \node [block](53) [right of = 52, xshift = 40]{};
+            \node [block](54) [right of = 53, xshift = 40]{};
+            \node [block](55) [right of = 54, xshift = 40]{};
+
+            \node [block](00) [above of = 10, xshift = 242.5, fill=green!30]{$\bot$};
+
+            \node [ellipse, draw, minimum width = 90, minimum height = 30, fill=gray!20](x) [below of = 51]{$x_1 \lor x_5$};
+            \node [ellipse, draw, minimum width = 90, minimum height = 30, dashed](y) [below of = 52]{No axiom!};
+
+            % Block pointers
+            \foreach \l in {1,2,3,4,5} {
+                \foreach \b in {0,1,2,3,4,5} {
+                    \node [small circle] at (\l\b.north) [yshift=1.5pt] {};
+
+                    \ifnum\l=5
+                        \node [small circle] at (\l\b.south) [yshift=-1.5pt] {};
+                    \else
+                        \node [small circle] at (\l\b.south) [xshift=-4pt, yshift=-1.5pt] {};
+                        \node [small circle] at (\l\b.south) [xshift=4pt, yshift=-1.5pt] {};
+                    \fi
+                }
+            }
+            \node [small circle] at (00.south) [xshift=-4pt, yshift=-1.5pt] {};
+            \node [small circle] at (00.south) [xshift=4pt, yshift=-1.5pt] {};
+
+            % Arrows
+
+            \path[every node/.style={font=\sffamily\small}]
+                ($(00.south) + (-5pt,-2pt)$) edge ($(12.north) + (0,1.5pt)$)
+                ($(00.south) + (5pt,-2pt)$) edge ($(13.north) + (0,1.5pt)$)
+
+                ($(12.south) + (-5pt,-2pt)$) edge ($(21.north) + (0,1.5pt)$)
+                ($(12.south) + (5pt,-2pt)$) edge ($(23.north) + (0,1.5pt)$)
+
+                ($(23.south) + (-5pt,-2pt)$) edge ($(33.north) + (0,1.5pt)$)
+                ($(23.south) + (5pt,-2pt)$) edge ($(34.north) + (0,1.5pt)$)
+
+                ($(30.south) + (-5pt,-2pt)$) edge ($(40.north) + (0,1.5pt)$)
+                ($(30.south) + (5pt,-2pt)$) edge ($(41.north) + (0,1.5pt)$)
+
+                ($(41.south) + (-5pt,-2pt)$) edge ($(51.north) + (0,1.5pt)$)
+                ($(41.south) + (5pt,-2pt)$) edge ($(52.north) + (0,1.5pt)$)
+
+                ($(51.south) + (0pt,-2pt)$) edge (x)
+                ($(52.south) + (0pt,-2pt)$) edge (y)
+            ;
+        \end{tikzpicture}
+    }
+    \caption{Snapshot of the reservations made during an execution of \Cref{algo:algo_extraction}. The \textcolor{green!60!black}{\textbf{green}} tree is obtained by the answers given by the Duplicator by consistently following the canonical exponential-size tree-like, starting from the root. The \textcolor{yellow!80!black}{\textbf{yellow}} tree is obtained in the same way, but starting from an new block that was never mentioned. \textcolor{pink!85!black}{\textbf{Pink}} nodes are queried out-of-context only once. \textcolor{gray!70}{\textbf{Gray}} nodes are axioms of $\varphi$ obtained by answering valid weakening steps. The leaf marked in \textcolor{red!70!black}{\textbf{red}} is not the weakening of any axiom, meaning that its negation is a satisfying assignment.} 
+\end{figure}
+
+    \begin{proof}[Proof of the claim]
+        We proceed by structural induction. The conditions are all trivially true for the initial iteration, i.e. when $C = \bot$ and $\alpha = \rho$. Consider now any other iteration of the algorithm. If $C$ is an illegal step, the algorithm immediately terminates so nothing has to be verified. When $C$ is obtained through a weakening or resolution step, if one between (i), (iii) and (iv) were to be false, it would also be false for the clause through which $C$ was explored, raising a contradiction.
+
+        This leaves us with reasoning only about point (ii). Notice that $3 \mathrm{bwidth}(C)$ is the maximum number of blocks that the reservation has to remember when working with clause $C$: it mentions $\mathrm{bwidth}(C)$ blocks and each of these blocks may mention at most 2 parents. Thanks to the clean-up phase, once the traversal moves from $C$ to the next clause $D$ of the proof, all blocks that are parents of blocks in $C$ (equivalently, blocks that are parents of parents of blocks in $D$) get forgotten by the Duplicator. In particular, at most $3 \mathrm{bwidth}(D)$ are preserved in $\alpha$, plus the $d$ disabled blocks.
+    \end{proof}
+
+    We observe that the above claim implies that a leaf of $\pi$ is never reached. In fact, if $C$ were to be a leaf, conditions (i) and (iv) would raise a contradiction. Therefore, the algorithm must always halt before this happens through one of the two possible types of returns (assuming $\pi$ is a correct refutation).
+
+    In the first case, the algorithm tried to reserve a block $\mathfrak{B}$ on a layer $0 \leq \ell < n$ but the search failed, outputting $C$. This can happen only if $\alpha$ has already reserved at least $\floor{(s-d)n}-1$ blocks of that layer. Together with the $d$ blocks disabled by $\alpha$, we get that $\mathrm{bwidth}(\alpha) \geq \floor{(s-d)/n}-1 + d$. By condition (ii) of the invariant, we conclude that $\mathrm{bwidth}(C) \geq \frac{1}{3} \floor{(s-d-n)/n}$.
+
+    In the second case, instead, the algorithm failed to find an axiom $\mathscr{A}$ of $\varphi$ that was a weakening of the clause $\mathscr{C}$ described in $\alpha$ for a block $\mathfrak{B}$ on the last layer $n$. Since $\mathscr{C}$ contains $n$ literals by condition (iii) of the invariant and since it isn't a weakening of any axiom of $\varphi$, it must hold that $\lnot \mathscr{C}$ is a total assignment for $\varphi$ that satisfies it.  
+\end{proof}
+
+We're now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}[n^3]$.
+
+\begin{theorem}
+    $\mathrm{FPAP}[n^3] \in \mathsf{FP}$ and $\mathrm{FPAP}[n^2] \in \mathsf{FZPP}$.
+\end{theorem}
+
+\begin{proof}
+    We prove only the deterministic case; the randomized one follows the exact same proof using the improved bound. Let $\mathcal{A}$ and $\mathcal{B}$ be, respectively, the deterministic restriction algorithm \Cref{algo:algo_block_width} and the extraction algorithm \Cref{algo:algo_extraction}. We define a new procedure $\mathcal{C}$ as follows. On input $(\varphi, \pi, 1^s)$ with $s \geq n^3$, we scan $\pi$ in search for illegal derivation steps. If one is found, we immediately reject. Otherwise, we run $\mathcal{A}(\varphi, \pi, 1^s)$ to obtain the $d$-disabling restriction $\rho$ with $d \leq \frac{c}{2} \sqrt{s \log \abs{\pi}}$, for some $c > 0$. Then, we run $\mathcal{B}(\varphi, \pi, 1^s, \rho)$ to obtain either a satisfying assignment $\beta$ for $\varphi$ or a clause $C$ with $\mathrm{bwidth}(C) \geq \frac{1}{3}\floor{(s-d-n)/n}$. In the first case, we simply output $\beta$. In the second case, instead, we know that:
+    \[c \sqrt{s \log \abs{\pi}} \geq \mathrm{bwidth}(\pi_{\rho}) \geq \mathrm{bwidth}(C) \geq \frac{1}{3}\floor{(s-d-n)/n}\]
+
+    since $d \leq \frac{c}{2} \sqrt{s \log \abs{\pi}}$ and $s \geq n^3$, from the above inequality we obtain that $\abs{\pi} \leq 2^{\varepsilon s/n^2} = 2^{\varepsilon n}$ for some $\varepsilon > 0$. Therefore, since the input is so large, $\mathcal{C}$ proceeds to find a satisfying assignment through bruteforce. In both cases, the runtime is $\mathrm{poly}(n,\abs{\pi},s)$.
+\end{proof}
+
+\section{Extending analyzability to algebraic systems}
+\label{sec:analyzability_pcr}
+
+In \cite{alg_nphard}, the authors prove that the Atserias-Müller lower bound holds in Polynomial Calculus for the formula $\mathrm{bTreeRef}_s(\varphi)$, a variant of $\mathrm{Ref}_s(\varphi)$ that uses binary relativized encoding and forces the underlying proof to be tree-like. This variant is required in order to obtain an exponential size lower bound with respect to $N = \abs{\mathrm{bTreeRef}_s(\varphi)}$, which doesn't properly transfer to $\mathrm{Ref}_s(\varphi)$.
+
+In the context of analyzability, however, we only require that the size lower bound is exponential with respect of the number of variables $n$ of $\varphi$. In this section, we shall prove such exponential bound by adapting the argument for $\mathrm{bTreeRef}_s(\varphi)$ used in \cite{alg_nphard} to the one for $\mathrm{Ref}_s(\varphi)$ shown in \Cref{sec:weak_systems}.
+
+To prove the lower bound for the tree-like binary version of the formula, the authors translate the concept of decision tree reductions to \textit{algebraic reductions}.
+
+\begin{definition}
+    Let $\varphi$ and $\psi$ be, respectively, CNF formulas over the variables $x_1, \ldots, x_n$ and $y_1, \ldots, y_t$. A degree-$d$ algebraic reduction between $\varphi$ and $\psi$, written as $\varphi \leq_{d}^{alg} \psi$ is a function $r : \{0,1\}^n \to \{0,1\}^t$ such that:
+    \begin{itemize}
+        \item Each output bit $r_i : \{0,1\}^n \to \{0,1\}^t$ is computed by an independent degree-$d$ polynomial.
+        \item For each polynomial $g$ of $\psi$, viewed as a function $g : \{0,1\}^t \to \{0,1\}$, the multilinearization of the composition $g \circ r$ has a Nullstellensatz derivation of degree $d \cdot \deg(g)$ from the polynomials of $\varphi$
+    \end{itemize}
+\end{definition}
+
+To better understand why this translation comes in hand, we observe that any function computable by a depth-$d$ decision tree can also be computed through a degree-$d$ polynomial. Let $\mathcal{T}$ be a decision tree. For every leaf $\ell \in \mathrm{Leaves}(\mathcal{T})$ of the decision tree, let $D_\ell$ be the term made of all the literals corresponding to the query outcomes on the path from the root to the leaf. Then, $\lnot D_\ell$ is a clause. Let $q_\ell$ be the polynomial obtained through the standard mapping between clauses and polynomials. For each assignment $\alpha$, it holds that $\alpha(D_\ell) = 1$ if and only if $\alpha(1-q_\ell) = 0$ under the constraints $\{x_i^2-x_i = 0\}_{i \in [n]}$ imposed by NS, PC and PCR proofs. Moreover, $1-q_\ell$ is a polynomial of degree at most $d$.
+
+By summing up the polynomials of all leaves of $\mathcal{T}$ outputting $1$, we obtain a polynomial $q_{\mathcal{T}}$ that evaluates to 0 if and only if $\mathcal{T}$ evaluates to 1, preserving the flipped nature of truth values in the algebraic context.
+\[q_{\mathcal{T}} := \sum_{\substack{\ell \in \mathrm{Leaves}(\mathcal{T}):\\ \mathrm{out}(\ell) = 1}} (1-q_\ell)\]
+
+As in the Resolution case, we'll be interested in working with \textit{block-aware} measures. To do this, we define \textit{block-degree} as the degree measure analogous to block-width (recall that width gets translated to degree in algebraic systems).
+
+\begin{definition}
+    Let $r$ be a degree-$d$ algebraic reduction witnessing $\varphi \leq_d^{alg} \psi$. Suppose that the variables $y_1, \ldots y_s$ of $\psi$ are partitioned into blocks. We say that the reduction $r$ is block-aware if for each block $B \leq [t]$ there is a depth-$d$ algebraic reduction $r : \{0,1\}^n \to \{0,1\}^t$ such that:
+    \begin{itemize}
+        \item For each block $B$ and each $T \subseteq B$ the polynomial $r_T := \mathrm{mult}\rbk{\prod_{i \in I}} r_i$ has degree at most $d$
+        \item For each polynomial $g$ of $\psi$, viewed as a function $g : \{0,1\}^t \to \{0,1\}$, the multilinearization of the composition $g \circ r$ has a Nullstellensatz derivation of degree $d \cdot \mathrm{bdeg}(g)$ from the polynomials of $\varphi$
+    \end{itemize}
+\end{definition}
+
+\begin{proposition}
+    If $\varphi \leq_d^{dt} \psi$ then $\varphi \leq_d^{alg} \psi$. The same also holds for block-aware reductions.
+\end{proposition}
+
+\begin{proof}
+    We directly address block-aware reductions. Let $f : \{0,1\}^n \to \{0,1\}^t$ be the block-aware reducing function from $\varphi$ to $\psi$ computed by depth-$d$ decision trees. For each block $B \subseteq [t]$ of $\psi$ we know that there is a depth-$d$ decision tree $\mathcal{T}_B$ computing $f_B(x) = (f_i(x))_{i \in [B]}$ simultaneously. By the above discussion, there is a polynomial $q_B$ that computes $f_B$ obtained from $\overline{\mathcal{T}_B}$, the decision tree obtained by inverting the output of each leaf. 
+
+    Now consider any axiom $C \in \psi$. Recall that the decision tree reduction guarantees that every clause in $C \circ f$ is a weakening of an axiom of $\varphi$. Thus, we may write $C \circ r = \bigwedge_{i \in I} (A_i \lor B_i)$, where $A_i \in \varphi$. Moreover, we know that at most one clause $(A_i \lor B_i)$ evaluates to false. Therefore, the multilinearization of $\sum_{i \in I} p_{A_i} \cdot\, p_{B_i}$ computes $p_C \circ f$, where $p_{A_i}, p_{B_i}$ are the degree-$(d \cdot \mathrm{bdeg}(p_{C}))$ polynomials representations of $A_i, B_i$ and $\mathrm{bdeg}(p_C) = \mathrm{bwidth}(C)$.
+\end{proof}
+
+Furthermore, the adaptation from decision tree reductions to algebraic reductions is also \textit{lossless} on lower bounds, meaning that there is no additional factor gained due to a switch to the algebraic context.
+
+\begin{proposition}
+    \label{prop:alg_block_reduction}
+    If $\varphi \leq^{alg}_d \psi$ via a block-aware reduction then $\mathrm{deg}_{\mathrm{Q}}(\varphi) \leq d \cdot \mathrm{deg}_{\mathrm{Q}}(\psi)$, where $Q \in \{\mathrm{NS}, \mathrm{PC}, \mathrm{PCR}\}$.
+\end{proposition}
+
+\begin{proof}
+    We first prove the result for Nullstellensatz. Let $r$ be the function computing the reduction and let $\psi = \{g_1, \ldots, g_k\}$ be the axiom polynomials of $\psi$. We observe that for each NS-refutation $\pi = \{p_1, \ldots, p_k\}$ for $\psi$, it holds that:
+    \[\sum_{j \in [k]} (p_j \circ r)(g_j \circ r) = \rbk{\sum_{j \in [k]} p_j g_j} \circ r = 1 \circ r = 1\]
+    since $\pi$ is a refutation and $1$ contains no variables to compose with. Moreover, by definition of algebraic reduction, each polynomial $g_j \circ r$ can be derived from the axioms of $\varphi$ with degree $d \cdot \mathrm{bdeg}(g_i)$. Therefore, there is an equivalent NS-refutation for $\varphi$ of block-degree at most $d \cdot \mathrm{bdeg}(\pi)$.
+
+    Next, we prove the result for PC and PCR. We observe that the given argument doesn't rely on the presence or not of twin variable, hence it works for both proof systems. Let $\pi$ be a PC-refutation for $\psi$. We proceed by structural induction on $\pi$ to obtain a PC-refutation $\pi'$ of $\varphi$. In particular, whenever $p$ is derived in $\pi$, we'll derive $p \circ r$.
+
+    Again, for each axiom $g_i$ of $\psi$ we know that $g_i \circ r$ can be derived in Nullstellensatz with degree at most $d \cdot \mathrm{bdeg}(\pi)$, hence also in PC and PCR by simulation (the simulation can be made so that it preserves degree). For each polynomial $p+q$ derived by summing $p$ and $q$, by summing $p \circ r$ and $q \circ r$ we obtain $(p+q) \circ r$. For each $y_i p$ derived through multiplication, instead, we can derive $r_i (p \circ r) = y_i p \circ r$ from $p \circ r$ through a constant number of multiplications and sums. Since the two last operations blow up the block-degree of the original proof only by a factor of $d$ (due to the composition), we conclude that $\deg(\pi') \leq d \cdot \mathrm{bdeg}(\pi)$.
+\end{proof}
+
+After proving that the tools translate in the algebraic context in a natural way, the argument proceeds similarly as that of \Cref{sec:tradeoffs}. In particular, one can show that $\deg(\mathrm{rPHP}^{2m}_m) = \Omega(m / \log m)$ \cite{alg_nphard, raz_pc} to obtain a PCR block-degree lower bound of $\Omega\rbk{\frac{s}{n^2 \log^2(s/n)}}$ for $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is unsatisfiable. Notice that the bound is similar to the one obtained for block-width, up to a logarithmic factor. To get the final exponential size lower bound, we adapt to PCR the argument shown in \Cref{lem:tradeoff_bw_size}.
+
+\begin{lemma}
+    \label{lem:tradeoff_bd_size}
+    Let $\varphi$ be an unsatisfiable CNF formula with $n$ variables and $m$ clauses. Then, for all $s \in \N$ with $s \geq n^2$, it holds that $\mathrm{bdeg}_{\mathrm{PCR}}(\mathrm{Ref}_{s/2}(\varphi)) \leq O(\log \mathrm{size}_{\mathrm{PCR}}(\mathrm{Ref}_{s}(\varphi)))$
+\end{lemma}
+
+\begin{proof}
+    We proceed similarly to what is done for Resolution. For convenience, we assume that $s$ is odd (instead of even as in Resolution). We define a partial assignment $\rho$ obtained through the same randomized procedure:
+    \begin{enumerate}[nosep]
+        \item Initialize $\rho$ as the empty mapping.
+        \item Pair all the first $s-1$ blocks into $(s-1)/2$ pairs
+        \item For each pair $(B_i, B_{i+1})$, flip a balanced coin $c_i$. If $c_i = 0$ then set $\rho \gets \rho \cup \{\mathrm{enable}^{B_i} \mapsto 0, \overline{\mathrm{enable}^{B_i}} \mapsto 1\}$. Otherwise, set $\rho \gets \rho \cup \{\mathrm{enable}^{B_{i+1}} \mapsto 0, \overline{\mathrm{enable}^{B_{i+1}}} \mapsto 1\}$
+    \end{enumerate}
+
+    We observe that the procedure has been adapted in order to manage the twin variable axioms: for each variable that gets disabled we have to enforce that its twin variable gets set to the opposite value. This is necessary in order to avoid contradicting the axioms $\{1-\mathrm{enable}^{B_i}-\overline{\mathrm{enable}^{B_i}}\}_{i \in [s]}$. Other than this change, the proof follows the same reasoning as the original one.
+
+    Let $\pi$ be a PCR refutation of $\mathrm{Ref}_s(\varphi)$. For each block $B_i$, with $i \in [s-1]$, consider any variable $\ell \in \{\mathrm{enabled}^{B_i}, \overline{\mathrm{enabled}^{B_i}}\}$. After applying the above procedure, the probability that both block $B_i$ is disabled and $\rho(\ell) = 0$ is $1/4$. Therefore, we know that $\Pr_{\rho}[\rho(\ell) = 0] \geq 1/4$.
+
+    Consider now any monomial $m$ in $\pi$ of block-degree $w$ (value to be determined later). The probability that the whole monomial doesn't get killed in the restriction by setting any of its enable literals to 0 is bounded by $\Pr_{\rho}[m_{\upharpoonright_{\rho}} \neq 0] \leq (3/4)^{w/2}$. Since $m$ mentions at least $w/2$ different pairs and since each pair is independent from the others we can conclude that:
+    \[\Pr_{\rho}[\exists m \in \pi \text{ with } \mathrm{bdeg}(m_{\upharpoonright_\rho}) \geq w] \leq \abs{\pi} \cdot \rbk{\frac{3}{4}}^{w/2}\]
+    
+    By setting $w \leq (2(\log \abs{\pi} - \log (1-p)))(\log(4/3))$ with $0 < p < 1$, the above probability is lower than 1, thus there must be at least one partial assignment $\rho^*$ for which it doesn't hold. The lemma follows by choosing $\pi$ as a refutation of $\mathrm{Ref}_s(\varphi)$ with the smallest size possible.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:pcr_lower_bound}
+    Let $\varphi$ be an unsatisfiable formula with $n$ variables. Then, every PCR refutation of $\mathrm{Ref}_s(\varphi)$ has size $2^{\Omega(s/(n^2\log^2(s/n)))}$ 
+\end{corollary}
+
+\begin{proposition}
+    $\mathrm{PAP}_{Q}[n^3] \in \mathsf{P}$ for $Q \in \{\mathrm{NS}, \mathrm{PC}, \mathrm{PCR}\}$.
+\end{proposition}
+
+\begin{proof}
+    Follows for PCR from \Cref{cor:pcr_lower_bound} by using an argument similar to \Cref{prop:res_analyz}. For NS and PC it follows from downwards closure of analyzability.
+\end{proof}
+
+Since $\mathrm{Res} \leq_p \mathrm{PCR}$, the above proposition gives a simplified proof of the non-automatability of Polynomial Calculus with Resolution under the $\mathsf{P} \neq \mathsf{NP}$ assumption. However, we remark that the same doesn't hold for Nullstellensatz and standard Polynomial Calculus since they don't $p$-simulate Resolution. This could be fixed by proving that Pudlák's upper bound also holds in NS and PC. In \cite{alg_nphard}, it is argued that this may be doable in PC using a clever argument, but it seems out of reach for NS. In fact, this is what forced the authors to use tree-like refutation statements: since both NS and PC $p$-simulate $\mathrm{Res}^*$, it follows as the most natural choice. 
+
+\begin{corollary}
+    Automating PCR is $\mathsf{NP}$-hard.
+\end{corollary}
+
+\todo{explain why search-analyzability is difficult to prove for PCR}
+
+\section{Is analyzability linked with feasible interpolation? (TODO)}
 
 \cleardoublepage
