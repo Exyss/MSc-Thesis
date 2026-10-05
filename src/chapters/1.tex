@@ -251,7 +251,7 @@ Finally, we define one last class that introduces randomized computation \cite{g
 
 To interact with these classes we often use the concept of reductions between problems \cite{karp,sip_book}. The idea of problem reduction is simple: if there is a reducing function between an initial problem $A$ and a target problem $B$ and $B$ can be solved then $A$ can also be solved by using the reduction as a tunnel. This is due to the fact that if an algorithm for the original problem can simply compute the reduction and then execute the algorithm that solves the new problem.
 
-\begin{definition}
+\begin{definition}[Many-to-one reduction]
   Let $A$ and $B$ be two decision problems. We say that $A$ many-to-one reduces to $B$, written as $A \leq_m B$ when there is a computable function $f : \Sigma^* \to \Sigma^*$ such that $x \in A$ if and only if $f(x) \in B$. 
 \end{definition}
 
@@ -262,7 +262,7 @@ When $A \leq_m B$ holds, we say that $B$ is \curlyquotes{at least as hard as} $A
 \textit{Decision trees} are a simple computational model used in many areas of Computer Science \cite{jukna,arora_barak}. In our case, we'll consider decision trees as a way to compute Boolean functions $f : \{0,1\}^n \to \{0,1\}$ or, more generally, for search problems based on such functions. Informally, decision trees are graphical representations of algorithms for computing a function of an unknown input. Each node of the tree is labeled by a variable $x_i$, $i \in [n]$, and the branches from that node are labeled by the possible values of the variable ($0$ or $1$ in our case). The leaves are labeled by the output of the function. The process starts at the root, knowing nothing, works down the tree, choosing to learn the values of some of the variables based on those already known and eventually reaches a decision.
 
 \begin{definition}
- A decision tree is a rooted directed binary tree whose nodes are associated with either an output value or an input Boolean variable. Each internal node is labeled by a variable and the two outgoing edges are labeled by the two possible values. Each leaf is labeled with an output $o \in O$, for a fixed set of outputs $O$.
+ A decision tree is a rooted directed binary tree whose nodes are associated with either an output value or an input Boolean variable. Each internal node is labeled by a variable and the two outgoing edges are labeled by the two possible values. Each leaf is labeled with an output $o \in O$, for a set of outputs $O$.
 \end{definition}
 
 A Boolean function $f$ is said to be computed by a decision tree $\mathcal{T}$ when for each input $x$ it holds that $f(x) = \mathcal{T}(x)$. For this computation model we're interested in two main complexity measures: depth and size \cite{jukna, dt_survey}. The \textit{depth} of a decision tree is the number of edges in a longest path from the root to a leaf, or equivalently, the maximum number of bits tested on such a path. The \textit{size} of a decision tree, instead, is the number of nodes in the tree. Generally, for a Boolean function $f$ we denote with $D(f)$ the minimum depth across all decision trees computing $f$.

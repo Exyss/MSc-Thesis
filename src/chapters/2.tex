@@ -278,14 +278,14 @@ This sub-system of Resolution is called \textit{tree-like Resolution}, denoted w
 
 Complexity measures lie at the heart of proof complexity. These measures provide a rigorous language to measure if a minimal proof must be short or long, allowing us to evaluate how different systems perform on proving a common statement \cite{kraj_book,arora_barak,galesi_toran}. Different measures highlight different facets of a proof, often interlinking them. By analyzing these measures, we gain a deeper understanding of the inherent difficulty of logical reasoning, even from an algorithmic perspective.
 
-Resolution is the quintessential proof system when it comes to complexity measures. Consider a Res-proof $\pi$. For any clause $C$, let $\abs{C}$ denote the number of literals in $C$. Our main complexity measure of interest is the \textit{size} of $\pi$, written as $\abs{\pi}$, corresponding to the total number of literals inside it, i.e. $\abs{\pi} = \sum_{D_i \in \pi} \abs{D_i}$. For instance, the refutation in \Cref{fig:res_example_1} has size $18$. In a natural way, the size of the proof corresponds to the number of symbols used to describe the witness of the verifier-based definition of the proof system. For any formula $\varphi$ with $m$ clauses over $n$ variables, the Resolution size of $\varphi$, written as $\mathrm{size}_{\mathrm{Res}}(\varphi)$, is the minimum size across all Res-proofs of $\varphi$ (equivalently, across all refutations of $\lnot \varphi$).
+Resolution is the quintessential proof system when it comes to complexity measures. Consider a Res-refutation $\pi$. For any clause $C$, let $\abs{C}$ denote the number of literals in $C$. Our main complexity measure of interest is the \textit{size} of $\pi$, written as $\abs{\pi}$, corresponding to the total number of literals inside it, i.e. $\abs{\pi} = \sum_{D_i \in \pi} \abs{D_i}$. For instance, the refutation in \Cref{fig:res_example_1} has size $18$. In a natural way, the size of the proof corresponds to the number of symbols used to describe the witness of the verifier-based definition of the proof system. For any formula $\varphi$ with $m$ clauses over $n$ variables, the Resolution size of $\varphi$, written as $\mathrm{size}_{\mathrm{Res}}(\varphi)$, is the minimum size across all Res-refutations of $\varphi$ (equivalently, across all refutations of $\lnot \varphi$).
 \begin{equation}
     \mathrm{size}_{\mathrm{Res}}(\varphi) = \min_{\pi : \mathrm{Res} \vdash \varphi} \abs{\pi}
 \end{equation}
 
 Finding the Resolution size of a formula tells us the exact minimum number of symbols in a witnessing string for the given formula. Proving the existence of at least one formula $\varphi$, with $m$ clauses over $n$ variables, whose Resolution size is super-polynomial with respect to $\abs{\varphi} = \Theta(n+m)$ is sufficient to conclude Resolution is not polynomially bounded. \textcite{haken,arora_barak} was the first to show that one such formula is the Pigeonhole Principle formula $\mathrm{PHP}^{n+1}_{n}$, proving that it requires proofs of size at least $2^{\Omega(n)}$. This result not only implies that Resolution is not polynomially bounded, but it also implies Resolution is weak against a wide number of formulas due to this combinatorial principle being at the foundation of mathematics. 
 
-A natural complexity measure related with size is the \textit{length} of a proof, which measures the total number of clauses inside $\pi$, i.e. the number of steps in the proof. The Resolution length of a formula $\varphi$, written as $\mathrm{length}_{\mathrm{Res}}(\varphi)$, is the minimum length across all Res-proofs of $\varphi$. It is straightforward to prove that $\mathrm{length}_{\mathrm{Res}}(\varphi) \leq \mathrm{size}_{\mathrm{Res}}(\varphi) \leq n \cdot \mathrm{length}_{\mathrm{Res}}(\varphi)$ holds for any $\varphi$. For this reason, the concepts of size and length are often treated as synonyms in the case of Resolution. In this work, we'll extensively use size as a synonym of proof length.
+A natural complexity measure related with size is the \textit{length} of a proof, which measures the total number of clauses inside $\pi$, i.e. the number of steps in the proof. The Resolution length of a formula $\varphi$, written as $\mathrm{length}_{\mathrm{Res}}(\varphi)$, is the minimum length across all Res-refutations of $\varphi$. It is straightforward to prove that $\mathrm{length}_{\mathrm{Res}}(\varphi) \leq \mathrm{size}_{\mathrm{Res}}(\varphi) \leq n \cdot \mathrm{length}_{\mathrm{Res}}(\varphi)$ holds for any $\varphi$. For this reason, the concepts of size and length are often treated as synonyms in the case of Resolution. In this work, we'll extensively use size as a synonym of proof length.
 
 Another complexity measure inspired by Haken's proof is the \textit{width} of a proof $\pi$, defined as the maximum number of literals across all clauses of $\pi$, i.e. $\max_{D_i \in \pi} \abs{D_i}$. The Resolution width of $\varphi$, written as $\mathrm{width}_{\mathrm{Res}}(\varphi)$, is defined as the minimum across all proofs. \textcite{bs_wigder} proved that Resolution size and width are related to one another through the trade-off.
 
@@ -354,7 +354,7 @@ For a PC-proof $\pi' = (f_1, \ldots, f_t)$, instead, the size of $\pi'$ is defin
 \label{sec:simulations}
 To compare the relative power across different proof systems, we define the concept of polynomial simulation (or $p$-simulation) \cite{cook_proof_compx}. This notion adapts the concept of polynomial time reduction from decision problems to proof derivations.
 
-\begin{definition}
+\begin{definition}[$p$-simulation]
     Let $P$ and $Q$ be two proof systems. We say that $Q$ $p$-simulates $P$, written $P \leq_p Q$, when there is a polynomial time computable function $f : \Sigma^* \to \Sigma^*$ such that for all tautologies $\varphi$ if $\pi$ is a $P$-proof of $\varphi$ then $f(\pi)$ is a $Q$-proof of $\varphi$.
 \end{definition}
 
@@ -496,7 +496,7 @@ We observe two main differences between this game and Prover-Delayer game. First
 
 A practical example of how the game can be played is delayed to \Cref{sec:rPHP}, where the game will actually be needed to prove some important results. For now, we focus on showing that the characterization holds. To do this conveniently, we introduce the concept of \textit{extensible family} of partial assignments \cite{atserias_dalmau}. A $w$-extensible family for $\varphi$ is a downwards closed set of partial assignments which do not falsify $\varphi$ and can be extended to any variable as long as they assign at most $w-1$ variables. 
 
-\begin{definition}
+\begin{definition}[$w$-extensible family]
     Let $\varphi$ be an unsatisfiable CNF formula and let $w \in \N$ be some parameter. A set of partial assignments $\mathcal{H}$ is a $w$-extensible family for $\varphi$ if all of the following properties hold:
     \begin{itemize}[nosep]
         \item $\mathcal{H} \neq \varnothing$
