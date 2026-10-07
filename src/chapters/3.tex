@@ -157,10 +157,11 @@ The first results regarding non-automatability of proof systems came, surprising
     \end{itemize}
 \end{definition}
 
-We observe that feasible interpolation is down-ward closed: if $Q \leq_p P$ and $P$ has feasible interpolation then we can just convert the input $Q$-refutation into a $P$-refutation and apply the same algorithm. 
+We observe that feasible interpolation is down-ward closed: if $Q \leq_p P$ and $P$ has feasible interpolation then we can just convert the input $Q$-refutation into a $P$-refutation and apply the same algorithm. For systems \textit{closed under restrictions}, i.e. systems for which if $\pi$ is a $Q$-proof of $\varphi$ then $\pi_{\upharpoonright_\alpha}$ is a $Q$-refutation of $\pi$, feasible interpolation is implied by weak automatability (hence also by automatability). 
 
 \begin{theorem}
-    If a proof system $Q$ is weakly automatable in time $t$ then it has feasible interpolation in time $t$.
+    \label{thm:waut_fi}
+    Let $Q$ be a proof system closed under restrictions. If $Q$ is weakly automatable in time $t$ then it has feasible interpolation in time $t$.
 \end{theorem}
 
 \begin{proof}
@@ -183,9 +184,14 @@ Recent results expand these results to \textit{quantum automatability}, i.e. aut
 
 For weaker proof systems, the argument based on the impossibility of feasible interpolation fails. In fact, most weak proof systems actually posses feasible interpolation (Resolution \cite{kraj_fi}, Nullstellensatz and Polynomial Calculus \cite{hak_fi}, Cutting Planes \cite{pud_fi}), making this approach impossible. Nonetheless, we'll see in \Cref{sec:weak_systems} a more complex argument that proves the non-automatability of weak proof systems under the $\mathsf{P} \neq \mathsf{NP}$ assumption.
 
-Another connection between the two properties is given by the formula $\mathrm{Reflex}_s^Q(\varphi) := (\mathrm{Sat}(\varphi, \alpha) \to \lnot \mathrm{Ref}_s^Q(\varphi, \pi))$, where $\mathrm{Sat}(\varphi, \alpha)$ encodes the statement \curlyquotes{$\alpha$ satisfies $\varphi$} and $\mathrm{Ref}^Q_s(\varphi,\pi)$ encodes the statement \curlyquotes{$\pi$ is a $Q$-refutation of $\varphi$ of size at most $s$}. This formula is referred to as the \textit{Reflection Principle} \cite{pudlak_upper,resk_weakauto} of a refutational system $Q$ and it is always a tautology since if $\varphi$ is satisfiable then it cannot have a refutation. Therefore, the formula $\lnot \mathrm{Reflex}_s^Q(\varphi)$ is always unsatisfiable and, assuming it has short proofs, feasible interpolation may be applied to it in order to find short proofs of $\varphi$. This gives us a partial inverse of the previous theorem.
+Another connection between the two properties is given by the formula
+\begin{equation}
+    \mathrm{Reflex}_s^Q(\varphi) := (\mathrm{Sat}(\varphi, \alpha) \to \lnot \mathrm{Ref}_s^Q(\varphi, \pi))
+\end{equation}
+where $\mathrm{Sat}(\varphi, \alpha)$ encodes the statement \curlyquotes{$\alpha$ satisfies $\varphi$} and $\mathrm{Ref}^Q_s(\varphi,\pi)$ encodes the statement \curlyquotes{$\pi$ is a $Q$-refutation of $\varphi$ of size at most $s$}. This formula is referred to as the \textit{Reflection Principle} \cite{pudlak_upper,resk_weakauto} of a refutational system $Q$ and it is always a tautology since if $\varphi$ is satisfiable then it cannot have a refutation. Therefore, the formula $\lnot \mathrm{Reflex}_s^Q(\varphi)$ is always unsatisfiable and, assuming it has short proofs, feasible interpolation may be applied to it in order to find short proofs of $\varphi$. This gives us a partial inverse of the previous theorem.
 
 \begin{theorem}
+    \label{thm:fi_waut}
     Let $Q$ be a proof system. If there is a proof system $P$ that has feasible interpolation in polynomial time and has polynomial size proofs of $\mathrm{Reflex}_s^Q$ then $Q$ is weakly automatable in polynomial time.
 \end{theorem}
 
@@ -204,7 +210,8 @@ We notice that the above theorem matches the known results on proof systems. Cur
 The most prominent evidence for this conjecture is the $\mathrm{Res}(k)$ proof system. It is known \cite{resk_weakauto} that this proof system has short refutations of Resolution's Reflection Principle $\mathrm{Reflex}_s^{\mathrm{Res}}(\varphi)$, meaning that Resolution would be weakly automatable if $\mathrm{Res}(k)$ had feasible interpolation in polynomial time. However, in the same paper it is also proven that both of these properties are actually equivalent to proving that $\mathrm{Res}(k)$ itself is weakly automatable \cite{resk_weakauto}.
 
 \begin{theorem}
-    For all constants $k \geq 1$, the following three statements are equivalent:
+    \label{thm:resk_fi}
+    For all constants $k \geq 2$, the following three statements are equivalent:
     \begin{itemize}[nosep]
         \item $\mathrm{Res}$ is weakly automatable in polynomial time
         \item $\mathrm{Res}(k)$ is weakly automatable in polynomial time

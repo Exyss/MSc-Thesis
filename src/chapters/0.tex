@@ -1,11 +1,13 @@
-\chapter{Introduction} \label{chap:introduction}
+\chapter*{Introduction} \label{chap:introduction}
+\addcontentsline{toc}{chapter}{Introduction}
 
-\section{History of the problem}
+\section*{History of the problem}
+\addcontentsline{toc}{section}{History of the problem}
 
 It's 1956. The genius mathematician John von Neumann is hospitalized at the Walter Reed Army Medical Hospital in Washington, USA. One year earlier, a mass was found near his collarbone, which turned out to be cancer, probably caused by exposure to radiation at the Los Alamos National Laboratory during World War II \cite{vn_biography, vn_book}. After his condition improved thanks to a successful treatment, his colleague and friend Kurt Gödel sent a letter to express solidarity for his diagnosis, hoping for a full recovery. To keep von Neumann busy during his hospital stay, Gödel proposed his friend a seminal problem of fundamental interest both for logic and computer science.
 
 \begin{quote}
-    \say{One can obviously easily construct a Turing machine, which for every formula $F$ in first order predicate logic and every natural number $n$, allows one to decide if there is a proof of $F$ of length $n$ (length = number of symbols). Let $\psi(F,n)$ be the number of steps the machine requires for this and let $\varphi(n) = \max_F \psi(F,n)$. The question is how fast $\varphi$(n) grows for an optimal machine. One can show that $\varphi(n) \ge kn$.
+    \say{One can obviously easily construct a Turing machine, which for every formula $F$ in first order predicate logic and every natural number $n$, allows one to decide if there is a proof of $F$ of length $n$ (length = number of symbols). Let $\psi(F,n)$ be the number of steps the machine requires for this and let $\varphi(n) = \max_F \psi(F,n)$. The question is how fast $\varphi(n)$ grows for an optimal machine. One can show that $\varphi(n) \ge kn$.
     \newline
     If there really were a machine with $\varphi(n) \sim kn$ (or even $\sim kn^2$), this would have consequences of the greatest importance. Namely, it would obviously mean that in spite of the undecidability of the Entscheidungsproblem, the mental work of a mathematician concerning Yes-or-No questions could be completely replaced by a machine. After all, one would simply have to choose the natural number $n$ so large that when the machine does not deliver a result, it makes no sense to think more about the problem.}
 
@@ -24,6 +26,32 @@ A central discovery of modern proof complexity is that natural propositional pro
 
 These findings culminate into the brand new concept of analyzability \cite{pap}. While automatability evaluates whether an algorithm can efficiently output a proof bounded by the size of the shortest existing proof in a fixed system, \textit{analyzability} inspects the structural complexity of its search space. In particular, we are interested in understanding if proofs of lower bounds can leak information about the formula. For instance, we may be able to learn some information about the satisfiability of a formula by investigating what allows a proof system to achieve short proofs of the formula's lower bounds.
 
-\section{Thesis structure and contributions (TODO)}
+\section*{Contributions}
+\addcontentsline{toc}{section}{Contributions}
+
+A self-contained exposition of the line of work ranging from automatability to analyzability is presented from chapter \Cref{chap:automatability} to \Cref{sec:extraction} of \Cref{chap:analyzability}. In particular, we give a single uniform presentation of the meta-complexity approach to proof search, adapting and reproving all main results to a single encoding of $\mathrm{Ref}_s(\varphi)$. All previous works \cite{res_nphard,alg_nphard,pap,pap_2} use mixed encodings. In the remaining sections of \Cref{chap:analyzability}, the following original results are proven:
+\begin{enumerate}
+    \item \textit{Polynomial Calculus with Resolution is analyzable}. Given a PCR proof of the fact that a CNF formula $\varphi$ on $n$ variables has no Resolution refutation of size $s \leq n^3 \log^2 n$, one can decide in polynomial time whether $\varphi$ is satisfiable or not. The proof lifts the block-width lower bound for $\mathrm{Ref}_s(\varphi)$ to a block-degree lower bound through algebraic decision-tree reductions. Since analyzability is preserved downwards under $p$-simulation, Nullstellensatz and Polynomial Calculus are analyzable too. Combined with Pudlák's upper bound, this gives a new proof that automating PCR is $\mathrm{NP}$-hard. This is the first instance of analyzable proof systems above resolution.
+    
+    \item \textit{Analyzability does not imply feasible interpolation, unless NP-pairs collapse}. For every disjoint $\mathrm{NP}$-pair $(U, V)$ we construct a proof system that simulates Resolution, is closed under restrictions and is analyzable, but has feasible interpolation only if $(U, V)$ is polynomial-time separable. Hence analyzability does not imply feasible interpolation unless various computational complexity and cryptographic assumptions fail. The idea is to add to Resolution a rule on a reserved alphabet that encodes the pair, so that the ordinary alphabet, which is all that the analysis of $\mathrm{Ref}_s(\varphi)$ sees, behaves exactly like Resolution.
+    \item \textit{An obstacle to the converse implication}. Both analyzability and feasible interpolation extract information from proofs and every analyzable system known so far has feasible interpolation. We show that proving that feasible interpolation implies analyzability would imply that Resolution is not weakly automatable unless $\mathsf{P} = \mathsf{NP}$. Since the weak automatability of Resolution is a long-standing open problem, a proof of this implication would require new ideas.
+\end{enumerate}
+
+Further contributions include:
+\begin{enumerate}
+    \item \textit{Generalization of the reduction from $\mathrm{rPHP}$ to $\mathrm{Ref}_s(\varphi)$}. We give a version of the reduction from the retraction pigeonhole principle to $\mathrm{Ref}_s(\varphi)$ that holds for every size parameter $s$, with the logarithmic factors tracked explicitly. In previous results, these factors were usually hidden inside asymptotic notation.
+    \item \textit{Obstacles for search-analyzability of PCR}. We discuss why the extraction algorithm for Resolution does not extend directly to PCR, and hence why search-analyzability of PCR remains open.
+\end{enumerate}
+
+\section*{Thesis outline}
+\addcontentsline{toc}{section}{Thesis outline}
+
+In \Cref{chap:preliminaries} we recall the background used in the rest of the thesis. In particular, we fix notions from propositional logic, encodings of combinatorial principles such as the pigeonhole principle. We then recall topics regarding computational models, focusing on computability, complexity classes and decision trees.
+
+In \Cref{chap:proof_complexity} we introduce proof complexity, defining Cook-Reckhow propositional proof systems and presenting the proof systems discussed in later sections. We then define complexity measures and simulations between proof systems as tools to compare them. We give game characterizations for Resolution measures, focusing on the Prover-Delayer and Spoiler-Duplicator games, characterizing tree-like size and dag-like width. These games are the main tool for the lower bounds of the following chapters.
+
+In \Cref{chap:automatability} automatability is extensively discussed. After stating the basic definitions, we present the quasi-polynomial proof search algorithm for tree-like Resolution and the non-automatability of strong systems, which follows from failure of feasible interpolation under cryptographic assumptions. The rest of the chapter proves that automating Resolution is $\mathsf{NP}$-hard through the meta-complexity. We introduce the formula $\mathrm{Ref}_s(\varphi)$, which states that $\varphi$ has a Resolution refutation of size $s$, and prove Pudlák's polynomial upper bound on the minimum size of Resolution refutations of $\mathrm{Ref}_s(\varphi)$ in the case of satisfiable formulas. When $\varphi$ is unsatisfiable, we prove an exponential lower bound through a decision-tree reduction from the retraction pigeonhole principle and a random restriction argument, following the original argument of Atserias and Müller revisited by de Rezende, Göös, Nordström, et al. All proofs are given in full for a the unary relativized encoding of $\mathrm{Ref}_s(\varphi)$.
+
+In \Cref{chap:analyzability} we discuss analyzability, the constructive counterpart of the arguments shown in Chapter 4. After introducing the Proof Analysis Problem and its basic facts, such as the analyzability of Resolution, we present an algorithm capable of extracting satisfying assignments of $\varphi$ from short Resolution refutation of $\mathrm{Ref}_s(\varphi)$. This algorithm shows that Resolution is also search-analyzable. Finally, we extend known results by proving that PCR is analyzable, by lifting the block-width lower bound for $\mathrm{Ref}_s(\varphi)$ to a block-degree lower bound. This result is followed by a brief discussion on why the extraction algorithm of Resolution does not trivially extend to PCR. In the last section, we compare analyzability with feasible interpolation, showing that the two properties are highly to be unrelated to each other for a generic proof system above Resolution.
 
 \cleardoublepage

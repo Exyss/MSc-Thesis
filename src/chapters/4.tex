@@ -23,6 +23,7 @@ We observe that the restriction imposed by $\sigma(n)$ on the size of the lower 
 When both $\sigma$ and $t$ are polynomial functions, we simply say that the proof system is analyzable. We notice that, by definition, analyzability acts as a bridge from automatability to solving $\mathrm{SAT}$. This follows from an argument very similar to what is used to show the  $\mathsf{NP}$-hardness of weak proof systems (\Cref{lem:res_nphard}).
 
 \begin{proposition}
+    \label{prop:aut_an}
     Let $Q$ be a proof system. If $\mathrm{Res} \leq_p Q$ then $Q$ cannot be both automatable and analyzable, unless $\mathsf{P} = \mathsf{NP}$.
 \end{proposition}
 
@@ -32,7 +33,7 @@ When both $\sigma$ and $t$ are polynomial functions, we simply say that the proo
     We define a new algorithm $\mathcal{C}$ that solves $\mathrm{SAT}$ using this time bound. Given an input formula $\varphi$, $\mathcal{C}$ constructs $\mathrm{Ref}_s(\varphi)$ and executes $\mathcal{A}$ for at most $N^c$ steps, where $N = \abs{\mathrm{Ref}_s(\varphi)}$ and $s = n^d$, for $d > 0$. If this time bound is exceeded, $\mathcal{C}$ immediately rejects. Otherwise, $\mathcal{C}$ outputs $\mathcal{B}(\varphi, \pi, 1^s)$, where $\pi$ is the proof returned by $\mathcal{A}$.
 \end{proof}
 
-We observe that the above argument differs from the one of \Cref{lem:res_nphard} only by one thing: instead of using the lower bound in the case of unsatisfiable formulas, we directly use PAP to compute SAT once the proof is computed. Of course, the Resolution lower bound can be used to prove that Resolution is indeed analyzable, obtaining a simplified argument for its $\mathsf{NP}$-hardness.
+We observe that the above argument differs from the one of \Cref{lem:res_nphard} only by one thing: instead of using the lower bound in the case of unsatisfiable formulas, we directly use PAP to compute SAT once the proof is computed. Of course, the Resolution lower bound can be used to prove that Resolution is indeed analyzable, obtaining a simplified argument for its $\mathsf{NP}$-hardness. 
 
 \begin{proposition}
     \label{prop:res_analyz}
@@ -49,13 +50,21 @@ We observe that the above argument differs from the one of \Cref{lem:res_nphard}
     In the original result \cite{pap}, the above result is stated as $\mathrm{PAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$. This improved result is obtained by using the original Atserias-Müller lower bound, which is slightly better than the one obtained through the reduction in \Cref{sec:rPHP_Ref}. For our purposes, this is no issue: \Cref{sec:fpap} fixes this by showing that $\mathrm{FPAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$.
 \end{observation}
 
-In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatability of other weak systems can be obtained through variants of $\mathrm{Ref}_s(\varphi)$. However, due to the fact that analyzability is strictly defined over this exact formula, those similar arguments break down completely in this context: one would have to prove that the lower bounds for the variants also holds for the standard formula $\mathrm{Ref}_s(\varphi)$. Furthermore, it turns out that lower bounds on the standard refutation statement are not only sufficient but also necessary for most proof systems, as proven in \cite{pap}.
+We'll refer to the above proof strategy as the \curlyquotes{length test}. This test can be applied to any proof system who has similar \textit{Ref-hardness} result as that of Resolution.
+
+\begin{definition}[Ref-hardness]
+   A proof system $Q$ is $(c, \varepsilon)$-Ref-hard, with $c, \varepsilon > 0$, when for every unsatisfiable formula $\varphi$ on $n$ variables and for every $s \geq n^c$ it holds that $\abs{\pi} \geq 2^{\varepsilon n}$ for all $\pi : Q \vdash \lnot \mathrm{Ref}_s(\varphi)$.
+\end{definition}
+
+In particular, $Q$ is $(c, \varepsilon)$-Ref-hard then $\mathrm{PAP}_Q[n^c] \in \mathsf{P}$. By \Cref{thm:ref_bounds_final}(ii), Resolution is $(4,\varepsilon)$-Ref-hard. In \Cref{sec:analyzability_pcr} we'll prove Polynomial Calculus with Resolution is also $(4,\varepsilon)$-Ref-hard, concluding that it is also analyzable.
+
+In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatability of other weak systems can be obtained through variants of $\mathrm{Ref}_s(\varphi)$. However, due to the fact that analyzability is strictly defined over this exact formula, those similar arguments break down completely in this context: one would have to prove that the lower bounds for the variants also holds for the standard formula $\mathrm{Ref}_s(\varphi)$. Furthermore, it turns out Ref-hardness is not only sufficient but also necessary for most proof system \cite{pap}.
 
 \begin{theorem}
     Let $Q$ be a proof system that $p$-simulates Resolution, is constructively closed under modus ponens and contrapositions and proves that Resolution is closed under restrictions. Under some standard complexity assumption, the following are equivalent:
     \begin{itemize}[nosep]
         \item $Q$ is analyzable;
-        \item There are constants $c, \varepsilon > 0$ such that for every unsatisfiable CNF formula $\varphi$ every $Q$-proof of the formula $\lnot \mathrm{Ref}_{nc} (\varphi)$ requires size at least $2^{\varepsilon n}$.
+        \item $Q$ is $(c,\varepsilon)$-Ref-hard for some $c,\varepsilon > 0$.
     \end{itemize}
 \end{theorem}
 
@@ -63,17 +72,18 @@ In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatabil
     Omitted. The reader is referred to \Cite{pap}.
 \end{proof}
 
-In \Cref{sec:analyzability_pcr} we'll prove that such lower bound can be obtained Polynomial Calculus with Resolution, proving that PCR is analyzable. Another important property to observe is that analyzability is downward closed under $p$-simulations, while automatability isn't. This comes by trivially mapping a PAP triple in the first proof system to the PAP triple in the second proof system, substituting the old proof with the one obtained through the simulation. Therefore, proving that a proof system $Q$ above Resolution is analyzable automatically implies that no proof system between $Q$ and Resolution is automatable, unless $\mathsf{P} = \mathsf{NP}$.
+Another important property to observe is that analyzability is downward closed under $p$-simulations, while automatability isn't. This comes by trivially mapping a PAP triple in the first proof system to the PAP triple in the second proof system, substituting the old proof with the one obtained through the simulation. Therefore, proving that a proof system $Q$ above Resolution is analyzable automatically implies that no proof system between $Q$ and Resolution is automatable, unless $\mathsf{P} = \mathsf{NP}$.
 
 \begin{proposition}
     Let $P,Q$ be two proof systems such that $Q \leq_p P$. Then, if $P$ is (search-)analyzable $Q$ also is.
 \end{proposition}
 
-Using this property, we'll obtain that Polynomial Calculus and Nullstellensatz are also analyzable. However, this doesn't act as another proof of the $\mathsf{NP}$-hardness of their automatability since they are incomparable with Resolution.
+We'll use this to conclude that every proof system standing between Resolution and PCR is analyzable. Notice that this doesn't imply a simplified proof of the $\mathsf{NP}$-hardness of automating NS and PC since they are incomparable with Resolution.
 
-In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version, through the fact that $\mathsf{EF}$ can prove \cite{cook_pitassi} Haken's Resolution lower bound for the pigeonhole principle \cite{haken}. In particular, they extend this by showing that $\mathrm{EF}$ can prove $\lnot \mathrm{Ref_s}(\varphi \lor \mathrm{PHP}_n)$ for every $\varphi$, to then use analyzability as a way of solving the Vertex Cover problem, which implicitly describes the pigeonhole principle. This non-analyzability result shows that the meta-complexity technique of using upper bounds and lower bounds for $\mathrm{Ref}_s(\varphi)$ fails for Frege Systems and above.
+In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version, through the fact that $\mathsf{EF}$ can prove \cite{cook_pitassi} Haken's Resolution lower bound for the pigeonhole principle \cite{haken}. In particular, they extend this by showing that $\mathrm{EF}$ can prove $\lnot \mathrm{Ref_s}(\varphi \lor \mathrm{PHP}_n)$ for every $\varphi$, to then use analyzability as a way of solving the Vertex Cover problem, which implicitly describes the pigeonhole principle. In a more recent article \cite{pap_2}, these results were extended by proving that $\mathrm{AC}^0$-Frege is not analyzable in quasi-polynomial time. These non-analyzability results shows that the technique of proving non-automatability results through upper and lower bounds on $\mathrm{Ref}_s(\varphi)$ fails for Frege Systems and above.
 
 \section{Search-analyzability of Resolution}
+\label{sec:fpap}
 
 In this section we discuss the main result of \cite{pap}, which showed that satisfying assignments can be algorithmically extracted from short Resolution proofs of refutation statements, settling the question regarding a constructive proof for the contrapositive of the Atserias-Müller lower bound.
 
@@ -357,6 +367,7 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
 We're now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}[n^3]$.
 
 \begin{theorem}
+    \label{thm:fpap_res}
     $\mathrm{FPAP}[n^3] \in \mathsf{FP}$ and $\mathrm{FPAP}[n^2] \in \mathsf{FZPP}$.
 \end{theorem}
 
@@ -369,7 +380,7 @@ We're now ready to put the two phases together. Since the bound of the randomize
     since $d \leq \frac{c}{2} \sqrt{s \log \abs{\pi}}$ and $s \geq n^3$, from the above inequality we obtain that $\abs{\pi} \geq 2^{\varepsilon s/n^2} = 2^{\varepsilon n}$ for some $\varepsilon > 0$. Therefore, since the input is so large, $\mathcal{C}$ proceeds to find a satisfying assignment through bruteforce. In both cases, the runtime is $\mathrm{poly}(n,\abs{\pi},s)$.
 \end{proof}
 
-We observe that the size bound obtained in the above proof is $\abs{\pi} \geq 2^{\Omega(s/n^2)}$. This is achieved by bypassing the reduction to $\mathrm{rPHP}$, just as in the original result from \textcite{res_nphard}. As a consequence, we also get that $\mathrm{PAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$, improving the bound of \Cref{prop:res_analyz}.
+We observe that the size bound obtained in the above proof is $\abs{\pi} \geq 2^{\Omega(s/n^2)}$. This is achieved by bypassing the reduction to $\mathrm{rPHP}$, just as in the original argument by \textcite{res_nphard}. As a consequence, we also get that Resolution is $(3,\varepsilon)$-analyzable, improving the bound of \Cref{prop:res_analyz}.
 
 \section{Extending analyzability to algebraic systems}
 \label{sec:analyzability_pcr}
@@ -469,12 +480,13 @@ After proving that the tools translate in the algebraic context in a natural way
     Let $\varphi$ be an unsatisfiable formula with $n$ variables. Then, every PCR refutation of $\mathrm{Ref}_s(\varphi)$ has size $2^{\Omega(s/(n^2\log^2(s/n)))}$ 
 \end{corollary}
 
-\begin{proposition}
-    $\mathrm{PAP}_{Q}[n^3 \log^2 n] \in \mathsf{P}$ for $Q \in \{\mathrm{NS}, \mathrm{PC}, \mathrm{PCR}\}$.
-\end{proposition}
+\begin{theorem}
+    \label{thm:pcr_an}
+    If $Q \leq_p \mathrm{PCR}$ then $\mathrm{PAP}_{Q}[n^3 \log^2 n] \in \mathsf{P}$.
+\end{theorem}
 
 \begin{proof}
-    Follows for PCR from \Cref{cor:pcr_lower_bound} by using an argument similar to \Cref{prop:res_analyz}. For NS and PC it follows from downwards closure of analyzability.
+    Follows for PCR from \Cref{cor:pcr_lower_bound} by using the length test (\Cref{prop:res_analyz}). For all $Q \leq_p \mathrm{PCR}$ it follows from downward closure of analyzability.
 \end{proof}
 
 Since $\mathrm{Res} \leq_p \mathrm{PCR}$, the above proposition gives a simplified proof of the non-automatability of Polynomial Calculus with Resolution under the $\mathsf{P} \neq \mathsf{NP}$ assumption. However, we remark that the same doesn't hold for Nullstellensatz and standard Polynomial Calculus since they don't $p$-simulate Resolution. This could be fixed by proving that Pudlák's upper bound also holds in NS and PC. In \cite{alg_nphard}, it is argued that this may be doable in PC using a clever argument, but it seems out of reach for NS. In fact, this is what forced the authors to use tree-like refutation statements: since both NS and PC $p$-simulate $\mathrm{Res}^*$, it follows as the most natural choice. 
@@ -485,8 +497,94 @@ Since $\mathrm{Res} \leq_p \mathrm{PCR}$, the above proposition gives a simplifi
 
 Even though extending analyzability to PCR uses ideas similar to the ones for Resolution, extending search-analyzability to PCR is not so straightforward. In particular, we observe that \Cref{algo:algo_extraction} walks down a single path of falsified clauses, guided by a Duplicator strategy that characterizes width. In PCR, there are three issues that must be overcome: (1) lines are polynomials, thus there is no notion of a \curlyquotes{falsified line} along one path; (2) degree lower bounds are proved through Razborov's \cite{raz_pc} pseudo-reduction operators (R-operators), which act on the whole ideal rather than along a path; (3) a polynomial of degree $d$ may mention more than $d$ blocks at the same time through different monomials all of degree $d$.
 
-Therefore, an extraction algorithm for PCR needs a constructive version of the R-operator argument to mimic what is achieved through the Spoiler-Duplicator game for Resolution. The randomized and deterministic restriction phases, instead, can be naturally translated to the PCR context. Another way to prove the search-analyzability of PCR is by a completely different extraction argument that analyzes the proof from a global perspective instead of a local one.
+Therefore, an extraction algorithm for PCR needs a constructive version of the R-operator argument to mimic what is achieved through the Spoiler-Duplicator game for Resolution. The randomized and deterministic restriction phases, instead, can be naturally translated to the PCR context. Another way to prove the search-analyzability of PCR is by a completely different extraction argument that analyzes the proof from a global perspective instead of a local one, but this requires finding a particularly complex R-operator.
 
-\section{Is analyzability linked with feasible interpolation? (TODO)}
+\section{Is analyzability linked to feasible interpolation?}
 
-\cleardoublepage
+Due to the tight relations between (weak) automatability and feasible interpolation (\Cref{thm:waut_fi}, \Cref{thm:fi_waut}, \Cref{thm:resk_fi}) and between automatability and analyzability (\Cref{prop:aut_an}), investigating whether analyzability and feasible interpolation are connected to each other follows as a natural question. Moreover, both analyzability and feasible interpolation are \textit{extraction properties}: the former extracts information from proofs of $\mathrm{Ref}_s(\varphi)$, while the latter can extract information from unsatisfiable split formulas $A(x,y) \land B(x,z)$. In this section, we investigate both directions.
+
+First of all, we start by observing that analyzability and feasible interpolation indeed seem to be related to each other. In particular, all proof systems that are known to be analyzable, i.e. those below $\mathrm{PCR}$ (\Cref{thm:pcr_an}), also have feasible interpolation \cite{pud_fi,hak_fi}. However, not all proof systems that posses feasible interpolation are known to be analyzable (Cutting Planes \cite{pud_fi}, Sum-of-Squares \cite{hak_fi}, $\ldots$). Nonetheless, all proof systems that are known to not be analyzable ($\mathrm{AC}^0$-Frege, Frege and Extended Frege \cite{pap, pap_2}) don't posses feasible interpolation \cite{kraj_fi,no_fis_int,fis_int_weak_aut}. Fo $\mathrm{Res}(k)$, instead neither analyzability nor feasible interpolation has been proven. This analysis raises to main questions: (i) does feasible interpolation imply analyzability? (ii) does the converse hold?
+
+The first implication is trivially either improbable or false. In fact, by \Cref{thm:waut_fi} and \Cref{prop:aut_an}, if the implication were to hold we would immediately obtain that Resolution is not weakly automatable, unless $\mathsf{P} = \mathsf{NP}$. Therefore, if it were to be true, proving that feasible interpolation unconditionally implies analyzability is at least as hard as proving that weakly automating Resolution is impossible under the $\mathsf{P} \neq \mathsf{NP}$ assumption. Of course, this doesn't rule out the possibility of the implication being unconditionally true, but it shows that is far from being provable with modern proof complexity results.
+
+\begin{proposition}
+    Under the $\mathsf{P} \neq \mathsf{NP}$ assumption, if every proof system $Q \geq \mathrm{Res}$ closed under restriction that has feasible interpolation is also analyzable then Resolution is not weakly automatable.
+\end{proposition}
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{l|ccccccccc}
+    & Res & NS & PC & PCR & CP & Res$(k)$ & $\mathrm{AC}^0$-$\mathsf{F}$ & $\mathsf{F}$ & $\mathsf{EF}$ \\
+    \midrule
+    Analyzable & \checkmark & \checkmark & \checkmark & \checkmark & ? & ? & $\times$ & $\times$ & $\times$ \\
+    Feas. Int. & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & ? & $\times$ & $\times$ & $\times$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{Analyzability and feasible interpolation in common proof systems.}
+  \label{tab:propositional_truth_table}
+\end{table}
+
+The answer to the second implication is also negative, but it requires more work. We start by defining a concept closely related with feasible interpolation and weak automatability: \textit{disjoint $\mathsf{NP}$-pairs}.
+
+\begin{definition}[Disjoint $\mathsf{NP}$-pair]
+    The pair $(U,V)$ is said to be a disjoint $\mathsf{NP}$-pair when $U,V \in \mathsf{NP}$ and $U \cap V = \varnothing$. The pair $(U,V)$ is said to be separable in time $t$ if there is an algorithm $\mathcal{S}$ with runtime $t$ such that $U \subseteq L(\mathcal{S})$ and $V \subseteq \overline{L(\mathcal{S})}$, where $L(\mathcal{S})$ is the set of inputs accepted by $\mathcal{S}$.
+\end{definition}
+
+When $t$ is a polynomial function, we say that the pair is simply separable. The concept of polynomial time reduction is extended to disjoint $\mathsf{NP}$-pairs in a natural way. We say that $(U,V)$ reduces to $(U',V')$, written as $(U,V) \leq_p (U', V')$, when there is a many-to-one reduction $f$ such that $f(U) \subseteq U'$ and $f(V) \subseteq V'$. 
+
+\textcite{pudlak_upper} originally proved his upper bound on refutation statements for satisfiable formulas while working with the canonical pair of Resolution. The \textit{canonical pair} of a proof system $Q$ \cite{razborov_np_pairs} is the disjoint $\mathsf{NP}$-pair $\mathrm{Can}(Q) := (\mathrm{SAT}^*, \mathrm{REF}^Q)$, where for any $(\varphi, 1^t)$, with $\varphi$ being a CNF formula, it holds that $(\varphi, 1^t) \in \mathrm{SAT}^*$ iff $\varphi$ is satisfiable, while $(\varphi, 1^t) \in \mathrm{REF}^Q$ iff $\mathrm{Ref}^Q_t(\varphi)$ is satisfiable. In particular, Pudlák showed that $\mathrm{Can}(\mathrm{Res})$ is \textit{symmetrical}, meaning that $(\mathrm{SAT}^*, \mathrm{REF}^\mathrm{Res}) \leq_p (\mathrm{REF}^{\mathrm{Res}}, \mathrm{SAT}^*)$. Furthermore, he also proved that separating the canonical pair of proof system is equivalent to weakly automating it.
+
+\begin{proposition}
+    Let $Q$ be a proof system. Then, $\mathrm{Can}(Q)$ is separable if and only if $Q$ is weakly automatable.
+\end{proposition}
+
+\begin{proof}
+    Let $\mathcal{S}$ be an algorithm separating $\mathrm{Can}(Q)$. We define a new proof system $P$ as follows: $1^t$ is a $P$-refutation of $\varphi$ when $\mathcal{S}(\varphi, 1^t)$ rejects. Notice that $P$ is a valid Cook-Reckhow proof system: if $\varphi$ is satisfiable then $P$ has no refutation, while if $\varphi$ is unsatisfiable then $1^{\mathrm{Size}_Q(\varphi)}$ is a valid $P$-refutation. Moreover, $P$ can be easily automatized by testing $\mathcal{S}(\varphi, 1^{2^t})$ with $t = 1, 2, 4, \ldots$ until $t = \ceil{\log \mathrm{Size}_Q(\varphi)}$ is reached. The $p$-simulation of $Q$ from $P$ follows by definition.
+
+    Vice versa, suppose that $Q$ is weakly automatable and let $\mathcal{A}$ be an algorithm automating $P \geq_p Q$. Then, we can build a separator $\mathcal{B}$ that on input $(\varphi, 1^t)$ runs $\mathcal{A}(\varphi)$ for at most $t$ steps, accepting if and only if the computation returned a refutation before the time bound.
+\end{proof}
+
+We shall use the above equivalence to prove that if analyzability were to imply feasible interpolation then every proof system would be weakly automatable. In particular, we prove something much stronger: under those assumptions, every $\mathsf{NP}$-pair becomes separable. In particular, starting from an arbitrary disjoint $\mathsf{NP}$-pair, we build an analyzable system that fails to interpolate unless the pair is separable. The idea is to give the system a single superpower that only works in a private corner of the variable space, making sure that refutation statements never enter that corner.
+
+Let $(U,V)$ be a disjoint $\mathsf{NP}$-pair. By the Cook-Levin theorem \cite{cook_sat,levin_fsat,arora_barak}, we know that there are two polynomial-time constructible CNFs $A_n(x,y)$ and $B_n(x,z)$, with $\abs{x}=n$, such that for every $a \in\{0,1\}^n$ it holds that $a \in U$ iff $A_n(a,\cdot)$ is satisfiable and $a \in V$ iff $B_n(a,\cdot)$ is satisfiable. Since $U\cap V=\emptyset$, the formula $F_n:=A_n\land B_n$ is a split unsatisfiable CNF formula and this also holds for every restriction ${F_n}_{\upharpoonright_\rho}$. We rewrite $F_n$ by separating its variables as a disjoint union of \textit{reserved} variables $z_{n,1},z_{n,2},\dots$ that no Ref formula ever uses and a set of \textit{non-reserved} variables, containing every other variable.
+
+We define a proof system $Q_{U,V}$ extending Resolution as follows. This construction follows the classical idea of tailoring a proof system to a disjoint $\mathsf{NP}$-pair \cite{razborov_np_pairs,beyersdorff_np_pairs,UP}. the new ingredient is a \textit{reserved alphabet}, which lets the system keep the Ref-hardness of Resolution while making the pair $(U, V)$ trivially refutable.
+
+A $(Q_{U,V})$-refutation is a sequence of clauses $\pi = (C_1, \ldots, C_t)$ where each clause is either an axiom or is obtained through an application of the resolution rule, the weakening rule or a new rule referred to as the \textit{$F$-rule}. Whenever the disjunction $C \lor D$ has been derived for every clause $C$ of some restriction of $F_n$ under some partial assignment $\rho$, the $F$-rule allows the system to derive $D$.
+\[\begin{array}{ccr}
+    \dfrac{(C \lor D \quad \forall C \in {F_n}_{\upharpoonright_\rho})}{D} & \qquad & (F\text{-rule})
+\end{array}\]
+
+Each use of the $F$-rule is represented by a triple $(n,\rho,D)$, where $n$ is written in binary, $\rho$ is written as a string over $\{0,1,*\}^{|\mathrm{Vars}(F_n)|}$. We argue that this rule is sound: since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\bigwedge_{C}(C\lor D)\equiv({F_n}_{\upharpoonright_\rho})\lor D$ implies $D$. Checking an application of the $F$-rule means computing ${F_n}_{\upharpoonright_\rho}$ and looking up its clauses among earlier lines. The padding makes this polynomial in the proof length (recall that computing $F_n$ takes time $\mathrm{poly}(n)$), so $Q_{U,V}$ is a valid Cook-Reckhow system. Moreover, because $\rho$ has a fixed-length encoding, restricting each application does not change the size of its representation.
+
+\begin{lemma}
+    For every disjoint $\mathsf{NP}$-pair $(U,V)$, the proof system $Q_{U,V}$:
+    \begin{enumerate}[label={(\roman*)}, nosep]
+        \item $p$-simulates Resolution;
+        \item is closed under restriction;
+        \item is $(3,\varepsilon)$-Ref-hard for some $\varepsilon > 0$.
+    \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+    $p$-simulation follows by definition of $Q_{U,V}$ since it has the Resolution rule and the weakening rule. Consider an application of the $F$-rule represented by $(n,\rho,D)$ and a restriction $\tau$. Let $\tau'$ be the sub-assignment of $\tau$ on the variables of $F_n$ that $\rho$ leaves free. For every $C\in {F_n}_{\upharpoonright_\rho}$, the variables of $C$ are among those free variables, thus $C_{\upharpoonright_\tau}=C_{\upharpoonright_{\tau'}}$. Hence, the restricted premises $(C \lor D)_{\upharpoonright_\tau}$ are exactly the clauses $C' \lor D _{\upharpoonright_\tau}$ for $C'\in {F_n}_{\upharpoonright_(\rho\cup\tau')}$, together with some premises that became true.
+    
+    Notice that this is a legal application of the $F$-rule because the premises indexed by clauses satisfied by $\tau'$ are exactly those dropped from ${F_n}_{\upharpoonright_(\rho\cup\tau')}$. In particular, notice that $\tau$ may falsify a whole clause $C$ of ${F_n}_{\upharpoonright_(\rho\cup\tau')}$, meaning that $\bot \in {F_n}_{\upharpoonright_(\rho\cup\tau')}$, thus the corresponding premise is $D_{\upharpoonright_\tau}$ itself and the step is a repetition. Moreover, this step is represented by $(n,\rho\cup\tau',D_{\upharpoonright_\tau})$, which has the same fixed length thus the size doesn't grow. If $\tau$ satisfies $D$, the conclusion is true and the step disappears. This concludes that the system is closed under restrictions.
+
+    We now prove the Ref-hardness of $Q_{U,V}$. Let $\pi$ be a $Q_{U,V}$-refutation of $\mathrm{Ref}_s(\varphi)$ and let $\beta$ set every reserved variable occurring in $\pi$ to $0$. Consider any application of the $F$-rule in $\pi$. All its premises $C\lor D$ are lines of $\pi$, hence every variable of ${F_n}_{\upharpoonright_\rho}$ occurs in $\pi$ and is assigned by $\beta$. Since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\beta$ must falsify at least one clause $C_0$. We notice that this is were the reserved variables are required: to collapse an application of the $F$-rule we must assign the variables of ${F_n}_{\upharpoonright_\rho}$. If these some variables of $\mathrm{Ref}_s(\varphi)$ were to be part of the reserved variables, $\beta$ would also restrict $\mathrm{Ref}_s(\varphi)$ itself.   
+    
+    Now, the premise $C_0\lor D$ restricts to $D_{\upharpoonright_\beta}$, which is exactly the restricted conclusion, so the step becomes a repetition. Moreover, the axioms of $\mathrm{Ref}_s(\varphi)$ contain no reserved variables and are untouched. Therefore $\pi_{\upharpoonright_\beta}$ is a standard Resolution refutation of $\mathrm{Ref}_s(\varphi)$ that never gains literals and where each collapsed $F$-step can be deleted, because its conclusion $D_{\upharpoonright_\beta}$ already occurs as the premise $C_0 \lor D_{\upharpoonright_\beta} = D_{\upharpoonright_\beta}$. Therefore, we get that $\mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \leq \abs{\pi}$. By $(3,\varepsilon)$-Ref-hardness of Resolution, we conclude that $Q_{U,V}$ must also be $(3,\varepsilon)$-hard.
+\end{proof}
+
+\begin{theorem}
+    \label{thm:an_no_fis_int}
+    There is at least one proof system that $p$-simulates Resolution, is closed under restrictions and is analyzable but doesn't possess feasible interpolation, unless every disjoint $\mathsf{NP}$-pair is separable.
+\end{theorem}
+
+\begin{proof}
+    Assume that the premise is false for every proof system and fix a disjoint $\mathsf{NP}$-pair $(U,V)$. Then, by the previous lemma, $Q_{U,V}$ must have an interpolating algorithm $\mathcal{I}$. Consider the restriction $\rho=\emptyset$ and the clause $D=\bot$. The $F$-rule can be used to derive $\bot$ directly from the clauses of $A_n \land B_n$, obtaining a refutation $\pi_n$ of size $O(|F_n|)$, constructible in polynomial time. By definition, $\mathcal{I}(\pi_n,a)$ must output $1$ when $a\in U$ (because then $A_n(a,\cdot)$ is satisfiable and $0$ is forbidden) and $0$ when $a\in V$. This concludes that $\mathcal{I}$ successfully separates $(U,V)$ in polynomial time.
+\end{proof}
+
+To further justify the negativeness of the result, we discuss how unlikely the premise of \Cref{thm:an_no_fis_int} is outside of the automatability context. First of all, we observe that the separability of every disjoint $\mathsf{NP}$-pair trivially implies that $\mathsf{P}=\mathsf{NP}\cap\mathsf{coNP}$: for any $L\in\mathsf{NP}\cap\mathsf{coNP}$ a separator for $(L, \overline{L})$ solves $L$ in polynomial time. More interestingly, the general separability property implies that $\mathsf{P}=\mathsf{UP}$, where $\mathsf{UP}$ is the class of $\mathsf{NP}$ languages that have exactly one witness per input. Notice that the existence of \textit{one-way permutations} (conjectured to be true) implies that $\mathsf{P}\neq\mathsf{UP}$ \cite{UP}. We use an argument inspired by \textcite{UP, UP_2}. Given $L \in \mathsf{UP}$, where $x\in L$ has a unique witness $w_x$, consider the disjoint $\mathsf{NP}$-pair $(L_{\leq y}, L_{> y})$, where $L_{\leq y} := \{(x,y):x\in L,\ w_x\le y\}$ and $L_{> y} := \{(x,y):x\in L,\ w_x > y\}$. A separator $\mathcal{S}$ for this pair can binary search over $y$ to find a candidate witness, which is then verified.
+
+This concludes that analyzability doesn't unconditionally imply feasible interpolation for systems above Resolution, unless (i) every disjoint $\mathsf{NP}$-pair is separable, (ii) every proof system is weakly automatable, (iii) $\mathsf{P} = \mathsf{NP} \cap \mathsf{coNP}$, (iv) $\mathsf{P} = \mathsf{UP}$, (v) one-way permutations don't exist.
