@@ -18,7 +18,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[edges]{forest}
 \usepackage{microtype}
+\usepackage{aliascnt}
+\usepackage{amsthm}
 \usepackage{hyperref}
+\usepackage[nameinlink, capitalise,noabbrev]{cleveref}
 \usepackage{geometry} 
 \usepackage{xspace}
 \usepackage{xargs}              
@@ -34,11 +37,9 @@
 \usepackage{chngcntr}
 \usepackage{listings}
 \usepackage{enumitem}
-\usepackage[nameinlink]{cleveref}
 \usepackage{caption}  
 \usepackage{amssymb}
 \usepackage{mathrsfs}
-\usepackage{amsthm}
 \usepackage{float}    
 \usepackage[
   colorinlistoftodos,
@@ -46,34 +47,6 @@
   textsize=tiny
 ]{todonotes}
 
-
-% Other Packages
-\usepackage[Algorithm]{algorithm}   
-\usepackage[noend]{algpseudocode}
-
-\makeatletter
-\newenvironment{breakablealgorithm}
-  {% \begin{breakablealgorithm}
-   \begin{center}
-     \refstepcounter{algorithm}% New algorithm
-     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
-     \renewcommand{\caption}[2][\relax]{% Make a new \caption
-       {\raggedright\textbf{\fname@algorithm~\thealgorithm} ##2\par}%
-       \ifx\relax##1\relax % #1 is \relax
-         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
-       \else % #1 is not \relax
-         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
-       \fi
-       \kern2pt\hrule\kern2pt
-     }
-  }{% \end{breakablealgorithm}
-     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
-   \end{center}
-  }
-\makeatother
-
-
-\usetikzlibrary{decorations.text}
 
 %%%% NOTE: Enable the following two lines if you want to use SapThesis' bibliography style
 

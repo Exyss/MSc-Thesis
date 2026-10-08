@@ -2,19 +2,19 @@
 
 \section{Do proofs of lower bounds leak information?}
 
-Pudlák's upper bound (\Cref{thm:ref_bounds_final}(i)) shows that satisfiable assignments can be used to construct short proofs of Resolution lower bounds. Atserias and Müller showed through their lower bound (\Cref{thm:ref_bounds_final}(ii)) that these two concepts are also connected in the opposite direction: if one such proof has sub-exponential size then the formula must be satisfiable. However, their lower bound argument is non-constructive, meaning that it doesn't extract a satisfying assignment from sub-exponential proofs. Therefore, it seems natural to ask if this is also possible.
+Pudlák's upper bound (\Cref{thm:ref_bounds_final}(i)) shows that satisfying assignments can be used to construct short proofs of Resolution lower bounds. Atserias and Müller showed through their lower bound (\Cref{thm:ref_bounds_final}(ii)) that these two concepts are also connected in the opposite direction: if one such proof has sub-exponential size then the formula must be satisfiable. However, their lower bound argument is non-constructive, meaning that it does not extract a satisfying assignment from sub-exponential proofs. Therefore, it seems natural to ask if this is also possible.
 
 \textcite{pap} investigated this possibility by introducing a new concept somewhat dual to automatability, referred to as \textit{analyzability}. Informally, the \textit{Proof Analysis Problem} (PAP) for a proof system $Q$ asks to establish if a formula $\varphi$ is satisfiable or not by looking at a $Q$-proof of the Resolution lower bound $\lnot \mathrm{Ref}_s(\varphi)$ (always recall that the refutation statement is defined for Resolution when no proof system is specified).
 
 \begin{definition}
     Let $Q$ be a proof system. The Proof Analysis Problem over $Q$ for Resolution lower bounds of size at least $\sigma(n)$ is defined as the language
-    \[\mathrm{PAP}_Q[\sigma(n)] = \{(\varphi, \pi, 1^s) \mid \varphi \in \mathrm{SAT}, \pi : Q \vdash \lnot \mathrm{Ref}^{\mathrm{Res}}_s(\varphi), s \geq S(\abs{\varphi})\}\]
+    \[\mathrm{PAP}_Q[\sigma(n)] = \{(\varphi, \pi, 1^s) \mid \varphi \in \mathrm{SAT}, \pi : Q \vdash \lnot \mathrm{Ref}^{\mathrm{Res}}_s(\varphi), s \geq \sigma(\abs{\varphi})\}\]
 
     \noindent
     The search version of the problem $\mathrm{FPAP}_Q[\sigma(n)]$ is defined analogously, asking to return a satisfying assignment (if one exists).
 \end{definition}
 
-We observe that the restriction imposed by $\sigma(n)$ on the size of the lower bounds is necessary. For most reasonable proof systems, lower bounds that are too small admit some degenerate instances that make the problem trivially $\mathsf{NP}$-hard. For instance, each $\varphi \in \mathrm{SAT}$ can be mapped to the triple $(\varphi, \pi, 1)$ of $\mathrm{PAP}_{\mathrm{Res}}[1]$ where $\pi$ is a trivial Resolution refutation of $\mathrm{Res}_1(\varphi)$. To avoid these issues, we'll work with values $\sigma(n) \geq n^2$.
+We observe that the restriction imposed by $\sigma(n)$ on the size of the lower bounds is necessary. For most reasonable proof systems, lower bounds that are too small admit some degenerate instances that make the problem trivially $\mathsf{NP}$-hard. For instance, each $\varphi \in \mathrm{SAT}$ can be mapped to the triple $(\varphi, \eta, 1)$ of $\mathrm{PAP}_{\mathrm{Res}}[1]$ where $\pi$ is a trivial Resolution refutation of $\mathrm{Res}_1(\varphi)$ (notice that $\varphi$ has a refutation of size 1 if and only if $\bot \in \varphi$). To avoid these issues, we will work with values $\sigma(n) \geq n^2$.
 
 \begin{definition}[Analyzability]
     Let $Q$ be a proof system. Given two functions $\sigma,t : \N \to \N$, we say that $Q$ is analyzable in time $t$ for lower bounds of size $\sigma$ if $\mathrm{PAP}_Q[\sigma(n)]$ is decidable in time $t$.
@@ -41,22 +41,22 @@ We observe that the above argument differs from the one of \Cref{lem:res_nphard}
 \end{proposition}
 
 \begin{proof}
-    Consider any refutation $\pi$ of $\mathrm{Ref}_{s}(\varphi)$, with $s \geq n^3$ and $n = \abs{\varphi}$. By \Cref{thm:ref_bounds_final}(ii), there is a constant $\varepsilon > 0$ such that if $\abs{\pi} < 2^{\varepsilon n}$ then $\varphi$ is satisfiable.
+    Consider any refutation $\pi$ of $\mathrm{Ref}_{s}(\varphi)$, with $s \geq n^3 \log n$ and $n = \abs{\varphi}$. By \Cref{thm:ref_bounds_final}(ii), there is a constant $\varepsilon > 0$ such that if $\abs{\pi} < 2^{\varepsilon n}$ then $\varphi$ is satisfiable.
     
     We use this to construct the following algorithm $\mathcal{A}$. On input $(\varphi, \pi, 1^s)$, $\mathcal{A}$ checks that $\pi$ is a valid refutation and computes its length. If it stands below $2^{\varepsilon n}$, $\mathcal{A}$ immediately accepts. Otherwise, $\mathcal{A}$ bruteforces $\mathrm{SAT}$ on $\varphi$ using the standard algorithm with runtime $O(2^n)$. Observe that the input size of $\mathcal{A}$ is $M = \abs{\varphi} + \abs{\pi} + s$, thus $\mathcal{A}$ runs in linear time.
 \end{proof}
 
 \begin{observation}
-    In the original result \cite{pap}, the above result is stated as $\mathrm{PAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$. This improved result is obtained by using the original Atserias-Müller lower bound, which is slightly better than the one obtained through the reduction in \Cref{sec:rPHP_Ref}. For our purposes, this is no issue: \Cref{sec:fpap} fixes this by showing that $\mathrm{FPAP}_{\mathrm{Res}}[n^3] \in \mathsf{P}$.
+    In the original result \cite{pap}, the above result is stated as $\mathrm{PAP}_{\mathrm{Res}}[n^2] \in \mathsf{P}$. This improved result is obtained by using the original Atserias-Müller lower bound, which is slightly better than the one obtained through the reduction in \Cref{sec:rPHP_Ref}. For our purposes, this is no issue.
 \end{observation}
 
-We'll refer to the above proof strategy as the \curlyquotes{length test}. This test can be applied to any proof system who has similar \textit{Ref-hardness} result as that of Resolution.
+we will refer to the above proof strategy as the \curlyquotes{length test}. This test can be applied to any proof system with a \textit{Ref-hardness} result similar to that of Resolution.
 
 \begin{definition}[Ref-hardness]
    A proof system $Q$ is $(c, \varepsilon)$-Ref-hard, with $c, \varepsilon > 0$, when for every unsatisfiable formula $\varphi$ on $n$ variables and for every $s \geq n^c$ it holds that $\abs{\pi} \geq 2^{\varepsilon n}$ for all $\pi : Q \vdash \lnot \mathrm{Ref}_s(\varphi)$.
 \end{definition}
 
-In particular, $Q$ is $(c, \varepsilon)$-Ref-hard then $\mathrm{PAP}_Q[n^c] \in \mathsf{P}$. By \Cref{thm:ref_bounds_final}(ii), Resolution is $(4,\varepsilon)$-Ref-hard. In \Cref{sec:analyzability_pcr} we'll prove Polynomial Calculus with Resolution is also $(4,\varepsilon)$-Ref-hard, concluding that it is also analyzable.
+In particular, if $Q$ is $(c, \varepsilon)$-Ref-hard then $\mathrm{PAP}_Q[n^c] \in \mathsf{P}$. By \Cref{thm:ref_bounds_final}(ii), Resolution is $(4,\varepsilon)$-Ref-hard. In \Cref{sec:analyzability_pcr} we will prove Polynomial Calculus with Resolution is also $(4,\varepsilon)$-Ref-hard, concluding that it is also analyzable.
 
 In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatability of other weak systems can be obtained through variants of $\mathrm{Ref}_s(\varphi)$. However, due to the fact that analyzability is strictly defined over this exact formula, those similar arguments break down completely in this context: one would have to prove that the lower bounds for the variants also holds for the standard formula $\mathrm{Ref}_s(\varphi)$. Furthermore, it turns out Ref-hardness is not only sufficient but also necessary for most proof system \cite{pap}.
 
@@ -72,15 +72,15 @@ In \Cref{sec:tradeoffs} we mentioned how the lower bounds behind non-automatabil
     Omitted. The reader is referred to \Cite{pap}.
 \end{proof}
 
-Another important property to observe is that analyzability is downward closed under $p$-simulations, while automatability isn't. This comes by trivially mapping a PAP triple in the first proof system to the PAP triple in the second proof system, substituting the old proof with the one obtained through the simulation. Therefore, proving that a proof system $Q$ above Resolution is analyzable automatically implies that no proof system between $Q$ and Resolution is automatable, unless $\mathsf{P} = \mathsf{NP}$.
+Another important property to observe is that analyzability is downward closed under $p$-simulations, while automatability is not. This comes by trivially mapping a PAP triple in the first proof system to the PAP triple in the second proof system, substituting the old proof with the one obtained through the simulation. Therefore, proving that a proof system $Q$ above Resolution is analyzable automatically implies that no proof system between $Q$ and Resolution is automatable, unless $\mathsf{P} = \mathsf{NP}$.
 
 \begin{proposition}
     Let $P,Q$ be two proof systems such that $Q \leq_p P$. Then, if $P$ is (search-)analyzable $Q$ also is.
 \end{proposition}
 
-We'll use this to conclude that every proof system standing between Resolution and PCR is analyzable. Notice that this doesn't imply a simplified proof of the $\mathsf{NP}$-hardness of automating NS and PC since they are incomparable with Resolution.
+we will use this to conclude that every proof system below PCR is analyzable. Notice that this does not imply a simplified proof of the $\mathsf{NP}$-hardness of automating NS and PC since they are incomparable with Resolution.
 
-In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version, through the fact that $\mathsf{EF}$ can prove \cite{cook_pitassi} Haken's Resolution lower bound for the pigeonhole principle \cite{haken}. In particular, they extend this by showing that $\mathrm{EF}$ can prove $\lnot \mathrm{Ref_s}(\varphi \lor \mathrm{PHP}_n)$ for every $\varphi$, to then use analyzability as a way of solving the Vertex Cover problem, which implicitly describes the pigeonhole principle. In a more recent article \cite{pap_2}, these results were extended by proving that $\mathrm{AC}^0$-Frege is not analyzable in quasi-polynomial time. These non-analyzability results shows that the technique of proving non-automatability results through upper and lower bounds on $\mathrm{Ref}_s(\varphi)$ fails for Frege Systems and above.
+In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version, through the fact that $\mathsf{EF}$ can prove \cite{cook_pitassi} Haken's Resolution lower bound for the pigeonhole principle \cite{haken}. In particular, they extend this by showing that for every $\varphi$ the system $\mathrm{EF}$ always has a proof $\pi_\varphi$ of $\lnot \mathrm{Ref_s}(\varphi \lor \mathrm{PHP}_n)$ constructible in polynomial time $n^c$. The $\mathsf{NP}$-hardness follows by mapping $\varphi \mapsto (\varphi, \pi_\varphi, 1^{n^c})$, solving SAT in polynomial time. In a more recent article \cite{pap_2}, they extended this result by proving that $\mathrm{AC}^0$-Frege is not analyzable in quasi-polynomial time. These non-analyzability results shows that the technique of proving non-automatability results through upper and lower bounds on $\mathrm{Ref}_s(\varphi)$ fails for Frege Systems and above.
 
 \section{Search-analyzability of Resolution}
 \label{sec:fpap}
@@ -89,7 +89,7 @@ In this section we discuss the main result of \cite{pap}, which showed that sati
 
 The extraction algorithm is subdivided in two phases: a \textit{block-width reduction} phase and a \textit{proof-analysis} phase. In the first phase, a deterministic version of the block-width restriction of \Cref{lem:tradeoff_bw_size} is applied to to the given $\mathrm{Ref}_s(\varphi)$ proof $\pi$, obtaining a smaller proof with a known block-width lower bound for $\mathrm{Ref}_{s'}(\varphi)$ with $s' < s$. This deterministic version gives a slightly worse lower bound, but it suffices for the extraction argument. Then, the second phase analyzes the restricted proof by traversing it from the root to the axioms, arriving at one of three conclusions: a satisfying assignment is found, a clause with large block-width is found or an error in the proof is found.
 
-We start by giving a more precise definition of the type restrictions that we're going to use for $\mathrm{Ref}_s(\varphi)$.
+We start by giving a more precise definition of the type restrictions that we are going to use for $\mathrm{Ref}_s(\varphi)$.
 
 \begin{definition}[$d$-disabling restriction]
     Let $\rho$ be an assignment to the $N$ variables of $\mathrm{Ref}_s(\varphi)$. We say that $\rho$ is a $d$-disabling restriction when:
@@ -100,18 +100,18 @@ We start by giving a more precise definition of the type restrictions that we're
     \end{enumerate}
 \end{definition}
 
-It's easy to see that the argument in \Cref{lem:tradeoff_bw_size} yields a $\floor{s/2}$-disabling restriction. Notice that this never falsifies the formula since all axioms involving a disabled block are satisfied independently of the values assumed by its variables. 
+it is easy to see that the argument in \Cref{lem:tradeoff_bw_size} yields a $\floor{s/2}$-disabling restriction. Notice that this never falsifies the formula since all axioms involving a disabled block are satisfied independently of the values assumed by its variables. 
 
 \begin{corollary}
-    Let $\varphi$ be an unsatisfiable formula. For each probability $0 < p < 1$, there is a randomized algorithm $\mathcal{R}$ that given $1^N$ as input, where $N$ is the number of variables in $\mathrm{Ref}_s(\varphi)$, returns a $\floor{s/2}$-disabling restriction $\rho$ such that for each Resolution-refutation $\pi$ of $\mathrm{Ref}_s(\varphi)$ the following holds:
-    \begin{itemize}
-        \item $\rho$ doesn't falsify $\mathrm{Ref}_s(\varphi)$;
+    Let $\varphi$ be an formula. For each probability $0 < p < 1$, there is a randomized algorithm $\mathcal{R}$ that given $1^N$ as input, where $N$ is the number of variables in $\mathrm{Ref}_s(\varphi)$, returns a $\floor{s/2}$-disabling restriction $\rho$ such that for each Resolution-refutation $\pi$ of $\mathrm{Ref}_s(\varphi)$ the following holds:
+    \begin{itemize}[nosep]
+        \item $\rho$ does not falsify $\mathrm{Ref}_s(\varphi)$;
         \item with probability at least $p$ the block width of $\pi_{\upharpoonright_\rho}$ is at most $O(\log \abs{\pi} - \log(1-p))$
         \item $\mathcal{R}(1^N)$ runs in $O(N)$.
     \end{itemize}
 \end{corollary}
 
-To make this restriction deterministic, we use a greedy assignment policy based on killing the remaining clauses with the highest block-degree. Given a set $W$ of clauses and a literal $\ell$ mentioning block $B_i$, the \textit{frequency} of $\ell$ in $X$, let $\nu(X, \ell)$ be the number of times $\ell$ appears in clauses of $X$ divided by $\abs{X}$. By extension, let $\nu(X, B_i)$ be the number of times block $B_i$ is mentioned in clauses of $X$. Consider the following algorithm, inspired by result in \cite{cook_pitassi,pitassi,bs_wigder}.
+To make this restriction deterministic, we use a greedy assignment policy based on killing the remaining clauses with the highest block-width. Given a set $W$ of clauses and a literal $\ell$ mentioning block $B_i$, the \textit{frequency} of $\ell$ in $X$, let $\nu(X, \ell)$ be the number of times $\ell$ appears in clauses of $X$ divided by $\abs{X}$. By extension, let $\nu(X, B_i)$ be the number of times block $B_i$ is mentioned in clauses of $X$, divided by $\abs{X}$. Consider the following algorithm, inspired by result in \cite{cook_pitassi,pitassi,bs_wigder}.
 
 \begin{breakablealgorithm}
     \caption{A deterministic algorithm $\mathcal{A}$ that reduces block-width}
@@ -120,10 +120,10 @@ To make this restriction deterministic, we use a greedy assignment policy based 
         \Require A triple $(\varphi, \pi, 1^s)$ where $\pi$ is a $\mathrm{Res}$-refutation of $\mathrm{Ref}_s(\varphi)$
         \Ensure A $d$-disabling restriction
         \State $\rho \gets \varnothing$
-        \State $\mathrm{Active} \gets [s]$
+        \State $\mathrm{Active} \gets [s-1]$
         \State $\mathrm{Disabled} \gets \varnothing$
         \State $W \gets \{C \in \pi \mid \mathrm{bwidth}(C) \geq w\}$
-        \Comment $w$ is a parameter to be specified later
+        \Comment{$w$ is a parameter to be specified later}
 
         \While{$W \neq \varnothing$ and $\exists i \in \mathrm{Active}$ with $B_i$ mentioned in $W$}
             \State Find $i \in \mathrm{Active}$ that maximizes $\nu(W, B_i)$
@@ -146,17 +146,17 @@ To make this restriction deterministic, we use a greedy assignment policy based 
                 \EndFor
             \EndIf
         \EndWhile
-        \State Update $\rho$ by enabling all blocks that weren't mentioned in $W$
+        \State Update $\rho$ by enabling all blocks that were not mentioned in $W$
         \State Return $\rho$
     \end{algorithmic}
 \end{breakablealgorithm}
 
-We argue that the above algorithm is dense in notation, but its workings are quite intuitive. The set $W$ corresponds to the set of clauses with initial block width exceeding a to-be-fixed parameter. On each iteration, we search for the active block that maximizes its frequency in $W$. If the enable variable of $B_i$ appears in at least $1/3$ of the clauses in $W$ that mention it, we enable block $B_i$ and update $W$ accordingly. Otherwise, we disable block $B_i$ to then set as true all of its variables that appear more positively than negatively in $W$, while setting all its other variables to false.
+The above algorithm is dense in notation, but its workings are quite intuitive. The set $W$ corresponds to the set of clauses with initial block width exceeding a to-be-fixed parameter. On each iteration, we search for the active block that maximizes its frequency in $W$. If the enable variable of $B_i$ appears in at least $1/3$ of the clauses in $W$ that mention it, we enable block $B_i$ and update $W$ accordingly. Otherwise, we disable block $B_i$ to then set as true all of its variables that appear more positively than negatively in $W$, while setting all its other variables to false.
 
 \begin{lemma}
-    Let $\pi$ be a Resolution refutation for $\mathrm{Ref}_s(\varphi)$. For an adequate choice of $w$, \Cref{algo:algo_block_width} $\mathcal{A}$ returns a $d$-disabling restriction $\rho$ in $O(O(s \abs{\pi}))$ such that:
-    \begin{itemize}
-        \item $\rho$ doesn't falsify $\mathrm{Ref}_s(\varphi)$;
+    Let $\pi$ be a Resolution refutation for $\mathrm{Ref}_s(\varphi)$. For an adequate choice of $w$, \Cref{algo:algo_block_width} $\mathcal{A}$ returns a $d$-disabling restriction $\rho$ in $O(s\abs{\pi})$ such that:
+    \begin{itemize}[nosep]
+        \item $\rho$ does not falsify $\mathrm{Ref}_s(\varphi)$;
         \item $d \leq \frac{c}{2} \sqrt{s \log\abs{\pi}}$
         \item the block-width of $\pi_{\upharpoonright_\rho}$ is at most $c \sqrt{s \log\abs{\pi}}$
     \end{itemize}
@@ -167,7 +167,7 @@ We argue that the above algorithm is dense in notation, but its workings are qui
 
     We want to choose a value $w$ so that after $\ell \leq s$ iterations, the set $W$ is guaranteed to be empty. Once $W$ gets emptied by the procedure, all clauses left in $\pi_{{\upharpoonright_{\rho_\ell}}}$ will have block-width at most $w$. Since each iteration enables or disables exactly one block, on each iteration $j$ there are at least $s-{j-1}$ active blocks, at most $j-1$ disabled blocks and the block width might have decreased up to $w - (j - 1)$. Through an averaging argument, we know that the most frequent block is mentioned in at least a $(w-(j-1))/(s-(j-1))$ fraction of the clauses left in $W$.
     
-    Moreover, if block $B_i$ is chosen in iteration $j$, the procedure doesn't guarantee that all the clauses mentioning $B_i$ are killed, but we are guaranteed to kill at least $1/3$ of them. Indeed, if block $B_i$ gets enabled this is possible only if at least $1/3$ of all the clauses in $W$ mention it. Otherwise, if it gets disabled, we are guaranteed to restrict at least $1/2$ of the remaining at least $2/3$ fraction of the clauses in $W$ mentioning $B_i$, which amounts to at least $1/3$ of clauses.Therefore, after $\ell$ iterations we have that:
+    Moreover, if block $B_i$ is chosen in iteration $j$, the procedure does not guarantee that all the clauses mentioning $B_i$ are killed, but we are guaranteed to kill at least $1/3$ of them. Indeed, if block $B_i$ gets enabled this is possible only if at least $1/3$ of all the clauses in $W$ mention it. Otherwise, if it gets disabled, we are guaranteed to restrict at least $1/2$ of the remaining at least $2/3$ fraction of the clauses in $W$ mentioning $B_i$, which amounts to at least $1/3$ of clauses. Therefore, after $\ell$ iterations we have that:
     \begin{equation}
         \begin{split}
             \abs{W_{\upharpoonright_{\rho_\ell}}} &\leq \abs{W} \rbk{1 - \frac{w}{3s}} \rbk{1 - \frac{w-1}{3(s-1)}} \cdots \rbk{1 - \frac{w-(\ell-1)}{3(s-(\ell-1))}} \\
@@ -182,9 +182,11 @@ We argue that the above algorithm is dense in notation, but its workings are qui
 
 We now move to the proof-analysis phase. We start by observing that this phase can be used after both the randomized and deterministic algorithms, obtaining improved results for the randomized one. The idea behind the algorithm is to traverse the restricted refutation in a fashion inspired by the Spoiler-Duplicator game defining block-width (see \Cref{sec:resolution_games} and \Cref{sec:dt_reductions}). In particular, we assume that $s-d$ blocks in the restricted formula $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho}$ are arranged in $n$ layers, each containing $\floor{(s-d)/n}$ blocks, plus one additional top layer containing the root node $s$, labeled as layer 0. Similarly to what is done in the reduction from $\mathrm{rPHP}$ to $\mathrm{Ref}_s(\varphi)$ (see \Cref{sec:rPHP_Ref}), we assume that each block on layer $0 \leq i < n$ is used to resolve on variable $x_{i+1}$. Blocks on layer $n$ are assumed to describe a clause that is a weakening of some axiom of $\varphi$.
 
-Throughout the traversal, we'll build a partial assignment $\alpha$ on the variables of $\mathrm{Ref}_s(\varphi)$, referred to as the \textit{reservation}. This assignment keeps track of the information needed to continue traversal, mimicking what the Duplicator has in mind while playing against the Spoiler. In particular, since $\mathrm{Ref}_s(\varphi)$ encodes a potential refutation, the reservation $\alpha$ will encode information about how blocks are connected. Just like the proof of \Cref{thm:rPHP_to_Ref}, we suggest the reader to look at \Cref{fig:extraction} while reading what comes next.
+Throughout the traversal, we will build a partial assignment $\alpha$ on the variables of $\mathrm{Ref}_s(\varphi)$, referred to as the \textit{reservation}. This assignment keeps track of the information needed to continue traversal, mimicking what the Duplicator has in mind while playing against the Spoiler. In particular, since $\mathrm{Ref}_s(\varphi)$ encodes a potential refutation, the reservation $\alpha$ will encode information about how blocks are connected. Just like the proof of \Cref{thm:rPHP_to_Ref}, we suggest that the reader looks at \Cref{fig:extraction} while reading what comes next.
 
-Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_s(\varphi)$ with $y_1, \ldots, y_N$ and the variables of $\varphi$ with $x_1, \ldots, x_n$. Similarly, clauses of $\mathrm{Ref}_s(\varphi)$ and $\pi$ are denoted with capital font $C$, while clauses of $\varphi$ are denoted with script font $\mathscr{C}$. Blocks are labeled with fraktur font $\mathfrak{B}$. We say that a block $\mathfrak{B}$ is \textit{reserved} in $\alpha$ if the variables defining the clause described by $\mathfrak{B}$ are assigned in $\alpha$.
+In the following algorithm, we will denote the variables of $\mathrm{Ref}_s(\varphi)$ with $y_1, \ldots, y_N$ and the variables of $\varphi$ with $x_1, \ldots, x_n$. Similarly, clauses of $\mathrm{Ref}_s(\varphi)$ and $\pi$ are denoted with capital font $C$, while clauses of $\varphi$ are denoted with script font $\mathscr{C}$. Blocks are labeled with fraktur font $\mathfrak{B}$. We say that a block $\mathfrak{B}$ is \textit{reserved} in $\alpha$ if the variables defining the clause described by $\mathfrak{B}$ are assigned in $\alpha$.
+
+\newpage
 
 \begin{breakablealgorithm}
     \caption{The extraction algorithm for Resolution}
@@ -210,7 +212,7 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
                         \State Update $\alpha$ so that $\mathfrak{B}_1$ describes the clause $x_{\ell+1} \lor \bigvee_{j \in [\ell]} x_j$
                         \State Update $\alpha$ so that $\mathfrak{B}_2$ describes the clause $\lnot x_{\ell+1} \lor \bigvee_{j \in [\ell]} x_j$
                         \State Update $\alpha$ so that $\mathfrak{B}$ is derived by resolving $\mathfrak{B}_1$ and $\mathfrak{B}_2$
-                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its children aren't}
+                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its children are not}
                         \State Let $\mathscr{C}$ be the clause described by $\mathfrak{B}$
                         \State Search two unreserved blocks $\mathfrak{B}_1, \mathfrak{B}_2$ on layer $\ell+1$
                         \State If the above search fails, output $C$ with message \curlyquotes{large clause}
@@ -225,7 +227,7 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
                         \State Update $\alpha$ so that $\mathfrak{B}$ describes the clause $\bigvee_{j \in [n]} x_j$
                         \State Update $\alpha$ so that $\mathfrak{B}$ is derived by weakening $\mathscr{A}$
                         
-                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its child isn't}
+                    \ElsIf{$\mathfrak{B}$ is reserved in alpha but its child is not}
                         \State Let $\mathscr{C}$ be the clause described by $\mathfrak{B}$
                         \State Search an axiom $\mathscr{A}$ of $\varphi$ such that $\mathscr{C}$ is a weakening of it
                         \State If the above search fails, output $\lnot \mathscr{C}$ with message \curlyquotes{satisfies}
@@ -234,14 +236,16 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
                 \EndIf
                 \State Set $C \gets A \lor y$ if $\alpha(y) = 0$ or $C \gets B \lor \lnot y$ if $\alpha(y) = 1$.
             \EndIf
-            \State Clean-up $\alpha$ by forgetting all the variables of blocks that aren't disabled, that aren't mentioned in $C$ or that aren't a child of a block mentioned in $C$
+            \State Clean-up $\alpha$ by forgetting all the variables of blocks that are not disabled, that are not mentioned in $C$ or that are not a child of a block mentioned in $C$
         \EndWhile
     \end{algorithmic}
 \end{breakablealgorithm}
 
+\newpage
+
 \begin{lemma}
     Let $\pi$ be a Resolution refutation for $\mathrm{Ref}_s(\varphi)$ and let $\rho$ be a $d$-disabling restriction. Let also $N$ be the number of variables of $\mathrm{Ref}_s(\varphi)$. \Cref{algo:algo_extraction} $\mathcal{A}$ returns in $O(N \abs{\pi})$ exactly one of the following possible outputs:
-    \begin{itemize}
+    \begin{itemize}[nosep]
         \item an incorrect derivation step in $\pi$;
         \item a large $C$ in $\pi_{\upharpoonright_{\rho}}$ such that $\mathrm{bwidth}(C) \geq \frac{1}{3} \floor{(s-d-n)/n}$;
         \item a total satisfying assignment for $\varphi$.
@@ -253,11 +257,11 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
 
     \begin{claim}
         At the beginning of each iteration of $\mathcal{A}$ it holds that:
-        \begin{enumerate}[label={(\roman*)}]
+        \begin{enumerate}[label={(\roman*)}, nosep]
             \item the reservation $\alpha$ falsifies $C$;
             \item a non-disabled block $\mathfrak{B}$ is reserved in $\alpha$ only if it is either mentioned by $C$ or one of its parents is mentioned by $C$. In particular, $\mathrm{bwidth}(\alpha) - d \leq 3 \cdot \mathrm{bwidth}(C)$;
             \item if $\alpha$ contains any information about a non-disabled block $\mathfrak{B}$ from a layer $\ell$ then $\alpha$ also exactly determines that $\mathfrak{B}$ contains exactly $\ell$ literals over $x_1, \ldots, x_\ell$;
-            \item the reservation $\alpha$ doesn't falsify any axiom of $\mathrm{Ref}_s(\varphi)$ 
+            \item the reservation $\alpha$ does not falsify any axiom of $\mathrm{Ref}_s(\varphi)$ 
         \end{enumerate}
     \end{claim}
     
@@ -347,7 +351,7 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
             ;
         \end{tikzpicture}
     }
-    \caption{Snapshot of the reservations made during an execution of \Cref{algo:algo_extraction}. The \textcolor{green!60!black}{\textbf{green}} tree is obtained by the answers given by the Duplicator by consistently following the canonical exponential-size tree-like, starting from the root. The \textcolor{yellow!80!black}{\textbf{yellow}} tree is obtained in the same way, but starting from an new block that was never mentioned. \textcolor{pink!85!black}{\textbf{Pink}} nodes are queried out-of-context only once. \textcolor{gray!70}{\textbf{Gray}} nodes are axioms of $\varphi$ obtained by answering valid weakening steps. The leaf marked in \textcolor{red!70!black}{\textbf{red}} is not the weakening of any axiom, meaning that its negation is a satisfying assignment.} 
+    \caption{Snapshot of the reservations made during an execution of \Cref{algo:algo_extraction}. The \textcolor{green!60!black}{\textbf{green}} tree is obtained by the answers given by the Duplicator by consistently following the canonical exponential-size tree-like refutation, starting from the root. The \textcolor{yellow!80!black}{\textbf{yellow}} tree is obtained in the same way, but starting from an new block that was never mentioned. \textcolor{pink!85!black}{\textbf{Pink}} nodes are queried out-of-context only once. \textcolor{gray!70}{\textbf{Gray}} nodes are axioms of $\varphi$ obtained by answering valid weakening steps. The leaf marked in \textcolor{red!70!black}{\textbf{red}} is not the weakening of any axiom, meaning that its negation is a satisfying assignment.} 
     \label{fig:extraction}
 \end{figure}
 
@@ -361,10 +365,10 @@ Throughout the following algorithm, we'll denote the variables of $\mathrm{Ref}_
 
     In the first case, the algorithm tried to reserve a block $\mathfrak{B}$ on a layer $0 \leq \ell < n$ but the search failed, outputting $C$. This can happen only if $\alpha$ has already reserved at least $\floor{(s-d)/n}-1$ blocks of that layer. Together with the $d$ blocks disabled by $\alpha$, we get that $\mathrm{bwidth}(\alpha) \geq \floor{(s-d)/n}-1 + d$. By condition (ii) of the invariant, we conclude that $\mathrm{bwidth}(C) \geq \frac{1}{3} \floor{(s-d-n)/n}$.
 
-    In the second case, instead, the algorithm failed to find an axiom $\mathscr{A}$ of $\varphi$ that was a weakening of the clause $\mathscr{C}$ described in $\alpha$ for a block $\mathfrak{B}$ on the last layer $n$. Since $\mathscr{C}$ contains $n$ literals by condition (iii) of the invariant and since it isn't a weakening of any axiom of $\varphi$, it must hold that $\lnot \mathscr{C}$ is a total assignment for $\varphi$ that satisfies it. This concludes the proof of the lemma.
+    In the second case, instead, the algorithm failed to find an axiom $\mathscr{A}$ of $\varphi$ that was a weakening of the clause $\mathscr{C}$ described in $\alpha$ for a block $\mathfrak{B}$ on the last layer $n$. Since $\mathscr{C}$ contains $n$ literals by condition (iii) of the invariant and since it is not a weakening of any axiom of $\varphi$, it must hold that $\lnot \mathscr{C}$ is a total assignment for $\varphi$ that satisfies it. This concludes the proof of the lemma.
 \end{proof}
 
-We're now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}[n^3]$.
+We are now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}[n^3]$.
 
 \begin{theorem}
     \label{thm:fpap_res}
@@ -385,13 +389,7 @@ We observe that the size bound obtained in the above proof is $\abs{\pi} \geq 2^
 \section{Extending analyzability to algebraic systems}
 \label{sec:analyzability_pcr}
 
-This section contains the first real new contribution of this work, other then the sharpening and the reproving of bounds in \Cref{chap:automatability}. In particular, we shall prove that all proof systems between Resolution and Polynomial Calculus with Resolution are analyzable.
-
-In \cite{alg_nphard}, the authors prove that the Atserias-Müller lower bound holds in Polynomial Calculus for the formula $\mathrm{bTreeRef}_s(\varphi)$, a variant of $\mathrm{Ref}_s(\varphi)$ that uses binary relativized encoding and forces the underlying proof to be tree-like. This variant is required in order to obtain an exponential size lower bound with respect to $\abs{\mathrm{bTreeRef}_s(\varphi)}$, which doesn't transfer to $\mathrm{Ref}_s(\varphi)$.
-
-In the context of analyzability, however, we only require that the size lower bound is exponential with respect of the number of variables $n$ of $\varphi$. In this section, we shall prove such an exponential bound by adapting the argument for $\mathrm{bTreeRef}_s(\varphi)$ used in \cite{alg_nphard} to the one for $\mathrm{Ref}_s(\varphi)$ shown in \Cref{sec:weak_systems}.
-
-To prove the lower bound for the tree-like binary version of the formula, the authors translate the concept of decision tree reductions to \textit{algebraic reductions}.
+This section contains the first real new contribution of this work, other than the sharpening and the reproving of bounds in \Cref{chap:automatability}. In particular, we shall prove that analyzability can be extended all the way up to Polynomial Calculus with Resolution. To achieve this, we prove that the lower bound argument for Resolutions transfers to PCR by adapting decision tree reductions to \textit{algebraic reductions} \cite{alg_nphard}.
 
 \begin{definition}[Algebraic reduction]
     Let $\varphi$ and $\psi$ be, respectively, CNF formulas over the variables $x_1, \ldots, x_n$ and $y_1, \ldots, y_t$. A degree-$d$ algebraic reduction between $\varphi$ and $\psi$, written as $\varphi \leq_{d}^{alg} \psi$ is a function $r : \{0,1\}^n \to \{0,1\}^t$ such that:
@@ -401,14 +399,14 @@ To prove the lower bound for the tree-like binary version of the formula, the au
     \end{itemize}
 \end{definition}
 
-To better understand why this translation comes in handy, we observe that any function computable by a depth-$d$ decision tree can also be computed through a degree-$d$ polynomial \cite{jukna,alg_nphard}. Let $\mathcal{T}$ be a decision tree. For every leaf $\ell \in \mathrm{Leaves}(\mathcal{T})$ of the decision tree, let $D_\ell$ be the term made of all the literals corresponding to the query outcomes on the path from the root to the leaf. Then, $\lnot D_\ell$ is a clause. Let $q_\ell$ be the polynomial obtained through the standard mapping between clauses and polynomials. For each assignment $\alpha$, it holds that $\alpha(D_\ell) = 1$ if and only if $\alpha(1-q_\ell) = 0$ under the constraints $\{x_i^2-x_i = 0\}_{i \in [n]}$ imposed by NS, PC and PCR proofs. Moreover, $1-q_\ell$ is a polynomial of degree at most $d$.
+To better understand why this translation comes in handy, we observe that any function computable by a depth-$d$ decision tree can also be computed through a degree-$d$ polynomial \cite{jukna,alg_nphard}. Let $\mathcal{T}$ be a decision tree. For every leaf $\ell \in \mathrm{Leaves}(\mathcal{T})$ of the decision tree, let $D_\ell$ be the term made of all the literals corresponding to the query outcomes on the path from the root to the leaf. Then, $\lnot D_\ell$ is a clause. Let $q_\ell$ be the polynomial obtained through the standard mapping between clauses and polynomials. For each assignment $\alpha$, it holds that $\alpha(D_\ell) = 1$ if and only if $\alpha(q_\ell) = 0$ under the constraints $\{x_i^2-x_i = 0\}_{i \in [n]}$ imposed by NS, PC and PCR proofs. Moreover, $q_\ell$ is a polynomial of degree at most $d$.
 
-By summing up the polynomials of all leaves of $\mathcal{T}$ outputting $1$, we obtain a polynomial $q_{\mathcal{T}}$ that evaluates to 0 if and only if $\mathcal{T}$ evaluates to 1, preserving the flipped nature of truth values in the algebraic context.
+By subtracting all the polynomials of all leaves of $\mathcal{T}$ outputting true from $1$, we obtain a polynomial $q_{\mathcal{T}}$ that evaluates to $1$ if and only if $\mathcal{T}$ evaluates to 0, preserving the flipped nature of truth values in the algebraic context.
 \begin{equation}
-    q_{\mathcal{T}} := \sum_{\substack{\ell \in \mathrm{Leaves}(\mathcal{T}):\\ \mathrm{out}(\ell) = 1}} (1-q_\ell)
+    q_{\mathcal{T}} := \sum_{\substack{\ell \in \mathrm{Leaves}(\mathcal{T}):\\ \mathrm{out}(\ell) = 1}} (q_\ell)
 \end{equation}
 
-As in the Resolution case, we'll be interested in working with \textit{block-aware} measures. To do this, we define \textit{block-degree} as the degree measure analogous to block-width (recall that width gets translated to degree in algebraic systems).
+As in the Resolution case, we will be interested in working with \textit{block-aware} measures. To do this, we define \textit{block-degree} as the degree measure analogous to block-width (recall that width gets translated to degree in algebraic systems).
 
 \begin{definition}[Block-aware algebraic reduction]
     Let $r$ be a degree-$d$ algebraic reduction witnessing $\varphi \leq_d^{alg} \psi$. Suppose that the variables $y_1, \ldots y_s$ of $\psi$ are partitioned into blocks. We say that the reduction $r : \{0,1\}^n \to \{0,1\}^t$ is block-aware when:
@@ -423,7 +421,7 @@ As in the Resolution case, we'll be interested in working with \textit{block-awa
 \end{proposition}
 
 \begin{proof}
-    We directly address block-aware reductions. Let $f : \{0,1\}^n \to \{0,1\}^t$ be the block-aware reducing function from $\varphi$ to $\psi$ computed by depth-$d$ decision trees. For each block $B \subseteq [t]$ of $\psi$ we know that there is a depth-$d$ decision tree $\mathcal{T}_B$ computing $f_B(x) = (f_i(x))_{i \in [B]}$ simultaneously. By the above discussion, there is a polynomial $q_B$ that computes $f_B$ obtained from $\overline{\mathcal{T}_B}$, the decision tree obtained by inverting the output of each leaf. 
+    We directly address block-aware reductions. Let $f : \{0,1\}^n \to \{0,1\}^t$ be the block-aware reducing function from $\varphi$ to $\psi$ computed by depth-$d$ decision trees. For each block $B \subseteq [t]$ of $\psi$ we know that there is a depth-$d$ decision tree $\mathcal{T}_B$ computing $f_B(x) = (f_i(x))_{i \in [B]}$ simultaneously. By the above discussion, there is a polynomial $q_B$ that computes $f_B$.
 
     Now consider any axiom $C \in \psi$. Recall that the decision tree reduction guarantees that every clause in $C \circ f$ is a weakening of an axiom of $\varphi$. Thus, we may write $C \circ r = \bigwedge_{i \in I} (A_i \lor B_i)$, with $A_i \in \varphi$, where at most one clause $(A_i \lor B_i)$ evaluates to false. Therefore, the multilinearization of $\sum_{i \in I} p_{A_i} \cdot\, p_{B_i}$ computes $p_C \circ f$, where $p_{A_i}, p_{B_i}$ are the degree-$(d \cdot \mathrm{bdeg}(p_{C}))$ polynomials representations of $A_i, B_i$ and $\mathrm{bdeg}(p_C) = \mathrm{bwidth}(C)$.
 \end{proof}
@@ -442,9 +440,9 @@ Furthermore, the adaptation from decision tree reductions to algebraic reduction
     \end{equation}
     since $\pi$ is a refutation and $1$ contains no variables to compose with. Moreover, by definition of algebraic reduction, each polynomial $g_j \circ r$ can be derived from the axioms of $\varphi$ with degree $d \cdot \mathrm{bdeg}(g_i)$. Therefore, there is an equivalent NS-refutation for $\varphi$ of block-degree at most $d \cdot \mathrm{bdeg}(\pi)$.
 
-    Next, we prove the result for PC and PCR. We observe that the given argument doesn't rely on the presence of twin variable, hence it works for both proof systems. Let $\pi$ be a PC-refutation for $\psi$. We proceed by structural induction on $\pi$ to obtain a PC-refutation $\pi'$ of $\varphi$. In particular, whenever $p$ is derived in $\pi$, we'll derive $p \circ r$.
+    Next, we prove the result for PC and PCR. We observe that the given argument does not rely on the presence of twin variables, hence it works for both proof systems. Let $\pi$ be a PC-refutation for $\psi$. We proceed by structural induction on $\pi$ to obtain a PC-refutation $\pi'$ of $\varphi$. In particular, whenever $p$ is derived in $\pi$, we will derive $p \circ r$.
 
-    Again, for each axiom $g_i$ of $\psi$ we know that $g_i \circ r$ can be derived in Nullstellensatz with degree at most $d \cdot \mathrm{bdeg}(\pi)$, hence also in PC and PCR by simulation (the simulation can be made so that it preserves degree). For each polynomial $p+q$ derived by summing $p$ and $q$, by summing $p \circ r$ and $q \circ r$ we obtain $(p+q) \circ r$. For each $y_i p$ derived through multiplication, instead, we can derive $r_i (p \circ r) = y_i p \circ r$ from $p \circ r$ through at most $d$ multiplications and an polynomial number of sums (notice that degree is preserved, hence the number of sums doesn't matter). Since the two last operations blow up the block-degree of the original proof only by a factor of $d$ (due to the composition), we conclude that $\deg(\pi') \leq d \cdot \mathrm{bdeg}(\pi)$.
+    Again, for each axiom $g_i$ of $\psi$ we know that $g_i \circ r$ can be derived in Nullstellensatz with degree at most $d \cdot \mathrm{bdeg}(\pi)$, hence also in PC and PCR by simulation (the simulation can be made so that it preserves degree). For each polynomial $p+q$ derived by summing $p$ and $q$, by summing $p \circ r$ and $q \circ r$ we obtain $(p+q) \circ r$. For each $y_i p$ derived through multiplication, instead, we can derive $r_i (p \circ r) = y_i p \circ r$ from $p \circ r$ through at most $d$ multiplications and a polynomial number of sums (notice that degree is preserved, hence the number of sums does not matter). Since the two last operations blow up the block-degree of the original proof only by a factor of $d$ (due to the composition), we conclude that $\deg(\pi') \leq d \cdot \mathrm{bdeg}(\pi)$.
 \end{proof}
 
 After proving that the tools translate in the algebraic context in a natural way, the argument proceeds similarly as that of \Cref{sec:tradeoffs}. In particular, one can show that $\deg(\mathrm{rPHP}^{2m}_m) = \Omega(m / \log m)$ \cite{alg_nphard, raz_pc,rphp_2} to obtain a PCR block-degree lower bound of $\Omega\rbk{\frac{s}{n^2 \log^2(s/n)}}$ for $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is unsatisfiable. Notice that the bound is similar to the one obtained for block-width, up to a logarithmic factor. To get the final exponential size lower bound, we adapt to PCR the argument shown in \Cref{lem:tradeoff_bw_size}, inspired by \cite{pc_tradeoff,lauria_optim}.
@@ -459,20 +457,20 @@ After proving that the tools translate in the algebraic context in a natural way
     \begin{enumerate}[nosep]
         \item Initialize $\rho$ as the empty mapping;
         \item Pair all the first $s-1$ blocks into $(s-1)/2$ pairs;
-        \item For each pair $(B_i, B_{i+1})$, flip a balanced coin $c_i$. If $c_i = 0$ then set $\rho \gets \rho \cup \{\mathrm{enable}^{B_i} \mapsto 1, \overline{\mathrm{enable}^{B_i}} \mapsto 0\}$. Otherwise, set $\rho \gets \rho \cup \{\mathrm{enable}^{B_{i+1}} \mapsto 0, \overline{\mathrm{enable}^{B_{i+1}}} \mapsto 1\}$;
+        \item For each pair $(B_i, B_{i+1})$, flip a balanced coin $c_i$. If $c_i = 0$ then set $\rho \gets \rho \cup \{\mathrm{enable}^{B_i} \mapsto 1, \overline{\mathrm{enable}^{B_i}} \mapsto 0\}$. Otherwise, set $\rho \gets \rho \cup \{\mathrm{enable}^{B_{i+1}} \mapsto 1, \overline{\mathrm{enable}^{B_{i+1}}} \mapsto 0\}$;
         \item After disabling one block of each pair, we set all the remaining blocks as enabled. Moreover, for each disabled block we randomly assign all its remaining variables.
     \end{enumerate}
 
     The procedure has been adapted in order to manage the twin variable axioms: for each variable that gets disabled we have to enforce that its twin variable gets set to the opposite value. This is necessary in order to avoid contradicting the axioms $\{1-\mathrm{enable}^{B_i}-\overline{\mathrm{enable}^{B_i}}\}_{i \in [s]}$. Other than this change, the proof follows the same reasoning as the original one.
 
-    Let $\pi$ be a PCR refutation of $\mathrm{Ref}_s(\varphi)$. For each block $B_i$, with $i \in [s-1]$, consider any variable $\ell \in \{\mathrm{enabled}^{B_i}, \overline{\mathrm{enabled}^{B_i}}\}$. After applying the above procedure, the probability that both block $B_i$ is disabled and $\rho(\ell) = 0$ is $1/4$. Therefore, we know that $\Pr\limits_{\rho}[\rho(\ell) = 0] \geq 1/4$.
+    Let $\pi$ be a PCR refutation of $\mathrm{Ref}_s(\varphi)$. For each block $B_i$, with $i \in [s-1]$, consider any literal $\ell$ mentioning $B_i$. We argue that the same reasoning applied to the case of Resolution transfers naturally to PCR by swapping zeros and ones (i.e. preserving the truth value swap of the algebraic context). In particular, we have that $\Pr\limits_{\rho}[\rho(\ell) = 0] \geq 1/4$ always holds.
 
-    Consider now any monomial $m$ in $\pi$ of block-degree $w$ (value to be determined later). The probability that the whole monomial doesn't get killed in the restriction by setting any of its enable literals to 0 is bounded by $\Pr\limits_{\rho}[m_{\upharpoonright_{\rho}} \neq 0] \leq (3/4)^{w/2}$. Since $m$ mentions at least $w/2$ different pairs and since each pair is independent from the others we can conclude that:
+    Consider now any monomial $m$ in $\pi$ of block-degree $w$ (value to be determined later). The probability that the whole monomial does not get killed in the restriction by setting any of its literals to 0 is bounded by $\Pr\limits_{\rho}[m_{\upharpoonright_{\rho}} \neq 0] \leq (3/4)^{w/2}$. Therefore, we have that:
     \begin{equation}
         \Pr\limits_{\rho}[\exists m \in \pi \text{ with } \mathrm{bdeg}(m_{\upharpoonright_\rho}) \geq w] \leq \abs{\pi} \cdot \rbk{\frac{3}{4}}^{w/2}
     \end{equation}
     
-    By setting $w \leq (2(\log \abs{\pi} - \log (1-p)))(\log(4/3))$ with $0 < p < 1$, the above probability is lower than 1, thus there must be at least one partial assignment $\rho^*$ for which no monomial of block-degree greater than $w$ survives. The lemma follows by choosing $\pi$ as a refutation of $\mathrm{Ref}_s(\varphi)$ with the smallest size possible.
+    By setting $w \geq (2(\log \abs{\pi} - \log (1-p)))(\log(4/3))$ with $0 < p < 1$, the above probability is lower than 1, thus there must be at least one partial assignment $\rho^*$ for which no monomial of block-degree greater than $w$ survives. The lemma follows by choosing $\pi$ as a refutation of $\mathrm{Ref}_s(\varphi)$ with the smallest size possible.
 \end{proof}
 
 \begin{corollary}
@@ -489,7 +487,7 @@ After proving that the tools translate in the algebraic context in a natural way
     Follows for PCR from \Cref{cor:pcr_lower_bound} by using the length test (\Cref{prop:res_analyz}). For all $Q \leq_p \mathrm{PCR}$ it follows from downward closure of analyzability.
 \end{proof}
 
-Since $\mathrm{Res} \leq_p \mathrm{PCR}$, the above proposition gives a simplified proof of the non-automatability of Polynomial Calculus with Resolution under the $\mathsf{P} \neq \mathsf{NP}$ assumption. However, we remark that the same doesn't hold for Nullstellensatz and standard Polynomial Calculus since they don't $p$-simulate Resolution. This could be fixed by proving that Pudlák's upper bound also holds in NS and PC. In \cite{alg_nphard}, it is argued that this may be doable in PC using a clever argument, but it seems out of reach for NS. In fact, this is what forced the authors to use tree-like refutation statements: since both NS and PC $p$-simulate $\mathrm{Res}^*$, it follows as the most natural choice. 
+Since $\mathrm{Res} \leq_p \mathrm{PCR}$, the above result gives a simplified proof of the non-automatability of Polynomial Calculus with Resolution under the $\mathsf{P} \neq \mathsf{NP}$ assumption. However, we remark that the same does not hold for Nullstellensatz and standard Polynomial Calculus since they do not $p$-simulate Resolution. This could be fixed by proving that Pudlák's upper bound also holds in NS and PC. In \cite{alg_nphard}, it is argued that this may be doable in PC using a clever argument, but it seems out of reach for NS.
 
 \begin{corollary}
     Automating PCR is $\mathsf{NP}$-hard.
@@ -503,13 +501,24 @@ Therefore, an extraction algorithm for PCR needs a constructive version of the R
 
 Due to the tight relations between (weak) automatability and feasible interpolation (\Cref{thm:waut_fi}, \Cref{thm:fi_waut}, \Cref{thm:resk_fi}) and between automatability and analyzability (\Cref{prop:aut_an}), investigating whether analyzability and feasible interpolation are connected to each other follows as a natural question. Moreover, both analyzability and feasible interpolation are \textit{extraction properties}: the former extracts information from proofs of $\mathrm{Ref}_s(\varphi)$, while the latter can extract information from unsatisfiable split formulas $A(x,y) \land B(x,z)$. In this section, we investigate both directions.
 
-First of all, we start by observing that analyzability and feasible interpolation indeed seem to be related to each other. In particular, all proof systems that are known to be analyzable, i.e. those below $\mathrm{PCR}$ (\Cref{thm:pcr_an}), also have feasible interpolation \cite{pud_fi,hak_fi}. However, not all proof systems that posses feasible interpolation are known to be analyzable (Cutting Planes \cite{pud_fi}, Sum-of-Squares \cite{hak_fi}, $\ldots$). Nonetheless, all proof systems that are known to not be analyzable ($\mathrm{AC}^0$-Frege, Frege and Extended Frege \cite{pap, pap_2}) don't posses feasible interpolation \cite{kraj_fi,no_fis_int,fis_int_weak_aut}. Fo $\mathrm{Res}(k)$, instead neither analyzability nor feasible interpolation has been proven. This analysis raises to main questions: (i) does feasible interpolation imply analyzability? (ii) does the converse hold?
+First of all, we start by observing that analyzability and feasible interpolation indeed seem to be related to each other. In particular, all proof systems that are known to be analyzable, i.e. those below $\mathrm{PCR}$ (\Cref{thm:pcr_an}), also have feasible interpolation \cite{kraj_fi, hak_fi}. However, not all proof systems that possess feasible interpolation are known to be analyzable (Cutting Planes \cite{pud_fi}, Sum-of-Squares \cite{hak_fi}, $\ldots$). Nonetheless, all proof systems that are known to not be analyzable ($\mathrm{AC}^0$-Frege, Frege and Extended Frege \cite{pap, pap_2}) do not possess feasible interpolation \cite{kraj_fi,no_fis_int,fis_int_weak_aut}. For $\mathrm{Res}(k)$, neither analyzability nor feasible interpolation has been proven. This analysis raises two main questions: (i) does feasible interpolation imply analyzability? (ii) does the converse hold?
 
-The first implication is trivially either improbable or false. In fact, by \Cref{thm:waut_fi} and \Cref{prop:aut_an}, if the implication were to hold we would immediately obtain that Resolution is not weakly automatable, unless $\mathsf{P} = \mathsf{NP}$. Therefore, if it were to be true, proving that feasible interpolation unconditionally implies analyzability is at least as hard as proving that weakly automating Resolution is impossible under the $\mathsf{P} \neq \mathsf{NP}$ assumption. Of course, this doesn't rule out the possibility of the implication being unconditionally true, but it shows that is far from being provable with modern proof complexity results.
+Proving the first implication is trivially hard: by \Cref{thm:waut_fi} and \Cref{prop:aut_an}, if the implication were to hold we would immediately obtain that Resolution is not weakly automatable, unless $\mathsf{P} = \mathsf{NP}$. Therefore, if it were to be true, proving that feasible interpolation unconditionally implies analyzability is at least as hard as proving that weakly automating Resolution is impossible under the $\mathsf{P} \neq \mathsf{NP}$ assumption. Of course, this does not rule out the possibility of the implication being unconditionally true, but it shows that is far from being provable with modern proof complexity results.
 
 \begin{proposition}
     Under the $\mathsf{P} \neq \mathsf{NP}$ assumption, if every proof system $Q \geq \mathrm{Res}$ closed under restriction that has feasible interpolation is also analyzable then Resolution is not weakly automatable.
 \end{proposition}
+
+The answer to the second implication is also negative, but it requires more work. We start by defining a concept closely related to feasible interpolation and weak automatability: \textit{disjoint $\mathsf{NP}$-pairs}.
+
+\begin{definition}[Disjoint $\mathsf{NP}$-pair]
+    The pair $(U,V)$ is said to be a disjoint $\mathsf{NP}$-pair when $U,V \in \mathsf{NP}$ and $U \cap V = \varnothing$. The pair $(U,V)$ is said to be separable in time $t$ if there is an algorithm $\mathcal{S}$ with runtime $t$ such that $U \subseteq L(\mathcal{S})$ and $V \subseteq \overline{L(\mathcal{S})}$, where $L(\mathcal{S})$ is the set of inputs accepted by $\mathcal{S}$.
+\end{definition}
+
+When $t$ is a polynomial function, we say that the pair is simply separable. The concept of polynomial time reduction is extended to disjoint $\mathsf{NP}$-pairs in a natural way. We say that $(U,V)$ reduces to $(U',V')$, written as $(U,V) \leq_p (U', V')$, when there is a many-to-one reduction $f$ such that $f(U) \subseteq U'$ and $f(V) \subseteq V'$. 
+
+\textcite{pudlak_upper} originally proved his upper bound on refutation statements for satisfiable formulas while working with the canonical pair of Resolution. The \textit{canonical pair} of a proof system $Q$ \cite{razborov_np_pairs} is the disjoint $\mathsf{NP}$-pair $\mathrm{Can}(Q) := (\mathrm{SAT}^*, \mathrm{REF}^Q)$, where for any $(\varphi, 1^t)$, with $\varphi$ being a CNF formula, it holds that $(\varphi, 1^t) \in \mathrm{SAT}^*$ iff $\varphi$ is satisfiable, while $(\varphi, 1^t) \in \mathrm{REF}^Q$ iff $\mathrm{Ref}^Q_t(\varphi)$ is satisfiable. In particular, Pudlák showed that $\mathrm{Can}(\mathrm{Res})$ is \textit{symmetrical}, meaning that $(\mathrm{SAT}^*, \mathrm{REF}^\mathrm{Res}) \leq_p (\mathrm{REF}^{\mathrm{Res}}, \mathrm{SAT}^*)$. Furthermore, he also proved that separating the canonical pair of proof system is equivalent to weakly automating it.
+
 
 \begin{table}[t]
   \centering
@@ -520,44 +529,35 @@ The first implication is trivially either improbable or false. In fact, by \Cref
     Feas. Int. & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & ? & $\times$ & $\times$ & $\times$ \\
     \bottomrule
   \end{tabular}
-  \caption{Analyzability and feasible interpolation in common proof systems.}
-  \label{tab:propositional_truth_table}
+  \caption{Analyzability and feasible interpolation in common proof systems. All negative results are conditional.}
 \end{table}
 
-The answer to the second implication is also negative, but it requires more work. We start by defining a concept closely related with feasible interpolation and weak automatability: \textit{disjoint $\mathsf{NP}$-pairs}.
-
-\begin{definition}[Disjoint $\mathsf{NP}$-pair]
-    The pair $(U,V)$ is said to be a disjoint $\mathsf{NP}$-pair when $U,V \in \mathsf{NP}$ and $U \cap V = \varnothing$. The pair $(U,V)$ is said to be separable in time $t$ if there is an algorithm $\mathcal{S}$ with runtime $t$ such that $U \subseteq L(\mathcal{S})$ and $V \subseteq \overline{L(\mathcal{S})}$, where $L(\mathcal{S})$ is the set of inputs accepted by $\mathcal{S}$.
-\end{definition}
-
-When $t$ is a polynomial function, we say that the pair is simply separable. The concept of polynomial time reduction is extended to disjoint $\mathsf{NP}$-pairs in a natural way. We say that $(U,V)$ reduces to $(U',V')$, written as $(U,V) \leq_p (U', V')$, when there is a many-to-one reduction $f$ such that $f(U) \subseteq U'$ and $f(V) \subseteq V'$. 
-
-\textcite{pudlak_upper} originally proved his upper bound on refutation statements for satisfiable formulas while working with the canonical pair of Resolution. The \textit{canonical pair} of a proof system $Q$ \cite{razborov_np_pairs} is the disjoint $\mathsf{NP}$-pair $\mathrm{Can}(Q) := (\mathrm{SAT}^*, \mathrm{REF}^Q)$, where for any $(\varphi, 1^t)$, with $\varphi$ being a CNF formula, it holds that $(\varphi, 1^t) \in \mathrm{SAT}^*$ iff $\varphi$ is satisfiable, while $(\varphi, 1^t) \in \mathrm{REF}^Q$ iff $\mathrm{Ref}^Q_t(\varphi)$ is satisfiable. In particular, Pudlák showed that $\mathrm{Can}(\mathrm{Res})$ is \textit{symmetrical}, meaning that $(\mathrm{SAT}^*, \mathrm{REF}^\mathrm{Res}) \leq_p (\mathrm{REF}^{\mathrm{Res}}, \mathrm{SAT}^*)$. Furthermore, he also proved that separating the canonical pair of proof system is equivalent to weakly automating it.
 
 \begin{proposition}
     Let $Q$ be a proof system. Then, $\mathrm{Can}(Q)$ is separable if and only if $Q$ is weakly automatable.
 \end{proposition}
 
 \begin{proof}
-    Let $\mathcal{S}$ be an algorithm separating $\mathrm{Can}(Q)$. We define a new proof system $P$ as follows: $1^t$ is a $P$-refutation of $\varphi$ when $\mathcal{S}(\varphi, 1^t)$ rejects. Notice that $P$ is a valid Cook-Reckhow proof system: if $\varphi$ is satisfiable then $P$ has no refutation, while if $\varphi$ is unsatisfiable then $1^{\mathrm{Size}_Q(\varphi)}$ is a valid $P$-refutation. Moreover, $P$ can be easily automatized by testing $\mathcal{S}(\varphi, 1^{2^t})$ with $t = 1, 2, 4, \ldots$ until $t = \ceil{\log \mathrm{Size}_Q(\varphi)}$ is reached. The $p$-simulation of $Q$ from $P$ follows by definition.
+    Let $\mathcal{S}$ be an algorithm separating $\mathrm{Can}(Q)$. We define a new proof system $P$ as follows: $1^t$ is a $P$-refutation of $\varphi$ when $\mathcal{S}(\varphi, 1^t)$ rejects. Notice that $P$ is a valid Cook-Reckhow proof system: if $\varphi$ is satisfiable then $P$ has no refutation, while if $\varphi$ is unsatisfiable then $1^{\mathrm{Size}_Q(\varphi)}$ is a valid $P$-refutation. Moreover, $P$ can be easily automated by testing $\mathcal{S}(\varphi, 1^{2^t})$ with $t = 1, 2, 4, \ldots$ until $t = \ceil{\log \mathrm{size}_Q(\varphi)}$ is reached. The $p$-simulation of $Q$ from $P$ follows by definition.
 
     Vice versa, suppose that $Q$ is weakly automatable and let $\mathcal{A}$ be an algorithm automating $P \geq_p Q$. Then, we can build a separator $\mathcal{B}$ that on input $(\varphi, 1^t)$ runs $\mathcal{A}(\varphi)$ for at most $t$ steps, accepting if and only if the computation returned a refutation before the time bound.
 \end{proof}
 
 We shall use the above equivalence to prove that if analyzability were to imply feasible interpolation then every proof system would be weakly automatable. In particular, we prove something much stronger: under those assumptions, every $\mathsf{NP}$-pair becomes separable. In particular, starting from an arbitrary disjoint $\mathsf{NP}$-pair, we build an analyzable system that fails to interpolate unless the pair is separable. The idea is to give the system a single superpower that only works in a private corner of the variable space, making sure that refutation statements never enter that corner.
 
-Let $(U,V)$ be a disjoint $\mathsf{NP}$-pair. By the Cook-Levin theorem \cite{cook_sat,levin_fsat,arora_barak}, we know that there are two polynomial-time constructible CNFs $A_n(x,y)$ and $B_n(x,z)$, with $\abs{x}=n$, such that for every $a \in\{0,1\}^n$ it holds that $a \in U$ iff $A_n(a,\cdot)$ is satisfiable and $a \in V$ iff $B_n(a,\cdot)$ is satisfiable. Since $U\cap V=\emptyset$, the formula $F_n:=A_n\land B_n$ is a split unsatisfiable CNF formula and this also holds for every restriction ${F_n}_{\upharpoonright_\rho}$. We rewrite $F_n$ by separating its variables as a disjoint union of \textit{reserved} variables $z_{n,1},z_{n,2},\dots$ that no Ref formula ever uses and a set of \textit{non-reserved} variables, containing every other variable.
+Let $(U,V)$ be a disjoint $\mathsf{NP}$-pair. By the Cook-Levin theorem \cite{cook_sat,levin_fsat,arora_barak}, we know that there are two polynomial-time constructible CNFs $A_n(x,y)$ and $B_n(x,z)$, with $\abs{x}=n$, such that for every $a \in\{0,1\}^n$ it holds that $a \in U$ iff $A_n(a,\cdot)$ is satisfiable and $a \in V$ iff $B_n(a,\cdot)$ is satisfiable. Since $U\cap V=\emptyset$, the formula $F_n:=A_n\land B_n$ is a split unsatisfiable CNF formula and this also holds for every restriction ${F_n}_{\upharpoonright_\rho}$. of \textit{reserved} variables $r_{n,1}, \ldots, r_{n,k}$ that no refutational formula uses and write every $F_n$ over reserved variables only.
 
-We define a proof system $Q_{U,V}$ extending Resolution as follows. This construction follows the classical idea of tailoring a proof system to a disjoint $\mathsf{NP}$-pair \cite{razborov_np_pairs,beyersdorff_np_pairs,UP}. the new ingredient is a \textit{reserved alphabet}, which lets the system keep the Ref-hardness of Resolution while making the pair $(U, V)$ trivially refutable.
+We define a proof system $Q_{U,V}$ extending Resolution as follows. This construction follows the classical idea of tailoring a proof system to a disjoint $\mathsf{NP}$-pair \cite{razborov_np_pairs,beyersdorff_np_pairs,UP}. The new ingredient is a \textit{reserved alphabet}, which lets the system keep the Ref-hardness of Resolution while making the pair $(U, V)$ trivially refutable.
 
 A $(Q_{U,V})$-refutation is a sequence of clauses $\pi = (C_1, \ldots, C_t)$ where each clause is either an axiom or is obtained through an application of the resolution rule, the weakening rule or a new rule referred to as the \textit{$F$-rule}. Whenever the disjunction $C \lor D$ has been derived for every clause $C$ of some restriction of $F_n$ under some partial assignment $\rho$, the $F$-rule allows the system to derive $D$.
 \[\begin{array}{ccr}
     \dfrac{(C \lor D \quad \forall C \in {F_n}_{\upharpoonright_\rho})}{D} & \qquad & (F\text{-rule})
 \end{array}\]
 
-Each use of the $F$-rule is represented by a triple $(n,\rho,D)$, where $n$ is written in binary, $\rho$ is written as a string over $\{0,1,*\}^{|\mathrm{Vars}(F_n)|}$. We argue that this rule is sound: since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\bigwedge_{C}(C\lor D)\equiv({F_n}_{\upharpoonright_\rho})\lor D$ implies $D$. Checking an application of the $F$-rule means computing ${F_n}_{\upharpoonright_\rho}$ and looking up its clauses among earlier lines. The padding makes this polynomial in the proof length (recall that computing $F_n$ takes time $\mathrm{poly}(n)$), so $Q_{U,V}$ is a valid Cook-Reckhow system. Moreover, because $\rho$ has a fixed-length encoding, restricting each application does not change the size of its representation.
+Each use of the $F$-rule is represented by a triple $(n,\rho,D)$, where $n$ is written in binary, $\rho$ is written as a string over $\{0,1,*\}^{|\mathrm{Vars}(F_n)|}$. We argue that this rule is sound: since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\bigwedge_{C}(C\lor D)\equiv({F_n}_{\upharpoonright_\rho})\lor D$ implies $D$. Checking an application of the $F$-rule means computing ${F_n}_{\upharpoonright_\rho}$ and looking up its clauses among earlier lines. Since $\rho$ is encoded with $\abs{\mathrm{Vars}(F_n)} \geq n$ symbols, computing $F_n$ (time poly(n)) is polynomial in the length of the step, so $Q_{U,V}$ is a valid Cook-Reckhow system. Moreover, because $\rho$ has a fixed-length encoding, restricting each application does not change the size of its representation.
 
 \begin{lemma}
+    \label{lem:q_uv}
     For every disjoint $\mathsf{NP}$-pair $(U,V)$, the proof system $Q_{U,V}$:
     \begin{enumerate}[label={(\roman*)}, nosep]
         \item $p$-simulates Resolution;
@@ -569,22 +569,118 @@ Each use of the $F$-rule is represented by a triple $(n,\rho,D)$, where $n$ is w
 \begin{proof}
     $p$-simulation follows by definition of $Q_{U,V}$ since it has the Resolution rule and the weakening rule. Consider an application of the $F$-rule represented by $(n,\rho,D)$ and a restriction $\tau$. Let $\tau'$ be the sub-assignment of $\tau$ on the variables of $F_n$ that $\rho$ leaves free. For every $C\in {F_n}_{\upharpoonright_\rho}$, the variables of $C$ are among those free variables, thus $C_{\upharpoonright_\tau}=C_{\upharpoonright_{\tau'}}$. Hence, the restricted premises $(C \lor D)_{\upharpoonright_\tau}$ are exactly the clauses $C' \lor D _{\upharpoonright_\tau}$ for $C'\in {F_n}_{\upharpoonright_(\rho\cup\tau')}$, together with some premises that became true.
     
-    Notice that this is a legal application of the $F$-rule because the premises indexed by clauses satisfied by $\tau'$ are exactly those dropped from ${F_n}_{\upharpoonright_(\rho\cup\tau')}$. In particular, notice that $\tau$ may falsify a whole clause $C$ of ${F_n}_{\upharpoonright_(\rho\cup\tau')}$, meaning that $\bot \in {F_n}_{\upharpoonright_(\rho\cup\tau')}$, thus the corresponding premise is $D_{\upharpoonright_\tau}$ itself and the step is a repetition. Moreover, this step is represented by $(n,\rho\cup\tau',D_{\upharpoonright_\tau})$, which has the same fixed length thus the size doesn't grow. If $\tau$ satisfies $D$, the conclusion is true and the step disappears. This concludes that the system is closed under restrictions.
+    Notice that this is a legal application of the $F$-rule because the premises indexed by clauses satisfied by $\tau'$ are exactly those dropped from ${F_n}_{\upharpoonright_(\rho\cup\tau')}$. In particular, notice that $\tau$ may falsify a whole clause $C$ of ${F_n}_{\upharpoonright_(\rho\cup\tau')}$, meaning that $\bot \in {F_n}_{\upharpoonright_(\rho\cup\tau')}$, thus the corresponding premise is $D_{\upharpoonright_\tau}$ itself and the step is a repetition. Moreover, this step is represented by $(n,\rho\cup\tau',D_{\upharpoonright_\tau})$, which has the same fixed length thus the size does not grow. If $\tau$ satisfies $D$, the conclusion is true and the step disappears. This concludes that the system is closed under restrictions.
 
-    We now prove the Ref-hardness of $Q_{U,V}$. Let $\pi$ be a $Q_{U,V}$-refutation of $\mathrm{Ref}_s(\varphi)$ and let $\beta$ set every reserved variable occurring in $\pi$ to $0$. Consider any application of the $F$-rule in $\pi$. All its premises $C\lor D$ are lines of $\pi$, hence every variable of ${F_n}_{\upharpoonright_\rho}$ occurs in $\pi$ and is assigned by $\beta$. Since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\beta$ must falsify at least one clause $C_0$. We notice that this is were the reserved variables are required: to collapse an application of the $F$-rule we must assign the variables of ${F_n}_{\upharpoonright_\rho}$. If these some variables of $\mathrm{Ref}_s(\varphi)$ were to be part of the reserved variables, $\beta$ would also restrict $\mathrm{Ref}_s(\varphi)$ itself.   
+    We now prove the Ref-hardness of $Q_{U,V}$. Let $\pi$ be a $Q_{U,V}$-refutation of $\mathrm{Ref}_s(\varphi)$ and let $\beta$ set every reserved variable occurring in $\pi$ to $0$. Consider any application of the $F$-rule in $\pi$. All its premises $C\lor D$ are lines of $\pi$, hence every variable of ${F_n}_{\upharpoonright_\rho}$ occurs in $\pi$ and is assigned by $\beta$. Since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\beta$ must falsify at least one clause $C_0$. We notice that this is where the reserved variables are required: to collapse an application of the $F$-rule we must assign the variables of ${F_n}_{\upharpoonright_\rho}$. If some of the variables of $\mathrm{Ref}_s(\varphi)$ were to be part of the reserved set, $\beta$ would also restrict $\mathrm{Ref}_s(\varphi)$ itself.   
     
-    Now, the premise $C_0\lor D$ restricts to $D_{\upharpoonright_\beta}$, which is exactly the restricted conclusion, so the step becomes a repetition. Moreover, the axioms of $\mathrm{Ref}_s(\varphi)$ contain no reserved variables and are untouched. Therefore $\pi_{\upharpoonright_\beta}$ is a standard Resolution refutation of $\mathrm{Ref}_s(\varphi)$ that never gains literals and where each collapsed $F$-step can be deleted, because its conclusion $D_{\upharpoonright_\beta}$ already occurs as the premise $C_0 \lor D_{\upharpoonright_\beta} = D_{\upharpoonright_\beta}$. Therefore, we get that $\mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \leq \abs{\pi}$. By $(3,\varepsilon)$-Ref-hardness of Resolution, we conclude that $Q_{U,V}$ must also be $(3,\varepsilon)$-hard.
+    Now, the premise $C_0\lor D$ restricts to $D_{\upharpoonright_\beta}$, which is exactly the restricted conclusion, so the step becomes a repetition. Moreover, the axioms of $\mathrm{Ref}_s(\varphi)$ contain no reserved variables, thus they are untouched. Therefore $\pi_{\upharpoonright_\beta}$ is a standard Resolution refutation of $\mathrm{Ref}_s(\varphi)$ that never gains literals and where each collapsed $F$-step can be deleted, because its conclusion $D_{\upharpoonright_\beta}$ already occurs as the premise $C_0 \lor D_{\upharpoonright_\beta} = D_{\upharpoonright_\beta}$. Therefore, we get that $\mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \leq \abs{\pi}$. By $(3,\varepsilon)$-Ref-hardness of Resolution, we conclude that $Q_{U,V}$ must also be $(3,\varepsilon)$-Ref-hard.
 \end{proof}
+
+
+
+\begin{figure}[t]
+    \centering
+    \resizebox{1\textwidth}{!}{
+        \begin{tikzpicture}[
+            font=\small,
+            cl/.style={draw, rounded corners=2pt, inner sep=4pt, minimum height=0.75cm, fill=white},
+            hl/.style={cl, draw=red!70!black, fill=red!8, very thick},
+            dim/.style={cl, draw=gray!60, text=gray},
+            arr/.style={-{Latex[length=2mm]}, thick}
+        ]
+            % ---------- before
+            \node[font=\bfseries] at (0,2.3) {In $\pi$};
+            \node[cl] (p1) at (-3,1) {$C_1 \vee D$};
+            \node[cl] (p2) at (-1,1) {$C_2 \vee D$};
+            \node at (0.6,1) {$\cdots$};
+            \node[cl] (p3) at (2.4,1) {$C_r \vee D$};
+            \node[cl] (c)  at (0,-0.8) {$D$};
+            \foreach \p in {p1,p2,p3} \draw[arr] (\p) -- (c);
+            \node[font=\footnotesize, below=0.15cm of c, align=center] {$F$-rule\\$\{C_1,\dots,C_r\}=F_n{\restriction}_\rho$};
+            
+            % ---------- after
+            \begin{scope}[xshift=10cm]
+            \node[font=\bfseries] at (0,2.3) {In $\pi{\restriction}_\beta$};
+            \node[dim] (q1) at (-3,1) {$1$};
+            \node[hl]  (q2) at (-1,1) {$D{\restriction}_\beta$};
+            \node at (0.6,1) {$\cdots$};
+            \node[dim] (q3) at (2.4,1) {$1$};
+            \node[cl] (d)  at (0,-0.8) {$D{\restriction}_\beta$};
+            \draw[arr, red!70!black, very thick] (q2) -- (d);
+            \draw[arr, gray!50, dashed] (q1) -- (d);
+            \draw[arr, gray!50, dashed] (q3) -- (d);
+            \node[font=\footnotesize, below=0.15cm of d, align=center] {repetition of a premise:\\delete the step};
+            \end{scope}
+            
+            % ---------- middle arrow
+            \draw[-{Latex[length=3mm]}, line width=1.4pt] (4.3,0.1) -- node[above, font=\footnotesize, align=center]{restrict by $\beta$\\(reserved vars $\mapsto 0$)} (5.9,0.1);
+            
+            % ---------- explanation
+            \node[align=center, font=\footnotesize, text width=15cm] at (5,-2.3)
+            {};
+        \end{tikzpicture}
+    }
+
+    \caption{The idea behind \Cref{lem:q_uv}. $F_n{\restriction}_\rho$ is unsatisfiable and all its variables are reserved, so $\beta$ falsifies some clause. That premise becomes $D{\restriction}_\beta$, while the other premises become true. Axioms of $\mathrm{Ref}_s(\varphi)$ use only ordinary variables, so $\mathrm{Ref}_s(\varphi){\restriction}_\beta=\mathrm{Ref}_s(\varphi)$.}
+    \label{fig:q_uv}
+\end{figure}
 
 \begin{theorem}
     \label{thm:an_no_fis_int}
-    There is at least one proof system that $p$-simulates Resolution, is closed under restrictions and is analyzable but doesn't possess feasible interpolation, unless every disjoint $\mathsf{NP}$-pair is separable.
+    There is at least one proof system that $p$-simulates Resolution, is closed under restrictions and is analyzable but does not possess feasible interpolation, unless every disjoint $\mathsf{NP}$-pair is separable.
 \end{theorem}
 
 \begin{proof}
-    Assume that the premise is false for every proof system and fix a disjoint $\mathsf{NP}$-pair $(U,V)$. Then, by the previous lemma, $Q_{U,V}$ must have an interpolating algorithm $\mathcal{I}$. Consider the restriction $\rho=\emptyset$ and the clause $D=\bot$. The $F$-rule can be used to derive $\bot$ directly from the clauses of $A_n \land B_n$, obtaining a refutation $\pi_n$ of size $O(|F_n|)$, constructible in polynomial time. By definition, $\mathcal{I}(\pi_n,a)$ must output $1$ when $a\in U$ (because then $A_n(a,\cdot)$ is satisfiable and $0$ is forbidden) and $0$ when $a\in V$. This concludes that $\mathcal{I}$ successfully separates $(U,V)$ in polynomial time.
+    Assume that the premise is false and fix a disjoint $\mathsf{NP}$-pair $(U,V)$. Then, by the previous lemma, $Q_{U,V}$ must have an interpolating algorithm $\mathcal{I}$. Consider the restriction $\rho=\emptyset$ and the clause $D=\bot$. The $F$-rule can be used to derive $\bot$ in polynomial time directly from the clauses of $A_n \land B_n$, obtaining a refutation $\pi_n$ of size $O(|F_n|)$, constructible in polynomial time. By definition, $\mathcal{I}(\pi_n,a)$ must output $1$ when $a\in U$ (because then $A_n(a,\cdot)$ is satisfiable and $0$ is forbidden) and $0$ when $a\in V$. This concludes that $\mathcal{I}$ successfully separates $(U,V)$.
 \end{proof}
+
+\begin{figure}[t]
+\centering
+    \resizebox{1\textwidth}{!}{
+        \begin{tikzpicture}[
+            font=\small,
+            box/.style={draw, rounded corners=3pt, align=center, inner sep=5pt, minimum width=4.6cm, fill=white},
+            arr/.style={-{Latex[length=2.2mm]}, thick},
+            lab/.style={font=\footnotesize\itshape, align=center}
+            ]
+            % ---- left column: ordinary alphabet
+            \node[box] (ref) {$\pi : Q_{U,V} \vdash \neg\mathrm{Ref}_s(\varphi)$\\[2pt]
+            {\footnotesize axioms on \emph{ordinary} variables}};
+            \node[box, below=1.1cm of ref] (res) {$\pi{\restriction}_\beta$ : Resolution refutation\\[2pt]
+            of $\mathrm{Ref}_s(\varphi)$, \ $|\pi{\restriction}_\beta|\le|\pi|$};
+            \node[box, below=1.1cm of res] (hard) {$Q_{U,V}$ is $(3,\varepsilon)$-Ref-hard\\[2pt]
+            $\Rightarrow$ \ \textbf{analyzable}};
+            \draw[arr] (ref) -- node[right, lab]{$\beta$: reserved vars $\mapsto 0$\\every $F$-step collapses} (res);
+            \draw[arr] (res) -- node[right, lab]{Resolution is\\Ref-hard} (hard);
+            
+            % ---- right column: reserved alphabet
+            \node[box, right=4.3cm of ref] (F) {$F_n = A_n(x,y)\wedge B_n(x,z)$\\[2pt]
+            {\footnotesize on \emph{reserved} variables}};
+            \node[box, below=1.1cm of F] (one) {$\pi_n$ : one $F$-step $(k,\emptyset,\bot)$\\[2pt]
+            size $O(|F_n|)$};
+            \node[box, below=1.1cm of one] (sep) {interpolant separates $(U,V)$\\[2pt]
+            $\Rightarrow$ \ \textbf{no feasible interpolation}\\
+            {\footnotesize unless $(U,V)$ is separable}};
+            \draw[arr] (F) -- node[right, lab]{$F$-rule with\\$\rho=\emptyset$, $D=\bot$} (one);
+            \draw[arr] (one) -- node[right, lab]{feasible interpolation\\on input $a\in\{0,1\}^k$} (sep);
+            
+            % ---- background regions
+            \begin{scope}[on background layer]
+            \node[fit=(ref)(res)(hard), inner xsep=28pt, inner ysep=10pt, rounded corners=6pt, fill=blue!6, draw=blue!40,
+                label={[font=\bfseries\small, text=blue!60!black]above:Ordinary alphabet}] (L) {};
+            \node[fit=(F)(one)(sep), inner xsep=28pt, inner ysep=10pt, rounded corners=6pt, fill=orange!8, draw=orange!50,
+                label={[font=\bfseries\small, text=orange!60!black]above:Reserved alphabet}] (R) {};
+            \end{scope}
+            
+            % ---- separation line
+            \draw[dashed, gray, thick] ($(L.north east)!0.5!(R.north west)+(0,0.5)$) -- ($(L.south east)!0.5!(R.south west)-(0,0.2)$)
+            node[below, font=\footnotesize, text=gray, align=center]{no shared variables};
+        \end{tikzpicture}
+    }
+
+    \caption{Summary of \Cref{lem:q_uv} and \Cref{thm:an_no_fis_int}.}
+\end{figure}
 
 To further justify the negativeness of the result, we discuss how unlikely the premise of \Cref{thm:an_no_fis_int} is outside of the automatability context. First of all, we observe that the separability of every disjoint $\mathsf{NP}$-pair trivially implies that $\mathsf{P}=\mathsf{NP}\cap\mathsf{coNP}$: for any $L\in\mathsf{NP}\cap\mathsf{coNP}$ a separator for $(L, \overline{L})$ solves $L$ in polynomial time. More interestingly, the general separability property implies that $\mathsf{P}=\mathsf{UP}$, where $\mathsf{UP}$ is the class of $\mathsf{NP}$ languages that have exactly one witness per input. Notice that the existence of \textit{one-way permutations} (conjectured to be true) implies that $\mathsf{P}\neq\mathsf{UP}$ \cite{UP}. We use an argument inspired by \textcite{UP, UP_2}. Given $L \in \mathsf{UP}$, where $x\in L$ has a unique witness $w_x$, consider the disjoint $\mathsf{NP}$-pair $(L_{\leq y}, L_{> y})$, where $L_{\leq y} := \{(x,y):x\in L,\ w_x\le y\}$ and $L_{> y} := \{(x,y):x\in L,\ w_x > y\}$. A separator $\mathcal{S}$ for this pair can binary search over $y$ to find a candidate witness, which is then verified.
 
-This concludes that analyzability doesn't unconditionally imply feasible interpolation for systems above Resolution, unless (i) every disjoint $\mathsf{NP}$-pair is separable, (ii) every proof system is weakly automatable, (iii) $\mathsf{P} = \mathsf{NP} \cap \mathsf{coNP}$, (iv) $\mathsf{P} = \mathsf{UP}$, (v) one-way permutations don't exist.
+This concludes that analyzability does not unconditionally imply feasible interpolation for systems above Resolution, unless (i) every disjoint $\mathsf{NP}$-pair is separable, (ii) every proof system is weakly automatable, (iii) $\mathsf{P} = \mathsf{NP} \cap \mathsf{coNP}$, (iv) $\mathsf{P} = \mathsf{UP}$, (v) one-way permutations do not exist.

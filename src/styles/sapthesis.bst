@@ -139,7 +139,7 @@ FUNCTION {output.nonnull.original}
 % C:\Program Files\MiKTeX 2.8\scripts\urlbst\perl\urlbst.pl...
 % The following three functions are for handling inlinelink.  They wrap
 % a block of text which is potentially output with write$ by multiple
-% other functions, so we don't know the content a priori.
+% other functions, so we do not know the content a priori.
 % They communicate between each other using the variables makeinlinelink
 % (which is true if a link should be made), and closeinlinelink (which holds
 % the string which should close any current link.  They can be called
@@ -187,7 +187,7 @@ FUNCTION {output.nonnull}
     'skip$
   if$
   bracket.state outside.brackets =
-    { % We're outside all brackets --- this is the normal situation.
+    { % We are outside all brackets --- this is the normal situation.
       % Write out what's currently at the top of the stack, using the
       % original output.nonnull function.
       s
@@ -766,7 +766,7 @@ FUNCTION {format.btitle}
 FUNCTION {either.or.check}
 { empty$
     'pop$
-    { "can't use both " swap$ * " fields in " * cite$ * warning$ }
+    { "ca not use both " swap$ * " fields in " * cite$ * warning$ }
   if$
 }
 FUNCTION {format.bvolume}
@@ -1127,7 +1127,7 @@ FUNCTION {make.href}
   if$
 }
 
-% If inlinelinks is true, then format.url should be a no-op, since it's
+% If inlinelinks is true, then format.url should be a no-op, since it is
 % (a) redundant, and (b) could end up as a link-within-a-link.
 FUNCTION {format.url}
 { inlinelinks #1 = url empty$ or
@@ -1162,7 +1162,7 @@ FUNCTION {format.pubmed}
   if$
 }
 
-% Output a URL.  We can't use the more normal idiom (something like
+% Output a URL.  We ca not use the more normal idiom (something like
 % `format.url output'), because the `inbrackets' within
 % format.lastchecked applies to everything between calls to `output',
 % so that `format.url format.lastchecked * output' ends up with both
@@ -1210,7 +1210,7 @@ FUNCTION {output.bibitem}
 % Wrapper for fin.entry.original
 FUNCTION {fin.entry}
 { output.web.refs  % urlbst
-  makeinlinelink       % ooops, it appears we didn't have a title for inlinelink
+  makeinlinelink       % ooops, it appears we did not have a title for inlinelink
     { setup.inlinelink % add some artificial link text here, as a fallback
       "[link]" output.nonnull }
     'skip$
@@ -1241,7 +1241,7 @@ FUNCTION {webpage}
     }
     { editor empty$
         { format.authors output.nonnull }
-        { "can't use both author and editor fields in " cite$ * warning$ }
+        { "ca not use both author and editor fields in " cite$ * warning$ }
       if$
     }
   if$
@@ -1254,7 +1254,7 @@ FUNCTION {webpage}
     'skip$
     { format.date "year" output.check }
   if$
-  % We don't need to output the URL details ('lastchecked' and 'url'),
+  % We do not need to output the URL details ('lastchecked' and 'url'),
   % because fin.entry does that for us, using output.web.refs.  The only
   % reason we would want to put them here is if we were to decide that
   % they should go in front of the rather miscellaneous information in 'note'.

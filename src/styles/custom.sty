@@ -14,20 +14,25 @@
 \newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
 
 % ================== CUSTOM ENVIRONMENTS ==================
-
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{lemma}{Lemma}[chapter]
-\newtheorem{proposition}{Proposition}[chapter]
-\newtheorem{corollary}{Corollary}[chapter]
-\newtheorem{conjecture}{Conjecture}[chapter]
-\newtheorem{claim}{Claim}[chapter]
-\newtheorem{observation}{Observation}[chapter]
 
-\newtheorem{definition}{Definition}[chapter]
-\newtheorem{example}{Example}[chapter]
-\theoremstyle{remark}
-\newtheorem{remark}{Remark}[chapter]
+\newcommand{\newthm}[3]{% {env}{Singular}{Plural}
+\newaliascnt{#1}{theorem}%
+\newtheorem{#1}[#1]{#2}%
+\aliascntresetthe{#1}%
+\crefname{#1}{#2}{#3}%
+}
+\crefname{theorem}{Theorem}{Theorems}
+\newthm{lemma}{Lemma}{Lemmas}
+\newthm{proposition}{Proposition}{Propositions}
+\newthm{corollary}{Corollary}{Corollaries}
+\newthm{claim}{Claim}{Claims}
+\newthm{definition}{Definition}{Definitions}
+\newthm{conjecture}{Conjecture}{Conjectures}
+\newthm{observation}{Observation}{Observations}
+\newthm{example}{Example}{Examples}
+\newthm{remark}{Remark}{Remarks}
 
 % ================== CUSTOM MACROS ==================
 
@@ -71,3 +76,30 @@
 \DeclareMathOperator{\LenOp}{len}
 \DeclareMathOperator{\wdt}{w}
 \DeclareMathOperator{\dg}{deg}
+
+% ================== CUSTOM ALGORITHMS ==================
+\usepackage[Algorithm]{algorithm}
+\usepackage[noEnd=true]{algpseudocodex}
+
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+   \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+       {\raggedright\textbf{\fname@algorithm~\thealgorithm} ##2\par}%
+       \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+       \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+       \fi
+       \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+   \end{center}
+  }
+\makeatother
+
+\usetikzlibrary{positioning,arrows.meta,calc,fit,backgrounds,decorations.text}

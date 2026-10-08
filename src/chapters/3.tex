@@ -2,7 +2,7 @@
 
 \section{The quest for finding proofs efficiently}
 
-We discussed how under the $\mathsf{NP} \neq \mathsf{coNP}$ hypothesis there cannot be a polynomially bounded propositional proof system, meaning that for each proof system there will always be a formula that requires proofs of large size. Therefore, it is impossible to construct proof search algorithms that are efficient in the formula size. However, we saw in the introduction how topics such as ATP are too important to go on unsolved, even approximately.
+We discussed how under the $\mathsf{NP} \neq \mathsf{coNP}$ hypothesis there cannot be a polynomially bounded propositional proof system, meaning that for each proof system there will always be a formula that requires proofs of large size. Therefore, it is impossible to construct proof search algorithms that are efficient in the formula size. However, we saw in the introduction how topics such as ATP are too important to give up, even approximately.
 
 In the attempt of finding a good-enough solution, researchers tried to relax the problem, asking for a proof search algorithm that returns proofs with a size close-enough to the size of the shortest proof \cite{psp_res, res_wphard}. In modern times, this concept is referred to as \textit{automatability}, first defined by \cite{no_fis_int}.
 
@@ -10,7 +10,7 @@ In the attempt of finding a good-enough solution, researchers tried to relax the
     Let $Q$ be a proof system. Given a function $t : \N \to \N$, we say that $Q$ is automatable in time $t$ if there is an algorithm $\mathcal{A}$ that for all input formulas $\varphi$ outputs a proof $\pi : Q \vdash \varphi$  in time $t(\abs{\varphi} + \mathrm{size}_Q(\varphi))$ when $\varphi$ is a tautology and $\bot$ otherwise.
 \end{definition}
 
-We're particularly interested in polynomial time automatability: when this holds, the proof returned by the automating algorithm is of size at most $(\abs{\varphi} + \mathrm{size}_Q(\varphi))^c$ for some $c > 0$ due to the upper bound on the running time. For this reason, we often simply say that $Q$ is automatable when $t$ is a polynomial function. We start by stating some simple results about automatability.
+We are particularly interested in polynomial time automatability: when this holds, the proof returned by the automating algorithm is of size at most $(\abs{\varphi} + \mathrm{size}_Q(\varphi))^c$ for some $c > 0$ due to the upper bound on the running time. For this reason, we often simply say that $Q$ is automatable when $t$ is a polynomial function. We start by stating some simple results about automatability.
 
 \begin{proposition}
     \label{prop:auto_p_np}
@@ -23,7 +23,7 @@ We're particularly interested in polynomial time automatability: when this holds
 \end{proposition}
 
 \begin{proof}
-    We prove the statement for the $\mathsf{NP} \subseteq \mathsf{P}$ case; the others follow in a similar way. Consider the language $\mathsf{PSP}_Q = \{(\varphi, 1^t) \mid \text{ there is a $Q$-proof for $\varphi$ of size at most $t$}\}$, corresponding to a formalization of the Proof Size Problem. It's easy to see that $\mathrm{PSP}_Q$ is in $\mathsf{NP}$, therefore also in $\mathsf{P}$ due to the assumption. We construct the following algorithm $\mathcal{A}$:
+    We prove the statement for the $\mathsf{NP} \subseteq \mathsf{P}$ case; the others follow in a similar way. Consider the language $\mathsf{PSP}_Q = \{(\varphi, 1^t) \mid \text{ there is a $Q$-proof for $\varphi$ of size at most $t$}\}$, corresponding to a formalization of the Proof Size Problem. It is easy to see that $\mathrm{PSP}_Q$ is in $\mathsf{NP}$, therefore also in $\mathsf{P}$ due to the assumption. We construct the following algorithm $\mathcal{A}$:
     \begin{enumerate}[nosep]
         \item On input $\varphi$, repeat the following for $i = 1, 2, 3, \ldots$:
         \begin{enumerate}[label={\arabic*}, start=2]
@@ -36,9 +36,9 @@ We're particularly interested in polynomial time automatability: when this holds
     The procedure goes on for at most $k = O(\log(\mathrm{size}_Q(\varphi)))$ iterations, each costing polynomial time to check membership in $\mathsf{PSP}_Q$. Once a valid size is found, the bit-by-bit proof search requires $O(2^k \cdot (\abs{\varphi} + 2^k)^d)$, concluding that $\mathcal{A}$ automates $Q$ in polynomial time.
 \end{proof}
 
-In this chapter we'll focus mostly on how all common proof systems yield negative results for automatability, implying that a system with positive results would likely. In particular, the above proposition implies that non-automatability results are unlikely to be unconditional since they would provide a proof that $\mathsf{NP}$ differs from $\mathsf{P}, \mathsf{QP}$ or $\mathsf{SUBEXP}$, which are all considered to be very hard to prove through modern computational complexity results. 
+In this chapter we will focus mostly on how all common proof systems yield negative results for automatability, implying that a system with positive results would likely be more complex. In particular, the above proposition implies that non-automatability results are unlikely to be unconditional since they would provide a proof that $\mathsf{NP}$ differs from $\mathsf{P}, \mathsf{QP}$ or $\mathsf{SUBEXP}$, which are all considered to be very hard to prove through modern computational complexity results. 
 
-Nonetheless, some very weak positive results are known. For instance, the Resolution size-width tradeoff proven by \textcite{bs_wigder} can be used to get an algorithm that automates Resolution in time $n^{O(\sqrt{n \log s})}$ via bounded-width search. However, this time bound is still exponential and is only slightly better than the trivial one obtainable through a brute force algorithm. A similar approach can be used to obtain an algorithm that automates Polynomial Calculus in time $n^{O(d)}$, where $d$ is the minimum proof degree \cite{separation_pc_ns,pc_wphard}. A less weak positive can be achieved in tree-like Resolution. In particular, this proof system has a quasi-polynomial time automating algorithm. We defer the discussion on this result to \Cref{sec:auto_treelike}.
+Nonetheless, some very weak positive results are known. For instance, the Resolution size-width tradeoff proven by \textcite{bs_wigder} can be used to get an algorithm that automates Resolution in time $n^{O(\sqrt{n \log s})}$ via bounded-width search. However, this time bound is still exponential and is only slightly better than the trivial one obtainable through a brute force algorithm. A similar approach can be used to obtain an algorithm that automates Polynomial Calculus in time $n^{O(d)}$, where $d$ is the minimum proof degree \cite{separation_pc_ns,pc_wphard}. A stronger positive result can be achieved in tree-like Resolution. In particular, this proof system has a quasi-polynomial time automating algorithm. We defer the discussion on this result to \Cref{sec:auto_treelike}.
 
 Another concept of our interest will be \textit{weak automatability} \cite{resk_weakauto, pudlak_upper}, where the proof is allowed to be from any other proof system $P$, but the size bound is still that of the original system.
 
@@ -56,7 +56,7 @@ Another concept of our interest will be \textit{weak automatability} \cite{resk_
 
 The above proposition tells us that when a proof system is not weakly automatable there is no proof system above it that is automatable, giving us a powerful tool for proving non-automatability results. When restricted to polynomial time, the converse of the above implication also holds \cite{resk_weakauto,pudlak_upper}. That is, a proof system is weakly automatable in polynomial time if and only if there is another proof system that $p$-simulates it and is automatable in polynomial time.
 
-This implies that proving the (conditional) non weakly-automatability of Resolution is the holy-grail of automatability theory: since almost any reasonable proof system can $p$-simulate Resolution due to it being weak enough, this would prove that no such proof system is automatable. We stress that the same doesn't hold for non automatability: Resolution may not be automatable, but a stronger system may be. 
+This implies that proving the (conditional) non weakly automatability of Resolution is the holy grail of automatability theory: since almost any reasonable proof system can $p$-simulate Resolution due to it being weak enough, this would prove that no such proof system is automatable. We stress that the same does not hold for non automatability: Resolution may not be automatable, but a stronger system may be. 
 
 \section{Quasi-automatability of Tree-like Resolution}
 \label{sec:auto_treelike}
@@ -78,7 +78,7 @@ As briefly mentioned before, tree-like Resolution has a non-trivial quasi-polyno
 \end{proposition}
 
 \begin{proof}
-    Let $\pi'$ be a tree-like refutation of $\varphi_{\upharpoonright_{\ell = 0}}$ of size $s$. W.l.o.g. we assume that $\pi'$ never uses the weakening step. We'll construct derivation $\pi$ of $\ell$ from $\varphi$ by mapping each clause of $\pi'$ to a clause of $\pi$.
+    Let $\pi'$ be a tree-like refutation of $\varphi_{\upharpoonright_{\ell = 0}}$ of size $s$. Without loss of generality, we assume that $\pi'$ never uses the weakening step. We will construct derivation $\pi$ of $\ell$ from $\varphi$ by mapping each clause of $\pi'$ to a clause of $\pi$.
 
     Each restricted axiom $C_{\upharpoonright_{\ell = 0}}$ of $\varphi_{\upharpoonright_{\ell = 0}}$ in $\pi'$ gets substituted with its corresponding axiom, which is either equal to $C_{\upharpoonright_{\ell = 0}}$ itself or equal to $C_{\upharpoonright_{\ell = 0}} \cup {\ell}$. Consider the last two clauses $A' := x_i$ and $B' := \lnot x_i$ that get resolved into $\bot$ in $\pi'$. The structure of $\pi$ copies exactly that of $\pi'$ up to these last two clauses, meaning that the same resolutions steps are applied along the two proofs. In particular, let $A$ and $B$ be the two clauses in $\pi$ obtained by applying the process up to $A'$ and $B'$. As a byproduct of the procedure, $A$ (resp. $B$) may either be equal to $A'$ or $A' \lor \ell$ (resp. $B'$ or $B' \lor \ell$). In the first case, we apply a weakening step to get $\widehat{A} := A' \lor \ell$ (resp. $\widehat{B} := B' \lor \ell$). In the second case, instead, we simply set $\widehat{A} := A$ (resp. $\widehat{B} := B$). Finally, we apply a resolution step between $\widehat{A}$ and $\widehat{B}$ over the variable $x_i$, which is guaranteed to yield a root node containing only $\ell$.
 \end{proof}
@@ -89,7 +89,7 @@ The idea behind the algorithm is to use these two propositions to apply a smart 
     \caption{An algorithm $\mathcal{A}$ that finds $\mathrm{Res}^*$ refutations}
     \label{algo:auto_treeres}
     \begin{algorithmic}
-        \Require A formula $\varphi$
+        \Require A formula $\varphi$ and a size parameter $s$
         \Ensure A $\mathrm{Res}^*$ refutation of $\varphi$
         \State $n \gets \abs{\mathrm{Vars}(\varphi)}$
         \If{$n = 1$}
@@ -100,11 +100,11 @@ The idea behind the algorithm is to use these two propositions to apply a smart 
             \EndIf
         \EndIf
         \For{$\ell \in \{x_1, \ldots, x_n, \lnot x_1, \ldots, \lnot x_n\}$}
-            \State $\pi_1' \gets \mathcal{A}(\varphi_{\upharpoonright_{\ell = 1}})$
+            \State $\pi_1' \gets \mathcal{A}(\varphi_{\upharpoonright_{\ell = 1}}, s/2)$
             \If{$\pi_1' \neq \varnothing$}
-                \State $\pi_2' \gets \mathcal{A}(\varphi_{\upharpoonright_{\ell = 0}})$
+                \State $\pi_2' \gets \mathcal{A}(\varphi_{\upharpoonright_{\ell = 0}}, s)$
                 \If{$\pi_2' \neq \varnothing$}
-                    \State $\pi_1 \gets \mathrm{convert}(\pi_1', \lnot \ell)$ \Comment Converts $\pi_1'$ into a derivation of $\lnot \ell$ from $\varphi$
+                    \State $\pi_1 \gets \mathrm{convert}(\pi_1', \lnot \ell)$ \Comment{Converts $\pi_1'$ into a derivation of $\lnot \ell$ from $\varphi$}
                     \State $\pi_2 \gets \mathrm{convert}(\pi_2', \ell)$
                     \State return $\pi := (\pi_1, \pi_2, \mathrm{Res}(\ell, \lnot \ell))$
                 \EndIf
@@ -119,7 +119,7 @@ The idea behind the algorithm is to use these two propositions to apply a smart 
 \end{theorem}
 
 \begin{proof}
-    We start by proving the correctness of the algorithm. We proceed by induction on $n$. When $n = 1$, the only way to get the a refutation of $\varphi$ is to resolve $x_i$ with $\lnot x_i$, which means that $\varphi = x_i \land \lnot x_i$ must hold.Suppose now that $n > 1$. The contrapositive of \Cref{prop:s/2_ref} says that if the proof search $\mathcal{A}(\varphi_{\upharpoonright_{\ell = 1}})$ fails for all literals then there cannot be a tree-like refutation for $\varphi$ of size $s$, hence the algorithm correctly rejects. If at least one such literal $\ell$ is found, we search the proof $\mathcal{A}(\varphi_{\upharpoonright_{\ell = 0}})$. If this last step succeeds, by joining the two derivations $\pi_1$ and $\pi_2$ of, respectively, $\lnot \ell$ and $\ell$, to then apply a final resolutions step, we obtain a proof of $\varphi$.
+    We start by proving the correctness of the algorithm. We proceed by induction on $n$. When $n = 1$, the only way to get a refutation of $\varphi$ is to resolve $x_i$ with $\lnot x_i$, which means that $\varphi = x_i \land \lnot x_i$ must hold.Suppose now that $n > 1$. The contrapositive of \Cref{prop:s/2_ref} says that if the proof search $\mathcal{A}(\varphi_{\upharpoonright_{\ell = 1}})$ fails for all literals then there cannot be a tree-like refutation for $\varphi$ of size $s$, hence the algorithm correctly rejects. If at least one such literal $\ell$ is found, we search the proof $\mathcal{A}(\varphi_{\upharpoonright_{\ell = 0}})$. If this last step succeeds, by joining the two derivations $\pi_1$ and $\pi_2$ of, respectively, $\lnot \ell$ and $\ell$, to then apply a final resolutions step, we obtain a proof of $\varphi$.
 
     We now argue the time complexity of the algorithm. Let $T(s,n)$ be the running time of $\mathcal{A}$ for an input formula $\varphi$ over $n$ variables that has a tree-like refutation of size at most $s$. Fix $s^* := \mathrm{size}_{\mathrm{Res}^*}(\varphi)$. Since the refutation size of each formula is bounded by $s^*$ itself, the value of $T(s^*, n)$ gives us the running time of the algorithm. By construction of $\mathcal{A}$, it holds that $T(s,n) = 2nT(s/2, n-1) + T(s, n-1)$ and $T(s,1) = \Theta(1)$.
 
@@ -131,13 +131,13 @@ We observe that the proof constructed by \Cref{algo:auto_treeres} generally does
 However, this algorithm is the best we can hope for. \textcite{res_wphard} showed that automating tree-like resolution in polynomial time is $W[P]$-hard. Recently, \textcite{eth_hard_treeres} extended this further by proving that under the \textit{Randomized Exponential Time Hypothesis} (rETH) \cite{eth} there is no algorithm capable of automating tree-like Resolution in time $n^{o(\log s)}$.
 
 \begin{conjecture}[Randomized Exponential Time Hypothesis]
-    $3$-SAT cannot be solved by a randomized algorithm in with runtime $2^{o(n)}$.
+    $3$-SAT cannot be solved by a randomized algorithm in runtime $2^{o(n)}$.
 \end{conjecture}
 
 The framework used in this intractability result is similar to the one used in \Cref{sec:weak_systems} to prove that Resolution is not automatable under $\mathsf{P} \neq \mathsf{NP}$.
 
 \begin{theorem}
-    Tree-like Resolution cannot be automated in time $n^{o(s)}$, unless the rETH is false. 
+    Tree-like Resolution cannot be automated in time $n^{o(\log s)}$, unless the rETH is false. 
 \end{theorem}
 
 \begin{proof}
@@ -170,10 +170,10 @@ We observe that feasible interpolation is down-ward closed: if $Q \leq_p P$ and 
     By well known computational complexity arguments (see \cite{arora_barak} for a detailed proof), the algorithm $\mathcal{C}$ can be turned into a Boolean circuit of size $O(t \log t)$ \cite{arora_barak, circ_size}, which is polynomial in this case. When $\mathcal{C}(\alpha)$ returns 0, the formula $\varphi(\alpha, y)$ is unsatisfiable by construction of $\mathcal{C}$. If the computation of $\mathcal{A}$ exceeds the time bound, instead, we know that $\psi(\alpha, z)$ is unsatisfiable. To show this, suppose by contradiction that $\psi(\alpha, \beta)$ is satisfiable for some assignment $\beta$ on the $z$ variables. Then, $\pi_{\upharpoonright_{\alpha \cup \beta}}$ is a $Q$-refutation of $(\varphi(\alpha, y) \land \psi (\alpha, z))_{\upharpoonright_{\beta}} \equiv \varphi(\alpha, y)$. Therefore, since $\pi$ has polynomial size, the execution of $\mathcal{A}$ on $\varphi(\alpha, y)$ should've found a refutation, raising a contradiction.
 \end{proof}
 
-This connection was first found by \textcite{fis_int_weak_aut}. Years prior, \textcite{kraj_pud_crypto} already proved that Extended Frege doesn't admit polynomial time feasible interpolation unless the RSA encryption scheme \cite{rsa} can be broken. This was extended down to $\mathrm{TC}^0$-Frege systems in \cite{no_fis_int}, a sub-system between Frege and $\mathrm{AC}^0$-Frege, and later on down to $\mathrm{AC}^0$-Frege in \cite{ac0_crypto}. All these results share the same idea: the \textit{Diffie-Hellman} key exchange protocol \cite{dh} can be encoded as a depth-$d$ propositional formula, with $d > 0$. Through feasible interpolation, these systems are capable of breaking the DH scheme through circuits of sub-exponential size, which is conjectured to be false. This makes Frege and all proof systems above it impossible to automate (conditionally).
+This connection was first found by \textcite{fis_int_weak_aut}. Years prior, \textcite{kraj_pud_crypto} already proved that Extended Frege does not admit polynomial time feasible interpolation unless the RSA encryption scheme \cite{rsa} can be broken. This was extended down to $\mathrm{TC}^0$-Frege systems in \cite{no_fis_int}, a sub-system between Frege and $\mathrm{AC}^0$-Frege, and later on down to $\mathrm{AC}^0$-Frege in \cite{ac0_crypto}. All these results share the same idea: the \textit{Diffie-Hellman} key exchange protocol \cite{dh} can be encoded as a depth-$d$ propositional formula, with $d > 0$. Through feasible interpolation, these systems are capable of breaking the DH scheme through circuits of sub-exponential size, which is conjectured to be false. This makes Frege and all proof systems above it impossible to automate (conditionally).
 
 \begin{theorem}
-    No proof system $p$-simulating $\mathrm{AC}^0$-Frege is weakly automatable in polynomial time, unless the DH procedure can be broken.
+    No proof system $p$-simulating $\mathrm{AC}^0$-Frege is weakly automatable in polynomial time, unless the DH procedure can be broken by circuits of size $2^{n^\varepsilon}$, for some $\varepsilon > 0$.
 \end{theorem}
 
 \begin{proof}
@@ -182,7 +182,7 @@ This connection was first found by \textcite{fis_int_weak_aut}. Years prior, \te
 
 Recent results expand these results to \textit{quantum automatability}, i.e. automatability through quantum algorithms. In particular, \textcite{quantum_auto} proved that quantum automating $\mathrm{TC}^0$-Frege is as hard as solving the Learning-With-Errors (LWE) problem through quantum algorithms. The hardness of the LWE problem is a building block of modern post-quantum cryptography \cite{lwe}. 
 
-For weaker proof systems, the argument based on the impossibility of feasible interpolation fails. In fact, most weak proof systems actually posses feasible interpolation (Resolution \cite{kraj_fi}, Nullstellensatz and Polynomial Calculus \cite{hak_fi}, Cutting Planes \cite{pud_fi}), making this approach impossible. Nonetheless, we'll see in \Cref{sec:weak_systems} a more complex argument that proves the non-automatability of weak proof systems under the $\mathsf{P} \neq \mathsf{NP}$ assumption.
+For weaker proof systems, the argument based on the impossibility of feasible interpolation fails. In fact, most weak proof systems actually possess feasible interpolation (Resolution \cite{kraj_fi}, Nullstellensatz and Polynomial Calculus \cite{hak_fi}, Cutting Planes \cite{pud_fi}), making this approach impossible. Nonetheless, we will see in \Cref{sec:weak_systems} a more complex argument that proves the non-automatability of weak proof systems under the $\mathsf{P} \neq \mathsf{NP}$ assumption.
 
 Another connection between the two properties is given by the formula
 \begin{equation}
@@ -200,7 +200,7 @@ where $\mathrm{Sat}(\varphi, \alpha)$ encodes the statement \curlyquotes{$\alpha
 
     Even though it seems artificial, $R$ is a Cook-Reckhow system and, moreover, it $p$-simulates $Q$. Consider the following verifier for $R$. Given the input $(\varphi, (1^s, \pi, \mathrm{C}))$, we start by checking if $\pi$ is a valid $P$-refutation of polynomial size for $\mathrm{Reflex}_s^Q(\varphi)$. Then, we compute $\mathcal{C}_{\mathcal{I}} = \mathcal{I}(\mathrm{Reflex}_s^Q(\varphi), \pi)$ and check if $\mathcal{C} = \mathcal{C}_{\mathcal{I}}$. If all checks have survived, the verifier accepts, otherwise it rejects.
 
-    It's easy to see that if the verifier accepts for some witness $(1^s, \pi, \mathcal{C})$ then $\mathcal{C}(\varphi) = 0$ implies that $\mathrm{Sat}(\varphi, \alpha)$ is unsatisfiable for each $\alpha$, which is possible if and only if $\varphi$ is unsatisfiable. Vice versa, if the verifier rejects all witnesses, even for well-defined ones, we know that every interpolating circuit returns 1, meaning that $\mathrm{Ref}_s^Q(\varphi)$ is unsatisfiable for each $s$. However, this is possible if and only if $\varphi$ doesn't admit $Q$-refutations. This concludes that $R$ is both sound and complete.
+    it is easy to see that if the verifier accepts for some witness $(1^s, \pi, \mathcal{C})$ then $\mathcal{C}(\varphi) = 0$ implies that $\mathrm{Sat}(\varphi, \alpha)$ is unsatisfiable for each $\alpha$, which is possible if and only if $\varphi$ is unsatisfiable. Vice versa, if the verifier rejects all witnesses, even for well-defined ones, we know that every interpolating circuit returns 1, meaning that $\mathrm{Ref}_s^Q(\varphi)$ is unsatisfiable for each $s$. However, this is possible if and only if $\varphi$ does not admit $Q$-refutations. This concludes that $R$ is both sound and complete.
 
     A similar argument can be used to prove the $p$-simulation of $Q$ by $R$. Given a $Q$-refutation $\pi_Q$ of $\varphi$, we know that $\mathrm{Sat}(\varphi, \alpha)$ is unsatisfiable for each $\alpha$, we know that $\mathcal{C}_{\mathcal{I}}(\varphi) = 0$, therefore the triple $(1^{\abs{\pi_Q}}, \pi_P, \mathcal{C}_{\mathcal{I}})$ is a valid $R$-refutation. Moreover, since $\pi_P$ and $\mathcal{C}_{\mathcal{I}}$ can both be computed in polynomial time, we conclude that $Q \leq_p R$.
 \end{proof}
@@ -224,23 +224,22 @@ The most prominent evidence for this conjecture is the $\mathrm{Res}(k)$ proof s
 
 \subsection{The $\mathrm{Ref}$ formula}
 
-To prove that weak proof systems are not automatable under the $\mathsf{P} \neq \mathsf{NP}$ hypothesis, we use a meta-complexity approach. As the name implies, \textit{meta-complexity} is the area of computational complexity theory that focus on studying how complex it is to prove that something is complex \cite{simons}. To achieve our goal, we'll focus on how hard it is for a proof system to prove that something is hard to prove in Resolution. This approach is a formidable refinement of previous approaches \cite{res_wphard, pc_wphard,res_hard_proofs,res_wphard} based on different meta-complexity problems.
+To prove that weak proof systems are not automatable under the $\mathsf{P} \neq \mathsf{NP}$ hypothesis, we use a meta-complexity approach. As the name implies, \textit{meta-complexity} is the area of computational complexity theory that focuses on studying how complex it is to prove that something is complex \cite{simons}. To achieve our goal, we will focus on how hard it is for a proof system to prove that something is hard to prove in Resolution. This approach is a refinement of previous approaches \cite{res_wphard, pc_wphard,res_hard_proofs} based on different meta-complexity problems.
 
-Given a CNF formula $\varphi$ and a parameter $s \in \N$, we define a formula $\mathrm{Ref}_s(\varphi)$ representing the statement \curlyquotes{$\varphi$ has a Resolution refutation with $s$ clauses} \cite{pudlak_upper,res_nphard,alg_nphard, pap}. Our final goal will be to prove that these refutation statements can act as a discriminant between satisfiability and unsatisfiability. In particular, we'll prove the following theorem.
+Given a CNF formula $\varphi$ and a parameter $s \in \N$, we define a formula $\mathrm{Ref}_s(\varphi)$ representing the statement \curlyquotes{$\varphi$ has a Resolution refutation with $s$ clauses} \cite{pudlak_upper,res_nphard,alg_nphard, pap}. Our final goal will be to prove that these refutation statements can act as a discriminant between satisfiability and unsatisfiability. Our goal will be proving the following theorem.
 
 \begin{theorem}
     \label{thm:ref_bounds}
     Let $\varphi$ be a formula with $n$ variables and $m$ clauses. Then:
     \begin{enumerate}[label={(\roman*)}, nosep]
-        \item If $\varphi \in \mathrm{SAT}$ then $\mathrm{Ref}_s(\varphi)$ has polynomial size Resolution refutations
+        \item If $\varphi \in \mathrm{SAT}$ then $\mathrm{Ref}_s(\varphi)$ has polynomial size Resolution refutations;
         \item If $\varphi \notin \mathrm{SAT}$ then $\mathrm{Ref}_s(\varphi)$ requires exponential size Resolution refutations.
     \end{enumerate}
 \end{theorem}
 
-This shows that, basically, Resolution is not capable of proving its own lower bounds (recall that a refutation of $\mathrm{Ref}_s(\varphi)$ is a proof of $\lnot \mathrm{Ref}_s(\varphi)$). Moreover, the theorem can be conveniently generalized to other weak proof systems (see \Cref{sec:tradeoffs}). We split the proof of this theorem in three parts, proven respectively in the next three sub-sections (see \Cref{lem:pudlak_upper_bound}, \Cref{lem:am_lower_bound}, \Cref{lem:tradeoff_bw_size}). This result can be generalized to Nullstellensatz, Polynomial Calculus and Cutting Planes. More information on this generalization is deferred to \Cref{sec:tradeoffs}.
+This shows that, basically, Resolution is not capable of proving its own lower bounds (recall that a refutation of $\mathrm{Ref}_s(\varphi)$ is a proof of $\lnot \mathrm{Ref}_s(\varphi)$, the formula stating that \curlyquotes{$\varphi$ requires refutations of size bigger than $s$}). We split the proof of this theorem in three parts, proven respectively in the next three sub-sections (see \Cref{lem:pudlak_upper_bound}, \Cref{lem:am_lower_bound}, \Cref{lem:tradeoff_bw_size}). This result can be generalized to Nullstellensatz, Polynomial Calculus and Cutting Planes. More information on this generalization is deferred to \Cref{sec:tradeoffs}.
 
-Through this result Resolution refutations of $\mathrm{Ref}_{s}(\phi)$ can act as a dichotomy tool for discerning satisfiable formulas from unsatisfiable ones. Therefore, if Resolution were to be automatable, we would be able to solve $\mathrm{SAT}$ in polynomial time, concluding that $\mathsf{P} = \mathsf{NP}$. Moreover, we observe that this result is \textit{optimal} by \Cref{prop:auto_p_np} (recall that $\mathrm{P} \subseteq \mathsf{QP} \subseteq \mathsf{SUBEXP}$).
-
+Together with the fact that $\mathrm{Ref}_s(\varphi)$ can be constructed in polynomial time, the above result can be used as a dichotomy tool for discerning satisfiable formulas from unsatisfiable ones. Therefore, if Resolution were to be automatable, we would be able to solve $\mathrm{SAT}$ in polynomial time, which implies $\mathsf{P} = \mathsf{NP}$. Moreover, we observe that this result is \textit{optimal} by \Cref{prop:auto_p_np} (recall that $\mathrm{P} \subseteq \mathsf{QP} \subseteq \mathsf{SUBEXP}$).
 
 \begin{lemma}
     \label{lem:res_nphard}
@@ -248,17 +247,19 @@ Through this result Resolution refutations of $\mathrm{Ref}_{s}(\phi)$ can act a
 \end{lemma}
 
 \begin{proof}
-    Let $\mathcal{A}$ be an algorithm that automates Resolution in time $t$. We define a new algorithm $\mathcal{B}$ that takes in input a CNF formula $\varphi$, constructs $\mathrm{Ref}_{s}(\varphi)$ and then runs $\mathcal{A}(\mathrm{Ref}_{s}(\varphi))$. If the number of steps of the execution of $\mathcal{A}$ exceeds $t(N^c)$, where $N$ is the size of $\mathrm{Ref}_s(\varphi)$ and $c > 0$ is the constant certifying \Cref{thm:ref_bounds}(i), we stop the computation and reject $\varphi$. Otherwise, if the computation doesn't exceed the bound, $\mathcal{A}$ returns a refutation $\pi$ for $\mathrm{Ref}_s(\varphi)$ and $\mathcal{B}$ accepts.
+    Let $\mathcal{A}$ be an algorithm that automates Resolution in time $t$. By \Cref{thm:ref_bounds}(i) we know that for every $s \geq n^2$ and all satisfiable $\varphi$ on $n$ variables it holds that $\mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \leq O(N^c)$ for some $c > 0$, where $N$ is the number of variables in $\mathrm{Ref}_s(\varphi)$.
+    
+    We define a new algorithm $\mathcal{B}$ that, given a CNF formula $\varphi$ in input, constructs $\mathrm{Ref}_{s}(\varphi)$ to then run $\mathcal{A}(\mathrm{Ref}_{s}(\varphi))$. If the number of steps in the execution of $\mathcal{A}$ exceeds $t(N+N^c)$, we stop the computation and immediately reject $\varphi$. Otherwise, if the computation does not exceed the bound, $\mathcal{A}$ returns either a refutation $\pi$ for $\mathrm{Ref}_s(\varphi)$ or $\bot$. In the first case, $\mathcal{B}$ accepts, otherwise it rejects.
 
-    When $\varphi$ is satisfiable, \Cref{thm:ref_bounds}(i) ensures that the bound is not violated, thus $\mathcal{B}$ accepts. When $\varphi$ is unsatisfiable, instead, item (ii) of the same theorem guarantees that the bound is violated, making $\mathcal{B}$ immediately reject. Since $\mathrm{Ref}_s(\varphi)$ is constructible in polynomial time, this gives us an algorithm that solves $\mathrm{SAT}$ in time $O(t(n^{cd}))$.
+    When $\varphi$ is satisfiable, \Cref{thm:ref_bounds}(i) ensures that $\mathrm{Ref}_s(\varphi)$ has a refutation of size at most $N^c$, thus the bound $t(N+N^c)$ is not violated and $\mathcal{B}$ accepts. When $\varphi$ is unsatisfiable, instead, item (ii) of the same theorem guarantees that the bound is always violated, making $\mathcal{B}$ immediately reject. Since $\mathrm{Ref}_s(\varphi)$ is constructible in polynomial time with respect to $n$, $\mathcal{A}$ solves $\mathrm{SAT}$ in time $O(t(n^{cd}))$, for some $d > 0$.
 \end{proof}
 
 \begin{corollary}
     Let $\mathcal{A}$ be an algorithm automating Resolution in time $t$. Then:
     \begin{itemize}[nosep]
-        \item If $t$ is any polynomial function then $\mathsf{NP} \subseteq \mathsf{P}$
-        \item If $t$ is any quasi-polynomial function then $\mathsf{NP} \subseteq \mathsf{QP}$
-        \item If $t$ is any sub-exponential function then $\mathsf{NP} \subseteq \mathsf{SUBEXP}$
+        \item If $t$ is any polynomial function then $\mathsf{NP} \subseteq \mathsf{P}$;
+        \item If $t$ is any quasi-polynomial function then $\mathsf{NP} \subseteq \mathsf{QP}$;
+        \item If $t$ is any sub-exponential function then $\mathsf{NP} \subseteq \mathsf{SUBEXP}$.
     \end{itemize}
 \end{corollary}
 
@@ -266,16 +267,16 @@ The simplicity of Resolution allows us to describe this meta-complexity refutati
 
 The initial standard encoding of this idea was the one used in Pudlák [Pud03], referred to in the literature as the \textit{unary encoding}. This encoding uses unary pointers, meaning that for every block $B \in [s]$ there are up to $2(s-1)$ variables that point at the blocks from which $B$ may be derived. Pudlák proved the easiness of $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is satisfiable through this encoding, but the proof can be adapted for other encodings.
 
-In order to prove their result, \textcite{res_nphard} adapted this encoding by introducing \textit{enable variables}. When the enable variable is true, the block is considered as part of the underlying refutation described by the blueprint (as if we're forcing the refutation to use this block). When this isn't the case, instead, the block gets completely ignored by the refutation, automatically satisfying all the axioms that mention it. This encoding is known as the \textit{relativized unary encoding}. This encoding was first introduced to prove the hardness of $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is unsatisfiable due to failure of achieving such result with the non-relativized encoding. Nonetheless, \textcite{res_ref_bounds} proved that the hardness of this formula doesn't come from the introduction of this variables by proving that the size lower bound also holds for the non-relativized encoding. 
+In order to prove their result, \textcite{res_nphard} adapted this encoding by introducing \textit{enable variables}. When the enable variable is true, the block is considered as part of the underlying refutation described by the blueprint (as if we are forcing the refutation to use this block). When this is not the case, instead, the block gets completely ignored by the refutation, automatically satisfying all the axioms that mention it. This encoding is known as the \textit{relativized unary encoding}. This encoding was first introduced to prove the hardness of $\mathrm{Ref}_s(\varphi)$ when $\varphi$ is unsatisfiable due to failure of achieving such result with the non-relativized encoding. Nonetheless, \textcite{res_ref_bounds} proved that the hardness of this formula does not come from the introduction of these variables by proving that the size lower bound also holds for the non-relativized encoding. 
 
 Finally, the last common encoding is the \textit{relativized binary encoding}, first defined by \textcite{alg_nphard}. This encoding describes the parent pointers of each block in binary, meaning that for each block $B \in [s]$ there are only $O(\log s)$ variables describing its pointers. This encoding drastically reduces the width of the formula, making it possible to prove the size lower bound simply by using a size-width tradeoff.
 
-In this work we'll use the relativized unary encoding as it is both the most natural one for the problem and the easiest to work with (see \cite{pap} for a more in depth comparison behind the encodings). Given $n$ variables $x_1, \ldots, x_n$, let $\mathrm{Lit}_n = \{x_1, \ldots, x_n, \lnot x_1, \ldots, \lnot x_n\}$. We define the variables of the formula $\mathrm{Ref}_s(\Phi)$, parametrized over a generic formula $\Phi$ with $n$ variables and $m$ clauses, as follows:
+In this work we will use the relativized unary encoding as it is both the most natural one for the problem and the easiest to work with (see \cite{pap} for a more in depth comparison behind the encodings). Given $n$ variables $x_1, \ldots, x_n$, let $\mathrm{Lit}_n = \{x_1, \ldots, x_n, \lnot x_1, \ldots, \lnot x_n\}$. We define the variables of the formula $\mathrm{Ref}_s(\Phi)$, parametrized over a generic formula $\Phi$ with $n$ variables and $m$ clauses, as follows:
 \begin{align*}
-    \text{a-lit}_\ell^A \quad & : \quad \text{literal } \ell \in \text{Lit}_n \text{ is present in the clause } A \in [m] \text{ of } \phi; \\
+    \text{a-lit}_\ell^A \quad & : \quad \text{literal } \ell \in \text{Lit}_n \text{ is present in the clause } A \in [m] \text{ of } \Phi; \\
     \text{enable}^B \quad & : \quad \text{block } B \in [s] \text{ is enabled}; \\
     \text{derived}^B \quad & : \quad \text{block } B \in [s] \text{ was obtained by a Resolution step}; \\
-    \text{weak}_A^B \quad & : \quad \text{block } B \in [s] \text{ is obtained by weakening from clause } A \in [m] \text{ of } \phi; \\
+    \text{weak}_A^B \quad & : \quad \text{block } B \in [s] \text{ is obtained by weakening from clause } A \in [m] \text{ of } \Phi; \\
     \text{lit}_\ell^B \quad & : \quad \text{literal } \ell \in \text{Lit}_n \text{ is present in the block } B \in [s]; \\
     \text{res}_{x_i}^B \quad & : \quad \text{block } B \in [s] \text{ was obtained by resolving over the variable } x_i; \\
     \text{lpoint}_{B'}^B \quad & : \quad \text{block } B \in [s] \text{ was resolved on the left from block } B' \in [s], B' < B; \\
@@ -283,7 +284,7 @@ In this work we'll use the relativized unary encoding as it is both the most nat
 \end{align*}
 
 When working with a specific formula $\varphi$, we restrict $\mathrm{Ref}_s(\Phi)$ to the formula $\mathrm{Ref}_s(\varphi) := \mathrm{Ref}_s(\Phi)_{\upharpoonright_{\alpha_\varphi}}$ through a partial assignment $\alpha_\varphi$ that sets the values of all the variables $\text{a-lit}_\ell^A$ in a way that describes the clauses of $\varphi$, i.e. $\alpha_\varphi(\text{a-lit}_\ell^A)$ is set to 1 if $\ell$ is part of the $A$-th clause of $\varphi$, otherwise we set it to 0. 
-Moreover, we also observe that the weakening variables $\text{weak}_A^B$ are defined only for axiom clauses. Of course, this can be extended to non-axiom clauses but, for the purpose of making proofs easier and shorter, we'll assume without loss of generality that the weakening step can be used only on axioms. The clauses of $\mathrm{Ref}_s(\varphi)$ are then defined as follows:
+Moreover, we also observe that the weakening variables $\text{weak}_A^B$ are defined only for axiom clauses. Of course, this can be extended to non-axiom clauses but, for the purpose of making proofs easier and shorter, we will assume without loss of generality that the weakening step can be used only on axioms. The clauses of $\mathrm{Ref}_s(\varphi)$ are then defined as follows:
 
 \begin{figure}[H]
     \resizebox{1\textwidth}{!}{
@@ -304,7 +305,7 @@ Moreover, we also observe that the weakening variables $\text{weak}_A^B$ are def
 \end{figure}
 
 \noindent
-The axiom clauses of $\mathrm{Ref}_s(\Phi)$ have been written as implications for the sake of readability. This encoding of $\mathrm{Ref}_s(\Phi)$ is defined over $N = \Theta(s^2 + sm + sn + nm)$ variables and $M = \Theta(s^2n^2 + smn)$ clauses, meaning that $\abs{\mathrm{Ref}_s(\Phi)} = \mathrm{poly}(s,n,m)$. The maximum width of the clauses is $O(s+m+n)$. The binary encoding used in \cite{alg_nphard}, instead, have width $O(\log s + m + n)$. This reduction in width is a crucial difference that makes it impossible to use the tradeoff of Ben-Sasson and Wigderson. A detailed discussion on this manner is deferred to \Cref{sec:dt_reductions}. 
+The axiom clauses of $\mathrm{Ref}_s(\Phi)$ have been written as implications for the sake of readability. This encoding of $\mathrm{Ref}_s(\Phi)$ is defined over $N = \Theta(s^2 + sm + sn + nm)$ variables and $M = \Theta(s^2n^2 + smn)$ clauses, meaning that $\abs{\mathrm{Ref}_s(\Phi)} = \mathrm{poly}(s,n,m)$. The maximum width of the clauses is $O(s+m+n)$.
 
 \begin{proposition}
     $\varphi$ has a Resolution refutation of length at most $s$ if and only if $\mathrm{Ref}_s(\varphi)$ is satisfiable.
@@ -313,7 +314,7 @@ The axiom clauses of $\mathrm{Ref}_s(\Phi)$ have been written as implications fo
 \begin{proof}
     Let $\pi$ be a refutation of $\varphi$ of length $s' \leq s$. We define a satisfying assignment for $\mathrm{Ref}_s(\varphi)$ by enabling exactly $s'$ blocks to then set all their variables by following the description of $\pi$.
 
-    Vice versa, let $\alpha$ be a satisfying assignment for $\mathrm{Ref}_s(\varphi)$. Since the clauses of $\mathrm{Ref}_s(\varphi)$ acts as a blueprint for a resolution refutation, we can read the contents of the enabled blocks in $\alpha$ and traverse the encoded refutation starting from the root block $s$ down to the axioms blocks. The steps taken by the encoded refutation correspond to the steps taken by a real refutation $\pi'$ of $\varphi$. Since $\mathrm{Ref}_s(\varphi)$ has at most $s$ enabled blocks, we get a refutation of length at most $s$ for $\varphi$.  
+    Vice versa, let $\alpha$ be a satisfying assignment for $\mathrm{Ref}_s(\varphi)$. Since the clauses of $\mathrm{Ref}_s(\varphi)$ act as a blueprint for a resolution refutation, we can read the contents of the enabled blocks in $\alpha$ and traverse the encoded refutation starting from the root block $s$ down to the axioms blocks. The steps taken by the encoded refutation correspond to the steps taken by a real refutation $\pi'$ of $\varphi$. Since $\mathrm{Ref}_s(\varphi)$ has at most $s$ enabled blocks, we get a refutation of length at most $s$ for $\varphi$.  
 \end{proof}
 
 \begin{figure}[t]
@@ -369,7 +370,7 @@ We prove that when $\varphi$ is satisfiable the formula $\mathrm{Ref}_s(\varphi)
 \end{lemma}
 
 \begin{proof}
-    Let $\alpha$ be a satisfying assignment for $\varphi$. We'll construct a refutation for $\mathrm{Ref}_s(\varphi)$ using $\alpha$ as a guide. For all $B \in [s]$, we'll derive (in increasing order of $B$) the following clause $\mathrm{True}(B,\alpha)$ asserting that \curlyquotes{if block $B$ is enabled then $\alpha$ satisfies it}:
+    Let $\alpha$ be a satisfying assignment for $\varphi$. We will construct a refutation for $\mathrm{Ref}_s(\varphi)$ using $\alpha$ as a guide. For all $B \in [s]$, we will derive (in increasing order of $B$) the following clause $\mathrm{True}(B,\alpha)$ asserting that \curlyquotes{if block $B$ is enabled then $\alpha$ satisfies it}:
     \begin{equation}
         \mathrm{True}(B,\alpha) := \lnot \text{enable}^B \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}
     \end{equation}
@@ -377,18 +378,18 @@ We prove that when $\varphi$ is satisfiable the formula $\mathrm{Ref}_s(\varphi)
     \noindent
     After deriving $\mathrm{True}(s,\alpha)$, the proof concludes by resolving it sequentially against all clauses REF-10 and REF-11 defined for $s$.
 
-    We start by deriving the clause $Z_1(B) := \mathrm{derived}^B \lor \mathrm{True}(B,\alpha)$ for each $B \in [s]$. Since $\alpha(\varphi) = 1$, for each clause $C_j \in \varphi$ there is at least one literal $\ell_j^\alpha \in C_j$ such that $\alpha(\ell) = 1$. Now, consider the following auxiliary clause $W(B,j)$:
+    We start by deriving the clause $Z_1(B) := \mathrm{derived}^B \lor \mathrm{True}(B,\alpha)$ for each $B \in [s]$. Since $\alpha(\varphi) = 1$, for each clause $C_j \in \varphi$ there is at least one literal $\ell_j^\alpha \in C_j$ such that $\alpha(\ell_j^{\alpha}) = 1$. Now, consider the following auxiliary clause $W(B,j)$:
     \begin{equation}
         W(B,j) := \lnot \text{enable}^B \lor \lnot \text{weak}^B_j \lor \bigvee_{\substack{\ell \in \mathrm{Lit}_n :\\ \alpha(\ell) = 1}} \text{lit}^B_{\ell}
     \end{equation}
 
     Notice that $W(B,j)$ is a weakening of the axiom clause REF-3$(B,j,\ell_j^\alpha)$ since the variable a-lit$^j_{\ell_j^\alpha}$ gets deleted by the restriction once $\varphi$ has been fixed inside $\mathrm{Ref}_s(\Phi)$. This accounts for a total of $m$ weakening steps.
 
-    By resolving axiom REF-7$(B)$ sequentially, for all $j \in [m]$, with each $W(B,j)$ over the variable $\mathrm{weak}_{j}^B$, we obtain the clause $Z_1(B)$. This accounts for a total of $m-1$ resolution steps. Since this procedure has to be applied for each block $B \in [s]$, we get a total of $O(sm)$ steps to obtain $Z_1(1), \ldots, Z_1(s)$.
+    By resolving axiom REF-7$(B)$ sequentially, for all $j \in [m]$, with each $W(B,j)$ over the variable $\mathrm{weak}_{j}^B$, we obtain the clause $Z_1(B)$. This accounts for a total of $m$ resolution steps. Since this procedure has to be applied for each block $B \in [s]$, we get a total of $O(sm)$ steps to obtain $Z_1(1), \ldots, Z_1(s)$.
     
-    Next, we'll derive $\mathrm{True}(B,\alpha)$ for each $B \in [s]$ through an inductive procedure. When $B = 1$, the axiom REF-5$(1)$ degenerates to $\lnot \mathrm{enable}^1 \lor \lnot \mathrm{derived}^1$ since no block comes before it. Therefore, by resolving REF-5$(1)$ with $Z_1(1)$ over the variable $\mathrm{derived}^1$ we obtain $\mathrm{True}(1,\alpha)$
+    Next, we will derive $\mathrm{True}(B,\alpha)$ for each $B \in [s]$ through an inductive procedure. When $B = 1$, the axiom REF-5$(1)$ degenerates to $\lnot \mathrm{enable}^1 \lor \lnot \mathrm{derived}^1$ since no block comes before it. Therefore, by resolving REF-5$(1)$ with $Z_1(1)$ over the variable $\mathrm{derived}^1$ we obtain $\mathrm{True}(1,\alpha)$
     
-    Fix $B \in [s]$ with $B > 1$ and assume that for each $B' \in [B-1]$ we have already derived $\mathrm{True}(B',\alpha)$. Fix a block $B' \in [B-1]$ and an index $i \in [n]$. Suppose that $\alpha(x_i) = 0$ (we omit the dual case since it can be constructed similarly by following the right-hand pointers). Observe that (REF-1) propagates every literal except $x_i$ and when $\alpha(x_i) = 0$ the literal $x_i$ absent from $\mathrm{True}(B', \alpha)$. For each $k \in [n]$, set $\ell_k = x_k$ if $\alpha(x_k) = 1$ and $\ell_k = \lnot x_k$ if $\alpha(x_k) = 0$.
+    Fix $B \in [s]$ with $B > 1$ and assume that for each $B' \in [B-1]$ we have already derived $\mathrm{True}(B',\alpha)$. Fix a block $B' \in [B-1]$ and an index $i \in [n]$. Suppose that $\alpha(x_i) = 0$ (we omit the dual case since it can be constructed similarly by following the right-hand pointers). Observe that (REF-1) propagates every literal except $x_i$ and when $\alpha(x_i) = 0$ the literal $x_i$ is absent from $\mathrm{True}(B', \alpha)$. For each $k \in [n]$, set $\ell_k = x_k$ if $\alpha(x_k) = 1$ and $\ell_k = \lnot x_k$ if $\alpha(x_k) = 0$.
 
     By resolving $\mathrm{True}(B',\alpha)$ sequentially, for all $k \in [n]$, with each axiom REF-1$(B,B',i,\ell_{k})$ over the variable $\text{lit}^{B'}_{\ell_{k}}$ we get the auxiliary clause $U_1(B,B',i)$ defined as:
     \begin{equation}
@@ -411,7 +412,7 @@ We prove that when $\varphi$ is satisfiable the formula $\mathrm{Ref}_s(\varphi)
 \subsection{Decision tree reductions}
 \label{sec:dt_reductions}
 
-The main tools that we'll use to prove \Cref{thm:ref_bounds}(ii) are reductions between formulas that relate the variables of the first formula $\varphi$ to the variables of the second formula $\psi$ via shallow decision trees which guarantee that the axioms of $\varphi$ imply those of $\psi$ \cite{alg_nphard,galesi_toran}.
+The main tools that we will use to prove \Cref{thm:ref_bounds}(ii) are reductions between formulas that relate the variables of the first formula $\varphi$ to the variables of the second formula $\psi$ via shallow decision trees which guarantee that the axioms of $\varphi$ imply those of $\psi$ \cite{alg_nphard,galesi_toran}.
 
 \begin{definition}[Decision tree reduction]
     Let $\varphi$ and $\psi$ be, respectively, CNF formulas over the variables $x_1, \ldots, x_n$ and $y_1, \ldots, y_t$. A depth-$d$ decision tree reduction between $\varphi$ and $\psi$, written as $\varphi \leq_{d}^{dt} \psi$ is a function $f : \{0,1\}^n \to \{0,1\}^t$ such that:
@@ -432,26 +433,26 @@ The key idea behind these reduction is to use the CNF representation property of
 \begin{proof}
     Let $f$ be the function witnessing $\varphi \leq_d^{dt} \psi$. Given a width-$w$ Spoiler strategy $\mathcal{G}$ for $\psi$, we define a width-$dw$ Spoiler strategy $\mathcal{F}$ for $\varphi$ by simulating $\mathcal{G}$ round-by-round through $f$.
 
-    We'll use the following invariant during each round of the game: if the game state for $\mathcal{G}$, i.e. the partial assignment to $y$, records a value $y_i = b$ for some $b \in \{0, 1\}$, then the current game state $\rho$ for $\mathcal{F}$, i.e. the partial assignment to $x$, satisfies $f_i(\rho) = b$ while having at most $d$ values of $x_j$ recorded in $\rho$.
+    We will use the following invariant during each round of the game: if the game state for $\mathcal{G}$, i.e. the partial assignment to $y$, records a value $y_i = b$ for some $b \in \{0, 1\}$, then the current game state $\rho$ for $\mathcal{F}$, i.e. the partial assignment to $x$, satisfies $f_i(\rho) = b$ while having at most $d$ values of $x_j$ recorded in $\rho$.
     
-    On each round, if $\mathcal{G}$ queries a variable $y_i$ then $\mathcal{F}$ computes $f_i(x) = b$ through queries and simulates $\mathcal{G}$ by responding $y_i = b$ --- in other words, $\mathcal{F}$ plays as the Duplicator against $\mathcal{G}$. When $\mathcal{G}$ forgets a variable $y_i$, instead, $\mathcal{F}$ forgets all the variables $x_j$ that aren't required to know the values of $f_j(x)$ for all those $j \in [t]$ such that the value of $y_j$ is not forgotten by $\mathcal{G}$.
+    On each round, if $\mathcal{G}$ queries a variable $y_i$ then $\mathcal{F}$ computes $f_i(x) = b$ through queries and simulates $\mathcal{G}$ by responding $y_i = b$ --- in other words, $\mathcal{F}$ plays as the Duplicator against $\mathcal{G}$. When $\mathcal{G}$ forgets a variable $y_i$, instead, $\mathcal{F}$ forgets all the variables $x_j$ that are not required to know the values of $f_j(x)$ for all those $j \in [t]$ such that the value of $y_j$ is not forgotten by $\mathcal{G}$.
 
     This simulation ensures that width of the strategy of $\mathcal{F}$ is at most $dw$. Moreover, when the game ends for $\mathcal{G}$ it will also end for $\mathcal{F}$: if $\mathcal{G}$'s game state falsifies an axiom of $G$, it will also falsify an axiom of $\mathcal{F}$ through the definition of $f$.
 \end{proof}
 
-The above proposition is the main tool to obtain a lower width bound on $\mathrm{Ref}_s(\varphi)$: it suffices to find a proper initial propositional formula from which we can obtain a large width lower bound and an efficient decision tree reduction. It turns out that this final ingredient is the \textit{Retraction Weak Pigeonhole Principle} $\mathrm{rPHP}_{m}^{2m}$ \cite{rphp_1, rphp_2}, a variant of the standard Pigeonhole Principle formula. In particular, we'll show that the width of any Resolution refutation of $\mathrm{rPHP}^{2m}_m$ has width at least $\Omega(m)$ and that it nicely reduces through relatively shallow decision trees to $\mathrm{Ref}_s(\varphi)$ for unsatisfiable formulas $\varphi$, formalized through the below theorem.
+The above proposition is the main tool to obtain a width lower bound on $\mathrm{Ref}_s(\varphi)$: it suffices to find a proper initial propositional formula from which we can obtain a large width lower bound and an efficient decision tree reduction. It turns out that this final ingredient is the \textit{Retraction Weak Pigeonhole Principle} $\mathrm{rPHP}_{m}^{2m}$ \cite{rphp_1, rphp_2}, a variant of the standard Pigeonhole Principle formula. In particular, we will show that the width of any Resolution refutation of $\mathrm{rPHP}^{2m}_m$ is at least $\Omega(m)$ and that it nicely reduces through relatively shallow decision trees to $\mathrm{Ref}_s(\varphi)$ for unsatisfiable formulas $\varphi$, formalized through the below theorem.
 
 \begin{theorem}
     \label{thm:rPHP_to_Ref}
     $\mathrm{rPHP}^{2m}_{m} \leq^{dt}_{O(n\log m)} \mathrm{Ref}_{m(n-\log m +2)-1}(\varphi)$ when $\varphi \notin \mathrm{SAT}$.
 \end{theorem}
 
-The proof of the lower bound is deferred to \Cref{sec:rPHP}, while the proof of the reduction is deferred to \Cref{sec:rPHP_Ref}. For now, we show how to use this theorem to obtain a width lower bound on refutational statements. Set $m = (s-1)/(n+1)$. By the above results we can conclude that:
+The proof of the lower bound is deferred to \Cref{sec:rPHP}, while the proof of the reduction is deferred to \Cref{sec:rPHP_Ref}. For now, we show how to use this theorem to obtain a width lower bound on refutational statements. Let $m$ be such that $s = m(n-\log m +2)-1$. By the above results we can conclude that:
 \begin{equation}
     \mathrm{width}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \geq \Omega \rbk{\dfrac{\mathrm{width}_{\mathrm{Res}}(\mathrm{rPHP}^{2m}_{m})}{n \log m}} \geq \Omega \rbk{\frac{s}{n^2\log(s/n)}}
 \end{equation}
 
-However, due to the presence of $s$ in the exponent, this lower bound is not enough to get an exponential size lower bound on $\mathrm{Ref}$. In fact, since $\mathrm{Ref}_{s}(\varphi)$ has axioms of width $O(s+m+n)$ and has $N = \Theta(s^2 + sm + sn + nm)$ variables, through the general size-width tradeoff by Ben-Sasson and Widgerson defined in \Cref{sec:measures} we obtain a trivial constant lower bound:
+However, due to the presence of $s$ in the exponent, this lower bound is not enough to get an exponential size lower bound on $\mathrm{Ref}$. In fact, since $\mathrm{Ref}_{s}(\varphi)$ has axioms of width $O(s+m+n)$ and has $N = \Theta(s^2 + sm + sn + nm)$ variables, through the general size-width tradeoff by Ben-Sasson and Wigderson defined in \Cref{sec:measures} we obtain a trivial constant lower bound:
 \begin{equation}
     \mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_s(\varphi)) \geq \exp\rbk{\Omega\rbk{\frac{(s/(n^2\log(s/n)) - (s+m+n))^2}{N}}} = \Omega(1)
 \end{equation}
@@ -462,10 +463,10 @@ To circumvent this issue, we define a new width measure for Resolution, called \
     Let $\varphi$ be a CNF formula whose variables can be partitioned into blocks. The Resolution block-width of a clause $C$ over the variables of $\varphi$, written as $\mathrm{bwidth}(C)$, is defined as the number of different blocks mentioned by the variables of the literals in $C$, without counting the mentions of the root block $s$.
 \end{definition}
 
-By natural extension, the block-width $\mathrm{bwidth}_{\mathrm{Res}}(\pi)$ of a Resolution refutation $\pi$ for $\varphi$ the maximum block-width over all the clauses in $\pi$. By extension, the block-width $\mathrm{bwidth}_{\mathrm{Res}}(\varphi)$ of a formula $\varphi$ is the minimum block-width across all its refutations. Block-width allows us to make a more fine-grained analysis of the variables contained inside the clauses of the refutations of $\mathrm{Ref}_s(\varphi)$. In particular, we can define the so-called \textit{block-aware reductions}, a more fine-grained type of decision tree reductions where all the decision trees that work with the variables of a block are replaced by a single decision tree that works on the whole block.
+By natural extension, the block-width $\mathrm{bwidth}_{\mathrm{Res}}(\pi)$ of a Resolution refutation $\pi$ for $\varphi$ is the maximum block-width over all the clauses in $\pi$. By extension, the block-width $\mathrm{bwidth}_{\mathrm{Res}}(\varphi)$ of a formula $\varphi$ is the minimum block-width across all its refutations. Block-width allows us to make a more fine-grained analysis of the variables contained inside the clauses of the refutations of $\mathrm{Ref}_s(\varphi)$. In particular, we can define the so-called \textit{block-aware reductions}, a more fine-grained type of decision tree reductions where all the decision trees that work with the variables of a block are replaced by a single decision tree that works on the whole block.
 
 \begin{definition}[Block-aware decision tree reduction]
-    Let $f$ be a depth-$d$ decision tree reduction witnessing $\varphi \leq_d^{dt} \psi$. Suppose that the variables $y_1, \ldots y_s$ of $\psi$ are partitioned into blocks. We say that the reduction $f$ is block-aware if for each block $B \subseteq [t]$ there is a depth-$d$ decision tree that computes all the values $f_{B}(x) := (f_i(x))_{i \in B}$ simultaneously.
+    Let $f$ be a depth-$d$ decision tree reduction witnessing $\varphi \leq_d^{dt} \psi$. Suppose that the variables $y_1, \ldots y_t$ of $\psi$ are partitioned into blocks. We say that the reduction $f$ is block-aware if for each block $B \subseteq [t]$ there is a depth-$d$ decision tree that computes all the values $f_{B}(x) := (f_i(x))_{i \in B}$ simultaneously.
 \end{definition}
 
 Spoiler-Duplicator games can equally well characterize block-width, defined for a game state as the number of blocks that the state records values from.
@@ -479,28 +480,28 @@ Spoiler-Duplicator games can equally well characterize block-width, defined for 
     The proof is similar to that of \Cref{prop:width_reduction}, assuming an additional invariant: for each block $B$ for which $\mathcal{G}$ records the value of some variable $y_i$, the simulation $\mathcal{F}$ knows $f_B(x)$ by recording at most $d$ values of the $x_j$ variables. From this new constraint it follows that if $\mathcal{G}$ has block-width $w$ then $\mathcal{F}$ has width at most $dw$.
 \end{proof}
 
-In \Cref{sec:tradeoffs} we'll show that in the case of refutation statements we can achieve better tradeoffs between block-width and size, obtaining our desired exponential lower bound.
+In \Cref{sec:tradeoffs} we will show that in the case of refutation statements we can achieve better tradeoffs between block-width and size, obtaining our desired exponential lower bound.
 
 \subsection{The retraction pigeonhole principle}
 \label{sec:rPHP}
 
 The \textit{Retraction Weak Pigeonhole Principle} formula, denoted with $\mathrm{rPHP}_{m}^{2m}$, is a variant of the standard formula $\mathrm{PHP}^{2m}_m$ that provides an efficient way to invert the mapping between pigeons and holes described by an assignment. This is achieved through two functions $f : [2m] \to [m]$ and $g : [m] \to [2m]$, where the addressing of the mappings is given in binary:
 \begin{itemize}
-    \item \textit{Pigeon mapping}: for every pigeon $i \in [2m]$ there are $\log m$ variables $f_{i,k}$, $k \in [\log m]$, that describe the binary encoding of the hole $f(i)$ that will be occupied by the $i$-th pigeon.
+    \item \textit{Pigeon mapping}: for every pigeon $i \in [2m]$ there are $\ceil{\log m}$ variables $f_{i,k}$, $k \in [\log m]$, that describe the binary encoding of the hole $f(i)$ that will be occupied by the $i$-th pigeon.
     \item \textit{Hole mapping}: for every hole $j \in [m]$ there are $\log 2m$ variables $g_{j,h}$, $h \in [\log 2m]$, that describe the binary encoding of the pigeon $g(j)$ that will occupy the $j$-th hole.
 \end{itemize}
 
 The axioms of $\mathrm{rPHP}^{2m}_m$ state for every $i \in [2m]$, $j \in [m]$ if $f(i) = j$ then $g(j) = i$ (equivalently, $g$ is a left-inverse function of $f$). To encode this idea, for each pair $(i,j) \in [2m] \times [m]$ we define the formula $\lnot[f(i) = j]$ as:
 \begin{equation}
-    \lnot[f(i) = j] := \bigvee_{\substack{k \in [\log m] : \\ }} \ell(i,j,k)
+    \lnot[f(i) = j] := \bigvee_{\substack{k \in [\log m]}} \ell(i,j,k)
 \end{equation}
 
-where $\ell(i,j,k) = f_{i,k}$ if $j_k = 0$, otherwise $\ell(i,j,k) = \lnot f_{i,k}$ --- recall that $j_k$ is the $k$-bit of $j$'s binary encoding. Then, the condition $f(i) = j \to g(j) = i$ is described by:
+where $\ell(i,j,k) = f_{i,k}$ if $j_k = 0$, otherwise $\ell(i,j,k) = \lnot f_{i,k}$ --- recall that $j_k$ is the $k$-th bit of $j$'s binary encoding. Then, the condition $f(i) = j \to g(j) = i$ is described by:
 \begin{equation}
-    \bigwedge_{h \in [\log m] } (\lnot[f(i) = j] \lor \gamma(j,i,h))
+    \bigwedge_{h \in [\log 2m] } (\lnot[f(i) = j] \lor \gamma(j,i,h))
 \end{equation}
 
-where $\gamma(j,i,h) = g_{j, i_h}$ if $i_h = 0$, otherwise $\gamma(j,i,h) = \lnot g_{j,i_h}$. Ranging across all pairs, the formula $\mathrm{rPHP}^{2m}_m$ has $O(m^2\log m)$ clauses, each containing $O(\log m)$ literals. We observe that such axioms still imply the pigeonhole principle: injectivity of $f$ follows from the retraction axioms, while totality is automatic in the binary encoding. A Resolution width lower bound can be proven through the Spoiler-Duplicator by adapting the classic strategy used for the standard pigeonhole principle \cite{rphp_2, atserias_dalmau}.
+where $\gamma(j,i,h) = g_{j, h}$ if $i_h = 1$, otherwise $\gamma(j,i,h) = \lnot g_{j,h}$. Notice that the $\gamma$ literals basically encode the statement $[g(j) = i]$, rewritten as a CNF formula. Ranging across all pairs, the formula $\mathrm{rPHP}^{2m}_m$ has $O(m^2\log m)$ clauses, each containing $O(\log m)$ literals. We observe that such axioms still imply the pigeonhole principle: injectivity of $f$ follows from the retraction axioms, while totality is automatic in the binary encoding. A Resolution width lower bound can be proven through the Spoiler-Duplicator game by adapting the classic strategy used for the standard pigeonhole principle \cite{rphp_2, atserias_dalmau}.
 
 \begin{lemma}
     \label{lem:rPHP_lower_bound}
@@ -520,23 +521,20 @@ where $\gamma(j,i,h) = g_{j, i_h}$ if $i_h = 0$, otherwise $\gamma(j,i,h) = \lno
 
 We give a generalization of the argument shown in \cite{res_nphard, res_ref_bounds, alg_nphard}, while also sharpening the exact values used in the proof. In particular, we generalize the reduction $\mathrm{rPHP}^{2n}_{n} \leq^{dt}_{O(n\log n)} \mathrm{Ref}_{n^2}(\varphi)$ to any value $s = m(n-\log m +2)-1$ by proving that $\mathrm{rPHP}^{2m}_{m} \leq^{dt}_{O(n\log m)} \mathrm{Ref}_{m(n-\log m +2)-1}(\varphi)$.
 
-\begin{observation}
-    The proof in \cite{alg_nphard} uses the notation $\widetilde{O}, \widetilde{\Omega}$, which hides logarithmic factors, i.e. $\widetilde{O}(f(n)) = O(f(n) \log n)$ and $\widetilde{\Omega}(f(n)) = \Omega(f(n) / \log n)$ to make the arguments smoother. In following articles \cite{cp_nphard,pap}, these two notations have been mixed up, stating new results with bounds that are wrong up to a logarithmic factor. In this work, we fix this issues by reproving all results without hiding them and by sharpening bounds.
-\end{observation}
-
 Let $T_n$ be the following full tree-like Resolution refutation of the formula $\varphi$, defined on the variables $x_1, \ldots, x_n$. We assume that the weakening rule is applied only on the leaves and that at each layer $i \in [n]$ of the tree the resolution rule is always applied on the variable $x_i$. Therefore, $T_n$ has $2^n$ leaves corresponding to all the possible width-$n$ clauses, each being a weakening of some axiom of $\varphi$.
-For any assignment $\alpha$ to $\mathrm{rPHP}_m^{2m}$, the reduction is going to produce an assignment $\beta$ to $\mathrm{Ref}_{s}(\varphi)$ that represents a purported refutation of size $s$ of $\varphi$ isomorphic to a subtree $T_\alpha \subseteq T_n$ of the full tree $T_n$.
+For any assignment $\alpha$ to $\mathrm{rPHP}_m^{2m}$, the reduction is going to produce an assignment $\beta$ to $\mathrm{Ref}_{s}(\varphi)$ that represents a purported refutation of size $s$ of $\varphi$ isomorphic to some subtree $T_\alpha \subseteq T_n$ of the full tree $T_n$.
 
 The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T_n$ is referred to as the \textit{boundary} of $T_\alpha$. Clearly, $T_\alpha$ is not a valid refutation of $\varphi$ since the boundary nodes have at least one missing child, but the non-boundary nodes will be indistinguishable from the corresponding neighborhoods of $T_n$. For this reason, the only axiom violations of $\mathrm{Ref}_{s}(\varphi)$ will be a result of the boundary nodes.
 
-\addtocounter{theorem}{-1}
-\begin{theorem}
+\addtocounter{theorem}{-5}
+\begin{theorem}[restated]
     \label{thm:rPHP_to_Ref}
     $\mathrm{rPHP}^{2m}_{m} \leq^{dt}_{O(n\log m)} \mathrm{Ref}_{m(n-\log m +2)-1}(\varphi)$ when $\varphi$ is an unsatisfiable CNF formula. Moreover, the reduction is block-aware.
 \end{theorem}
+\addtocounter{theorem}{4}
 
 \begin{proof}
-    Let $s = m(n-\log m +2)-1$. Given a total assignment $\alpha$ to $\mathrm{rPHP}^{2m}_m$, consider the subtree $T_\alpha \subseteq T_n$ defined as above. We'll use $\alpha$ to identify each block $B$ of $\mathrm{Ref}_{s}(\varphi)$ with some node in $T_n$. Once the position of the node is known, the values of the variables in block $B$ will be completely defined. To achieve this, we define the following partial mapping $h : [2m] \to [m] \cup \{*\}$:
+    Let $s = m(n-\log m +2)-1$. Given a total assignment $\alpha$ to $\mathrm{rPHP}^{2m}_m$, consider the subtree $T_\alpha \subseteq T_n$ defined as above. We will use $\alpha$ to identify each block $B$ of $\mathrm{Ref}_{s}(\varphi)$ with some node in $T_n$. Once the position of the node is known, the values of the variables in block $B$ will be completely defined. To achieve this, we define the following partial mapping $h : [2m] \to [m] \cup \{*\}$:
     \begin{equation}
         h(i) = \left \{ \begin{array}{ll}
             f(i) & \text{if } g(f(i)) = i \\
@@ -544,7 +542,7 @@ The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T
         \end{array}\right .
     \end{equation}
         
-    Observe that even if $\alpha$ is a total assignment to $\mathrm{rPHP}_m^{2m}$, the function $h$ is still necessarily undefined for some pigeons. The below claim explains the reason why we're using the retraction pigeonhole principle instead of the standard one.
+    Observe that even if $\alpha$ is a total assignment to $\mathrm{rPHP}_m^{2m}$, the function $h$ is still necessarily undefined for some pigeons. The below claim explains the reason why we are using the retraction pigeonhole principle instead of the standard one.
     
     \begin{claim}
         $h$ and its inverse can be computed by a decision tree of depth $O(\log m)$
@@ -598,7 +596,7 @@ The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T
                 \node [block, fill=gray!20] at (53.center){$B_{13}$};
                 \node [block, fill=gray!20] at (63.center){$B_{5}$};
 
-                \node [block, fill=gray!20] at (44.center){$B_{28}$};
+                \node [block, fill=gray!20] at (44.center){$B_{20}$};
                 \node [block, fill=gray!20] at (54.center){$B_{12}$};
                 \node [block, fill=gray!20] at (64.center){$B_{4}$};
 
@@ -664,26 +662,26 @@ The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T
                     ;
             \end{tikzpicture}
         }
-        \caption{The graph $G_{\alpha}$ of the reduction from $\mathrm{rPHP}^{2m}_m$ to $\mathrm{Ref}_{m(n-\log m +2)-1}(\varphi)$ with $n = 7$ and $m = 8$. The copies of the partial matching defined by $h : [2m] \to [m]$ are represented by \textcolor{blue!70!black}{\textbf{blue}} arrows. Hardcoded nodes are represented in \textcolor{green!60!black}{\textbf{green}}. Derived nodes that survive the walk-up phase are represented in \textcolor{yellow!80!black}{\textbf{yellow}}, while disabled blocks are represented in \textcolor{gray!70}{\textbf{gray}}. The subtree isomorphic to $T_\alpha$ is given by green and yellow nodes.}
+        \caption{The graph $G_{\alpha}$ of the reduction from $\mathrm{rPHP}^{2m}_m$ to $\mathrm{Ref}_{m(n-\log m +2)-1}(\varphi)$ with $n = 6$ and $m = 8$. The copies of the partial matching defined by $h : [2m] \to [m]$ are represented by \textcolor{blue!70!black}{\textbf{blue}} arrows. Hardcoded nodes are represented in \textcolor{green!60!black}{\textbf{green}}. Derived nodes that survive the walk-up phase are represented in \textcolor{yellow!80!black}{\textbf{yellow}}, while disabled blocks are represented in \textcolor{gray!70}{\textbf{gray}}. The subtree isomorphic to $T_\alpha$ is given by green and yellow nodes.}
         \label{fig:rphp_to_ref}
     \end{figure}
     
-    The idea is to map each block of $\mathrm{Ref}_{s}(\varphi)$ to a node of $G_\alpha$. In particular, the last block $B_{s}$ is placed at the root of $G_\alpha$, the node on layer 0, and the rest of the blocks are mapped to the graph decreasing order from left to right across all layers.
+    The idea is to map each block of $\mathrm{Ref}_{s}(\varphi)$ to a node of $G_\alpha$. In particular, the last block $B_{s}$ is placed at the root of $G_\alpha$, the node on layer 0, and the rest of the blocks are mapped to the graph in decreasing order from left to right across all layers.
     
-    Next, we consider the block pointers given by the total assignment $\alpha$. For each of these pointers, we'll add an edge to $G_\alpha$ corresponding to it. For the first $\floor{\log m}$ layers, we hardcode the edges in $G_\alpha$ in a way that they represents a full binary tree. Notice that this part of the pointer assignment doesn't depend on the variables $\alpha$.
+    Next, we consider the block pointers given by the total assignment $\alpha$. For each of these pointers, we will add an edge to $G_\alpha$ corresponding to it. For the first $\floor{\log m}$ layers, we hardcode the edges in $G_\alpha$ in a way that they represents a full binary tree. Notice that this part of the pointer assignment does not depend on the variables $\alpha$.
     
     Now, for each of the remaining layers $\ell \in [n] \setminus [\log m]$, we think of the $2m$ pointers going from the $m$ blocks of layer $\ell$ to those of layer $\ell+1$ as the $2m$ pigeons going to the $m$ holes, as defined by $h$. More precisely, we define the left pointer of the $i$-th block on layer $\ell$ as the $h(2i-1)$-th block on layer $\ell+1$. Similarly, the right pointer is the $h(2i)$-th block on layer $\ell+1$. When $h(i)$ is undefined, which can happen only when an axiom of $\mathrm{rPHP}_{m}^{2m}$ associated with $i$ is violated, we define the corresponding pointer as \textit{null} and we point it directly to the root block $B_{s}$, which automatically results in an axiom violation for $\mathrm{Ref}_{s}(\varphi)$.
     
-    We observe that the resulting topology (ignoring null pointers) is a forest of binary trees: it is constructed by stitching together a binary tree at the top with a layered sequence of copies of the same partial matchings where we have identified pairs of pigeons. Now that the topology of $G_\alpha$ has been defined, we'll show that one of its subtrees is isomorphic to $T_\alpha \subseteq T_n$.
+    We observe that the resulting topology (ignoring null pointers) is a forest of binary trees: it is constructed by stitching together a binary tree at the top with a layered sequence of copies of the same partial matchings where we have identified pairs of pigeons. Now that the topology of $G_\alpha$ has been defined, we will show that one of its subtrees is isomorphic to a subtree $T_\alpha \subseteq T_n$.
     
     Consider the following procedure to construct a decision tree that computes the literal set for a block $B$. Starting from $B$, we walk up $G_\alpha$ to its unique parent in the binary forest by computing the inverse of $h$ using $O(\log m)$ queries. Then, we repeat this process walking upwards for at most $n$ steps until we reach a block $B^*$ without a parent. We have two cases:
     \begin{itemize}
         \item $B^* = B_{s}$. Consider the reverse path $p$ from $B^*$ to $B$, viewed as a sequence of left and right turns. The path $p$ identifies a node $v$ of $T_\alpha$ obtained by following the same sequence of turns described by $p$. Once $v$ is found, we copy all the local structure of $v$ into $B$. In particular, the literal set of $B$ is made equal to that of $v$, where a left turn at layer $\ell$ is associated with $x_\ell$ and a right turn is associated with $\lnot x_\ell$. If $v$ is derived in $T_\alpha$ by resolving on $x_k$, we make $B$ a derived block and set its resolved variable to $x_k$. Similarly, if $v$ is a leaf of $T_\alpha$ that is a weakening of some axiom $C_A \in \varphi$, we make $B$ an axiom block and set its weakening index to $A$.
         
-        \item $B^* \neq B_{s}$. In this case, the block $B$ is set as disabled since it is not part of the subtree isomorphic to $T_n$. All of the other variables of $B$ are set to 0 since they're not needed.
+        \item $B^* \neq B_{s}$. In this case, the block $B$ is set as disabled since it is not part of the subtree isomorphic to $T_\alpha$. All of the other variables of $B$ are set to 0 since they are not needed.
     \end{itemize}
 
-    Through this procedure, all variables of a single block are computed from the same walk-up path, so one depth-$O(n log m)$ decision tree computes the whole block.
+    Through this procedure, all variables of a single block are computed from the same walk-up path, so one depth-$O(n \log m)$ decision tree computes the whole block.
 
     To conclude the proof of the theorem it remains to show that every axiom in $\mathrm{Ref}_{s}(\varphi)$ (composed with the reduction) is implied by some axiom of $\mathrm{rPHP}^{2m}_m$. We argue the contrapositive statement. Since the reduction produces a purported refutation isomorphic to a subtree $T_\alpha \subseteq T$ together with some disabled blocks which do not violate axioms of $\mathrm{Ref}_{m(n+1)-1}(\varphi)$, the only possible axiom violations in $\mathrm{Ref}_{m(n+1)-1}(\varphi)$ are caused by a block on a non-hardcoded layer $\ell \in [n]\setminus [\log m]$ containing a null pointer. Any null pointer is caused by the decision tree querying a pigeon $i$ with $h(i) = *$, which means that the decision tree has witnessed an axiom violation of the form $f(i) = j \to g(j) = i$ for $\mathrm{rPHP}_{m}^{2m}$.
 \end{proof}
@@ -693,7 +691,7 @@ The set of nodes of $T_\alpha$ that have smaller degree in $T_\alpha$ than in $T
 
 To conclude the proof of \Cref{thm:ref_bounds}(ii), we show that an improved tradeoff between block-width and size holds for the formula $\mathrm{Ref}_s(\varphi)$. This tradeoff was first used by \textcite{res_nphard}, using a similar measure called \textit{index-width}. Here, we restate it using the concept of block-width, similar to what is done in \cite{alg_nphard}.
 
-The tradeoff is based on a \textit{random restriction} argument \cite{pitassi,bs_wigder}, another tool typically used to prove Resolution lower bounds. The idea is to randomly compute a restriction that has non-zero probability of having the desired property. Since this probability is greater than one, there must be at least one valid restriction, certifying the bounds.
+The tradeoff is based on a \textit{random restriction} argument \cite{pitassi,bs_wigder}, another tool typically used to prove Resolution lower bounds. The idea is to randomly compute a restriction that has non-zero probability of having the desired property, which implies that there must be at least one restriction that possesses it.
 
 \begin{lemma}
     \label{lem:tradeoff_bw_size}
@@ -709,23 +707,24 @@ The tradeoff is based on a \textit{random restriction} argument \cite{pitassi,bs
         \item After disabling one block of each pair, we set all the remaining blocks as enabled. Moreover, for each disabled block we randomly assign all its remaining variables.
     \end{enumerate}
 
-    Let $\pi$ be a Resolution refutation of $\mathrm{Ref}_s(\varphi)$. After the above procedure is completed, $\rho$ decides for each pair which of the two blocks is disabled, with probability $1/2$ (notice that the procedure doesn't force the other block to be enabled). Therefore, the restricted refutation $\pi_{\upharpoonright_{\rho}}$ is, with probability $1/2$, a refutation of $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho} = \mathrm{Ref}_{s/2}(\varphi)$. Moreover, we observe that leaving out the last block $B_s$ in the above procedure guarantees that $\mathrm{enable}^{B_s}$ is never set to 0 in the restriction, otherwise $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho}$ would contain the empty clause $\bot$, hence a refutation of size 1.
+    Let $\pi$ be a Resolution refutation of $\mathrm{Ref}_s(\varphi)$. After the above procedure is completed, $\rho$ decides for each pair which of the two blocks is disabled, with probability $1/2$. Therefore, the restricted refutation $\pi_{\upharpoonright_{\rho}}$ is refutation of $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho} = \mathrm{Ref}_{s/2}(\varphi)$ (up to renaming variables). Moreover, we observe that leaving out the last block $B_s$ in the above procedure guarantees that $\mathrm{enable}^{B_s}$ is never set to 0 in the restriction, otherwise $\mathrm{Ref}_{s}(\varphi)_{\upharpoonright_\rho}$ would contain the empty clause $\bot$, hence a refutation of size 1.
 
     \begin{claim}
         $\mathrm{bwidth}_{\mathrm{Res}}(\pi_{\upharpoonright_{\rho}}) \leq O(\log \abs{\pi})$ with probability $p > 0$.
     \end{claim}
 
     \begin{proof}
-        For each block $B_i$, with $i \in [s-1]$, consider any literal $\ell \in \{\mathrm{enable}^{B_i}, \lnot \mathrm{enable}^{B_i}\}$. After applying the above procedure, the probability that both block $B_i$ is disabled and $\rho(\ell) =1$ is $1/4$. Therefore, we know that $\Pr_{\rho}[\rho(\ell) = 1] \geq 1/4$.
+        For each block $B_i$, with $i \in [s-1]$, consider any literal $\ell$ mentioning $B_i$. After applying the above procedure, if $\ell$ is a literal over $\mathrm{enable}^{B_i}$ then $\Pr_{\rho}[\rho(\ell) = 1] = 1/2$ trivially follows by the procedure. If $\ell$ is any other variable mentioning $B_i$, instead, we have that:
+        \[\Pr_{\rho}[\rho(\ell) = 1] \geq \Pr_{\rho}[\rho(\ell) = 1, B_i \text{ disabled}] = 1/4\]
 
-        Consider now any clause $C$ in $\pi$ of block-width $w$ (value to be determined later). The probability that the whole clause didn't get killed in the restriction by setting any of its enable literals to 1 is bounded by $\Pr_{\rho}[C_{\upharpoonright_{\rho}} \neq 1] \leq (3/4)^{w/2}$. Since $C$ mentions at least $w/2$ different pair and since each pair is independent from the others we can conclude that:
+        Therefore, it always holds that $\Pr_{\rho}[\rho(\ell) = 1] \geq 1/4$. Consider now any clause $C$ in $\pi$ of block-width $w$ (value to be determined later). Since $C$ mentions at least $w/2$ different pairs and since each pair is independent from the others, the probability that the whole clause did not get killed in the restriction by setting any of its literals to 1 is bounded by $\Pr_{\rho}[C_{\upharpoonright_{\rho}} \neq 1] \leq (3/4)^{w/2}$. Applying the union bound across all clauses of $\pi$, we get that:
         \begin{equation}
             \Pr_{\rho}[\exists C \in \pi \text{ with } \mathrm{bwidth}(C_{\upharpoonright_\rho}) \geq w] \leq \abs{\pi} \cdot \rbk{\frac{3}{4}}^{w/2}
         \end{equation}
             
-        In order for the claim to hold, we want the above bound to be smaller than $1-p$. Indeed, this is true when:
+        In order for the claim to hold, the above bound must be smaller than $1-p$. Indeed, this is true when:
         \begin{equation}
-            w \leq \frac{2(\log \abs{\pi} - \log (1-p))}{\log(4/3)} \leq \frac{2 \log \abs{\pi}}{\log(4/3)}
+            w \geq \frac{2(\log \abs{\pi} - \log (1-p))}{\log(4/3)} \geq \frac{2 \log \abs{\pi}}{\log(4/3)}
         \end{equation}
     \end{proof}
 
@@ -739,7 +738,7 @@ The tradeoff is based on a \textit{random restriction} argument \cite{pitassi,bs
 \end{lemma}
 
 \begin{proof}
-    For each integer $m \geq 0$, define $s_m := m(n -\log m + 2)-1$. Let $m^*$ be the maximum integer satisfying $s \geq s_{m^*}$. By \Cref{thm:rPHP_to_Ref} we know that $\mathrm{rPHP}^{2m^*}_{m^*} \leq^{dt}_{O(n\log m^*)} \mathrm{Ref}_{s_m}(\varphi)$ via a block-aware reduction. By \Cref{lem:rPHP_lower_bound} and \Cref{prop:block_reduction} we get that:
+    For each integer $m \geq 0$, define $s_m := m(n -\log m + 2)-1$. Let $m^*$ be the maximum integer satisfying $s \geq s_{m^*}$. By \Cref{thm:rPHP_to_Ref} we know that $\mathrm{rPHP}^{2m^*}_{m^*} \leq^{dt}_{O(n\log m^*)} \mathrm{Ref}_{s_{m^*}}(\varphi)$ via a block-aware reduction. By \Cref{lem:rPHP_lower_bound} and \Cref{prop:block_reduction} we get that:
     \begin{equation}
         \mathrm{bwidth}_{\mathrm{Res}}(\mathrm{Ref}_{s_{m^*}}(\varphi)) \geq \Omega \rbk{\dfrac{\mathrm{width}_{\mathrm{Res}}(\mathrm{rPHP}^{2m}_{m})}{n \log m}} \geq \Omega \rbk{\frac{m^*}{n \log m^*}}
     \end{equation}
@@ -751,19 +750,20 @@ The tradeoff is based on a \textit{random restriction} argument \cite{pitassi,bs
 
 By combining this with \Cref{lem:tradeoff_bw_size}, we obtain our exponential lower bound of $\mathrm{size}_{\mathrm{Res}}(\mathrm{Ref}_{s}(\varphi)) \geq 2^{\Omega(s/(n^2\log(s/n)))}$. For completeness, we restate \Cref{thm:ref_bounds} with the precise size bounds given by the lemmas of the last sections. By choosing a nice value of $s$, say $n^3$, this bound becomes easy to work with for a more precise proof of \Cref{lem:res_nphard}. 
 
-\addtocounter{theorem}{-2}
-\begin{theorem}
+\addtocounter{theorem}{-16}
+\begin{theorem}[restated]
     \label{thm:ref_bounds_final}
-    Let $\varphi$ be a formula with $n$ variables and $m$ clauses. Then:
+    Let $\varphi$ be a formula with $n$ variables and $m$ clauses.
     \begin{enumerate}[label={(\roman*)}]
-        \item If $\varphi \in \mathrm{SAT}$ then $\mathrm{Ref}_s(\varphi)$ has a Resolution refutation of size $O(s(m+sn^2))$
-        \item If $\varphi \notin \mathrm{SAT}$ then every Resolution refutation of $\mathrm{Ref}_s(\varphi)$ has size $2^{\Omega(s/(n^2\log(s/n)))}$ 
+        \item If $\varphi \in \mathrm{SAT}$ then $\mathrm{Ref}_s(\varphi)$ has a Resolution refutation of size $O(s(m+sn^2))$;
+        \item If $\varphi \notin \mathrm{SAT}$ then every Resolution refutation of $\mathrm{Ref}_s(\varphi)$ has size $2^{\Omega(s/(n^2\log(s/n)))}$.
     \end{enumerate}
 \end{theorem}
+\addtocounter{theorem}{15}
 
-All the results proven can be extended to other weak proof systems by similar arguments. In particular, various results \cite{alg_nphard,resk_nphard,cp_nphard,obdd_nphard,ac0f_nphard} extended them by considering variants of the refutation formula, either by imposing more structure, such as forcing the encoded refutation to be tree-like, or by lifting its complexity by composing it with gadget formulas. To this day, $\mathsf{NP}$-hardness of automatability has been extended with this meta-complexity approach up to the highest weak proof systems commonly studied: Cutting Planes \cite{cp_nphard}, Polynomial Calculus \cite{alg_nphard} and $\mathrm{AC}^0$-Frege \cite{ac0f_nphard}. However, some weak proof systems (Parity Resolution \cite{res_parity}, Sherali-Adams \cite{sherali_adams}, Sum-of-Squares \cite{sos},  $\ldots$) still resist this argument, but only due to the lack of proper ways of proving lower bounds. In particular, the original version of \cite{alg_nphard} claimed the non-automatability of Sherali-Adams, but this statement was later retracted due to failure of reductions preserving bounds.
+All the results proven can be extended to other weak proof systems by similar arguments. In particular, various results \cite{alg_nphard,resk_nphard,cp_nphard,obdd_nphard,ac0f_nphard} extended them by considering variants of the refutation formula, either by imposing more structure, such as forcing the encoded refutation to be tree-like, or by lifting its complexity by composing it with gadget formulas. To this day, $\mathsf{NP}$-hardness of automatability has been extended with this meta-complexity approach up to the highest weak proof systems commonly studied: Cutting Planes \cite{cp_nphard}, Polynomial Calculus \cite{alg_nphard} and $\mathrm{AC}^0$-Frege \cite{ac0f_nphard}. However, some weak proof systems (Parity Resolution \cite{res_parity}, Sherali-Adams \cite{sherali_adams}, Sum-of-Squares \cite{sos},  $\ldots$) still resist this argument, but only due to the lack of proper ways of proving lower bounds. In particular, the original version of \cite{alg_nphard} claimed the non-automatability of Sherali-Adams, but this statement was later retracted in a revised version.
 
-Recently, \textcite{pap} proved that refutation statements are actually \textit{universal} for automatability. In particular, they proved that any reasonably strong proof system (at least above $\mathsf{EF}$) is (weakly) automatable if and only if it is (weakly) automatable on refutation statements. This shows that the non weakly-automatability results of systems from $\mathsf{EF}$ to above can, in some way, be simplified by restricting them to $\mathrm{Ref}_s(\varphi)$. 
+Recently, \textcite{pap} proved that refutation statements are actually \textit{universal} for automatability. In particular, they proved that any reasonably strong proof system (at least above $\mathsf{EF}$) is (weakly) automatable if and only if it is (weakly) automatable on refutation statements. This shows that the non weakly automatability results of systems from $\mathsf{EF}$ to above can, in some way, be simplified by restricting them to $\mathrm{Ref}_s(\varphi)$. 
 
 
 \cleardoublepage
