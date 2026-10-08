@@ -2,7 +2,7 @@
 
 My Master's Degree Thesis in Computer Science at Sapienza Università di Roma, entitled ___"Short Propositional Proofs are Hard to Find: a Meta-Complexity Approach"___.
 
-[Download the Thesis](https://raw.githubusercontent.com/exyss/msc-thesis/main/src/MSc_Thesis.pdf)
+[Download the Thesis](https://raw.githubusercontent.com/exyss/msc-thesis/main/src/CScience_Bianco_thesis.pdf)
 
 ## Abstract
 
