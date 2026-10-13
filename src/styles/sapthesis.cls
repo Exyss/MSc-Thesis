@@ -222,7 +222,7 @@
 
 % logo
 \newif\ifSAP@sapienzalogo \SAP@sapienzalogofalse
-\IfFileExists{sapienzalogo.pdf}{\SAP@sapienzalogotrue}{%
+\IfFileExists{./styles/sapienzalogo.pdf}{\SAP@sapienzalogotrue}{%
 \ClassWarningNoLine{sapthesis}{Logo not found! You have to download it
 manually. See the documentation or just the frontispiece.}
 \RequirePackage{hyperref}}
