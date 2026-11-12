@@ -2,7 +2,7 @@
 
 \section{Propositional logic}
 
-Propositional logic serves as the foundational mathematical framework for reasoning over declarative statements using Boolean truth values and formal logical operators. For our purposes, we will be interested in a fragment of propositional logic that works with finite amount of elements. For a more in depth explanation of propositional logic covering topics necessary to understand this work, the reader is referred to \cite{logic_book,kraj_book,galesi_toran}.
+Propositional logic serves as the foundational mathematical framework for reasoning over declarative statements using Boolean truth values and formal logical operators. For our purposes, we will be interested in a fragment of propositional logic that works with a finite number of elements. For a more in-depth explanation of propositional logic covering topics necessary to understand this work, the reader is referred to \cite{logic_book,kraj_book,galesi_toran}.
 
 Let $\mathrm{Var} = \{x_1, \ldots, x_n\}$ denote a non-empty, finite set of atomic propositional symbols, called \textit{variables}, and let $\mathscr{O} = \{\land, \lor, \lnot, \to, \leftrightarrow\}$ be the set of Boolean logical connectives. Each of these connectives represents, respectively, the concept of conjunction, disjunction, negation, implication and logical equivalence. By recursively combining these connectives, starting from variables, we can build formulas that fully express sentences and properties. For instance, the sentence \curlyquotes{I'll take my umbrella and my boots if it rains} can be modeled by the formula $R \to (U \land B)$.
 
@@ -18,10 +18,10 @@ Let $\mathrm{Var} = \{x_1, \ldots, x_n\}$ denote a non-empty, finite set of atom
 The set $\mathrm{Fml}$ defines propositional logic from a syntactical point of view, i.e. how correct formulas are written. To give meaning to the formulas, we have to also define it from a semantic perspective using \textit{assignments}.
 
 \begin{definition}
-  An assignment is a mapping $\alpha : \mathrm{Var} \to \{0,1\}$ that sets a truth value to each variable.
+  An assignment is a mapping $\alpha : \mathrm{Var} \to \{0,1\}$ that assigns a truth value to each variable.
 \end{definition}
 
-By extension, each assignment $\alpha$ over variables induces an assignment $\widehat{\alpha} : \mathrm{Fml} \to \{0,1\}$ through the semantical meaning of the logical connectives:
+By extension, each assignment $\alpha$ over variables induces an assignment $\widehat{\alpha} : \mathrm{Fml} \to \{0,1\}$ through the semantics of logical connectives:
   \begin{itemize}
     \item $\widehat{\alpha}(\lnot \varphi) = 1$ if and only if $\widehat{\alpha}(\varphi) = 0$
     \item $\widehat{\alpha}(\varphi \land \psi) = 1$ if and only if $\widehat{\alpha}(\varphi) = \widehat{\alpha}(\psi) = 1$
@@ -72,7 +72,7 @@ For instance, consider again the CNF formula in \Cref{eq_1}. When restricted und
 
 \section{Encodings of combinatorial principles}
 
-Instead of working with CNF formulas that do not follow a structure, throughout this work we will focus on CNF formulas that encode combinatorial principles \cite{kraj_book,handbook_sat,galesi_toran}. Intuitively, these formulas make proving computational results easier thanks to their underlying principles \cite{kraj_book,galesi_toran}. For instance, the CNF formula $\mathrm{PHP}^{m}_n$ describing the \textit{Pigeonhole Principle} --- the combinatorial principle stating that $m$ pigeons cannot be mapped to $n$ holes when $m > n$ --- allows us to imagine a partial assignment for this formula as a partial mapping between pigeons and holes.
+Instead of working with CNF formulas that do not follow a structure, throughout this work we will focus on CNF formulas that encode combinatorial principles \cite{kraj_book,handbook_sat,galesi_toran}. Intuitively, these formulas make proving computational results easier thanks to their underlying principles \cite{kraj_book,galesi_toran}. For instance, the CNF formula $\mathrm{PHP}^{m}_n$ describing the \textit{Pigeonhole Principle} --- the combinatorial principle stating that $m$ pigeons cannot be mapped injectively to $n$ holes when $m > n$ --- allows us to imagine a partial assignment for this formula as a partial mapping between pigeons and holes.
 
 To encode combinatorial principles we usually rely on mathematical relations. Let $X$ be a finite set. For each pair $i,j \in X$ we define a \textit{Boolean indicator variable} $x_{i,j}$. Through these variables, any total assignment on the variables $\{x_{i,j}\}_{i,j \in X}$ corresponds to a relation $R_{\alpha} \subseteq X \times X$ with the intended meaning of $\alpha(x_{i,j}) = 1$ if and only if $R(i,j)$ holds. Any formula satisfied by an assignment describes a property satisfied by the relation described by such assignment.
 
@@ -83,7 +83,7 @@ As long as $X$ is finite, it is always possible to define a finite set of variab
   \bigvee_{i \in X} \bigwedge_{j \in X} x_{i,j}
 \end{equation}
 
-Going back to combinatorial principles, consider again the Pigeonhole Principle. This simple counting principle captures one of the most basic primitives of mathematics. Since the pigeonhole principle entails a counting argument, it has been considered as a prominent example of formula that is hard to prove for reasoning systems that have no rules that allow them to count \cite{php_lower, php_lower_2,php_easy,kraj_book,galesi_toran}.
+Going back to combinatorial principles, consider again the Pigeonhole Principle. This simple counting principle captures one of the most basic primitives of mathematics. Since the pigeonhole principle entails a counting argument, it has been considered as a prominent example of a formula that is hard to prove for proof systems that cannot count \cite{php_lower, php_lower_2,php_easy,kraj_book,galesi_toran}.
 
 Formally, the principle says that if $f$ is a total mapping from $[m] = \{1, \ldots, m\}$ to $[n] = \{1, \ldots, n\}$ with $m > n$ then $f$ has a \textit{collision}, that is, there are two pigeons $i,i' \in [m]$ with $i \neq i'$ mapped to the same hole, meaning $f(i) = j$ and $f(i') = j$. In first-order logic, this can be expressed as:
 \begin{equation}
@@ -154,19 +154,19 @@ This last propositional formula is referred to as $\mathrm{PHP}^{m}_n$. Proving 
 
 \section{Computability}
 
-Depending on the objective, a problem can ask for a binary answer, a specific solution structure or the best possible solution out of many. We divide these problems into three categories: \textit{decision}, \textit{search} and \textit{optimization} \cite{sip_book,papad_book}. A decision problem is a problem for which we are asked to determine if a chosen property holds for a given a instance of the problem. A search problem, instead, asks to find some structure that certifies the validity of the chosen property. Similarly, an optimization problem asks us to find the optimal structure among all the available ones. It is easy to see that these three ideas form some sort of hierarchy between types of problems. In general, optimization problems are at least as hard as search problems, which in turn is at least as hard as decision problems. For $\mathsf{NP}$-complete problems (see \Cref{sec:complexity}), search and decision are generally polynomially equivalent. This property is known as \textit{self-reducibility} \cite{decision_vs_search,papad_book}.
+Depending on the objective, a problem can ask for a binary answer, a specific solution structure or the best possible solution out of many. We divide these problems into three categories: \textit{decision}, \textit{search} and \textit{optimization} \cite{sip_book,papad_book}. A decision problem is a problem for which we are asked to determine if a chosen property holds for a given instance of the problem. A search problem, instead, asks to find some structure that certifies the validity of the chosen property. Similarly, an optimization problem asks us to find the optimal structure among all the available ones. It is easy to see that these three ideas form some sort of hierarchy between types of problems. In general, optimization problems are at least as hard as search problems, which in turn are at least as hard as decision problems. For $\mathsf{NP}$-complete problems (see \Cref{sec:complexity}), search and decision are generally polynomially equivalent. This property is known as \textit{self-reducibility} \cite{decision_vs_search,papad_book}.
 
 We face these types of problems every day in our life. For instance, suppose that we want to reach a destination $B$ from a starting point $A$. If we are interested in finding the \textit{shortest} route between point $A$ and $B$, this becomes an optimization problem. If we want to find a route between the two sites, without caring about its length, this becomes a search problem. If, instead, we want to just establish the existence of at least one route, this becomes a decision problem.  
 
 Let $\Sigma$ be a finite set of symbols (e.g. $\Sigma = \{a,b,c, 0, \$, 3, x, \ldots\}$), referred to as \textit{alphabet}, and let $\Sigma^*$ be the infinite set of all finite strings formed by characters taken from that alphabet. Any subset $L \subseteq \Sigma^*$ is referred to as a \textit{language}. Typically, we are interested in the case where $\Sigma = \{0,1\}$.
 
-Consider a binary predicate $P : \Sigma^* \to \{0,1\}$ representing some property, meaning that $P(x) = 1$ means that the property holds for the input instance $x$ and $P(x) = 0$ means that it does not. Let $R_P \subseteq \Sigma^* \times \Sigma^*$ be the binary relation such that $R_P(x,y)$ holds if and only if $y$ certifies the fact that $P(x) = 1$. We refer to $\mathrm{Sol}_P(x) = \{y \in \Sigma^* \mid R_P(x,y)\}$ as the set of \textit{solutions} (or \textit{witnesses}) for the instance $x$ over the property $P$.
+Consider a Boolean predicate $P : \Sigma^* \to \{0,1\}$ representing some property, meaning that $P(x) = 1$ means that the property holds for the input instance $x$ and $P(x) = 0$ means that it does not. Let $R_P \subseteq \Sigma^* \times \Sigma^*$ be the binary relation such that $R_P(x,y)$ holds if and only if $y$ certifies the fact that $P(x) = 1$. We refer to $\mathrm{Sol}_P(x) = \{y \in \Sigma^* \mid R_P(x,y)\}$ as the set of \textit{solutions} (or \textit{witnesses}) for the instance $x$ over the property $P$.
 
 \begin{definition}
   The decision problem of $P$ is defined as the language $\Pi_{\text{dec}}^P = \{x \in \Sigma^* \mid \mathrm{Sol}_P(x) \neq \varnothing\}$. The problem $\Pi_{\text{dec}}^P$ is said to be decidable (or computable) if there is an algorithm $\mathcal{A}$ such that $\mathcal{A}(x) = 1$ when $\mathrm{Sol}_P(x) \neq \varnothing$ and $\mathcal{A}(x) = 0$ otherwise.
 \end{definition}
 
-We observe that the above definition of computability for decision problem can also be stated as the existence of an always-halting algorithm $L(\mathcal{A}) =\Pi_{\text{dec}}^P$. Moreover, we also observe that the above definition could've been stated without the use of the binary relation $R_P$ since $\Pi_{\text{dec}}^P = \{x \in \Sigma^* \mid P(x) = 1\}$ is an equivalent definition. In this setting, the definition is given using $R_P$ only for consistency with search and optimization problems. In fact, for the other two types of problems binary relations are necessary due to the fact that one instance may have more than one possible witness. For instance, there may be more than one (optimal) route from point $A$ to point $B$.
+We observe that the above definition of computability for decision problem can also be stated as the existence of an always-halting algorithm $L(\mathcal{A}) =\Pi_{\text{dec}}^P$. Moreover, we also observe that the above definition could have been stated without the use of the binary relation $R_P$ since $\Pi_{\text{dec}}^P = \{x \in \Sigma^* \mid P(x) = 1\}$ is an equivalent definition. In this setting, the definition is given using $R_P$ only for consistency with search and optimization problems. In fact, for the other two types of problems binary relations are necessary due to the fact that one instance may have more than one possible witness. For instance, there may be more than one (optimal) route from point $A$ to point $B$.
 
 \begin{definition}
   The search problem of $P$ is defined as the binary relation $\Pi_{\text{search}}^P = R_P$. The problem $\Pi_{\text{search}}^P$ is said to be solvable (or computable) if there is an algorithm $\mathcal{A}$ such that $\mathcal{A}(x) \in \mathrm{Sol}_P(x)$ when $\mathrm{Sol}_P(x) \neq \varnothing$ and $\mathcal{A}(x) = \bot$ otherwise.
@@ -189,7 +189,7 @@ In his seminal work, Turing \cite{turing} proved that some problems are \textit{
   $s$ if on every input $x$ it uses at most $s(|x|)$ memory cells.
 \end{definition}
 
-These two complexity measures are intrinsically related one to another and they are, usually, negatively correlated. Generally, if we allow our algorithm to use more space then the computation can be sped up by saving partial computations, while if we want to lower the amount of space needed then these partial computations have to be calculated each time they are required. Larger inputs require larger amounts of computational resources, making the values $t(n)$ and $s(n)$ proportional to the size $n$ of the input.
+These two complexity measures are intrinsically related one to another and they are, usually, negatively correlated. Generally, if we allow our algorithm to use more space then the computation can be sped up by saving partial computations, while if we want to lower the amount of space needed then these partial computations have to be calculated each time they are required. Larger inputs require larger amounts of computational resources, making the values $t(n)$ and $s(n)$ grow with the size $n$ of the input.
 
 Usually, we work with these measures as the input length grows asymptotically. In particular, borrowing notation from standard calculus, we are interested in bounding costs from above and below, up to some constant factor. Let $f,g : \N \to \R^+$ be two functions. We say that:
   \begin{itemize}[nosep]
@@ -199,7 +199,7 @@ Usually, we work with these measures as the input length grows asymptotically. I
     \item $f(x)$ is in $o(g(x))$ when for each constant $c > 0$ there is a constant $n_0 > 0$ such that $\forall n \geq n_0$ we have $f(n) < c \cdot g(n)$.
   \end{itemize}
 
-The main goal of computational complexity is establishing what can and cannot be solved under some complexity measure constraints. In real world situations, any algorithm with runtime larger than $O(n^3)$ is considered impractical since it requires too much time for large inputs. Nonetheless, complexity theorists use this to their advantage: if a problem cannot be solved even when allowing this constraint to be any form of \textit{polynomial time}, i.e. time $O(n^c)$ for some $c > 0$, the problem is ruled out as \textit{intractable}. Therefore, in this context efficient and polynomial-time are considered synonyms of each other. The class of all efficiently solvable decision problems is denoted with $\mathsf{P}$ and the same holds for $\mathsf{FP}$, the class of efficiently solvable search problems \cite{cobham_p,arora_barak}.
+The main goal of computational complexity is establishing what can and cannot be solved under some complexity measure constraints. In real world situations, any algorithm with runtime larger than $O(n^3)$ is considered impractical since it requires too much time for large inputs. Nonetheless, complexity theorists use this to their advantage: if a problem cannot be solved even when allowing this constraint to be any form of \textit{polynomial time}, i.e. time $O(n^c)$ for some $c > 0$, the problem is ruled out as \textit{intractable}. Therefore, in this context efficient and polynomial-time are considered synonyms of each other. The class of all efficiently solvable decision problems is denoted by $\mathsf{P}$ and the same holds for $\mathsf{FP}$, the class of efficiently solvable search problems \cite{cobham_p,arora_barak}.
 
 \begin{definition}
   We define $\mathsf{P}$ as the class of decision problems solvable in polynomial time by an algorithm, i.e. in time $O(n^c)$ for some $c > 0$. Similarly, $\mathsf{FP}$ is the class of search problems solvable in polynomial time.
@@ -223,9 +223,9 @@ For our purposes, we will assume this conjecture to be true. Another class of ou
   $\mathsf{coNP} = \{L \subseteq \Sigma^* \mid \overline{L} \in \mathsf{NP}\}$.
 \end{definition}
 
-it is easy to see that problems that lie in $\mathsf{coNP}$ admit a verifier that uses witnesses to discard invalid input instances: if $w$ is a witness for the membership of $x$ in $\overline{L}$ then $w$ is also a witness for the non-membership of $x$ in $L$. In other words, a problem is in $\mathsf{NP}$ if its correct instances can be efficiently verified, while a problem is in $\mathsf{coNP}$ if the same holds for incorrect instances. 
+It is easy to see that problems that lie in $\mathsf{coNP}$ admit a verifier that uses witnesses to discard invalid input instances: if $w$ is a witness for the membership of $x$ in $\overline{L}$ then $w$ is also a witness for the non-membership of $x$ in $L$. In other words, a problem is in $\mathsf{NP}$ if its correct instances can be efficiently verified, while a problem is in $\mathsf{coNP}$ if the same holds for incorrect instances. 
 
-Again, it is easy to see that $\mathsf{P} \subseteq \mathsf{coNP}$, but the converse is not known and it is actually a question equivalent to establishing that $\mathsf{P} = \mathsf{NP}$. This is due to the fact that if a problem is efficiently solvable then its complement is also efficiently solvable (we can just negate the output of the same algorithm). This same reasoning implies that if $\mathsf{P} = \mathsf{NP}$ then $\mathsf{NP} = \mathsf{coNP}$. Therefore, proving that $\mathsf{NP} \neq \mathsf{coNP}$ could be a way of establishing that $\mathsf{P} \neq \mathsf{NP}$. It is also conjectured that $\mathsf{NP} \neq \mathsf{coNP}$: there are evident asymmetries between the hardness of witnessing that something holds and that of witnessing something does not hold both in mathematics and computer science \cite{cook_proof_compx}.
+Again, by definition $\mathsf{P} \subseteq \mathsf{coNP}$, but the converse is not known and it is actually a question equivalent to establishing that $\mathsf{P} = \mathsf{NP}$. This is due to the fact that if a problem is efficiently solvable then its complement is also efficiently solvable (we can just negate the output of the same algorithm). This same reasoning implies that if $\mathsf{P} = \mathsf{NP}$ then $\mathsf{NP} = \mathsf{coNP}$. Therefore, proving that $\mathsf{NP} \neq \mathsf{coNP}$ could be a way of establishing that $\mathsf{P} \neq \mathsf{NP}$. It is also conjectured that $\mathsf{NP} \neq \mathsf{coNP}$: there are evident asymmetries between the hardness of witnessing that something holds and that of witnessing something does not hold both in mathematics and computer science \cite{cook_proof_compx}.
 
 \begin{conjecture}
   $\mathsf{NP} \neq \mathsf{coNP}$
@@ -243,19 +243,19 @@ By definition, we have that $\mathsf{P} \subseteq \mathsf{QP} \subseteq \mathsf{
   $\mathsf{NP} \not\subseteq \mathsf{QP}$ and $\mathsf{NP} \not\subseteq \mathsf{SUBEXP}$.
 \end{conjecture}
 
-Finally, we define one last class that introduces randomized computation \cite{gill_zpp}. Intuitively, a randomized algorithm is an algorithm that is allowed to generate random bits according to a probability distribution, typically set to the uniform distribution over $0$ and $1$. In this work we will be interested in only one particular type of randomized computation, referred to as \textit{zero-sided error computation}. A randomized algorithm is said to have zero-sided error when for each generable sequence of randomized bits the algorithm never makes mistakes, but it is allowed to answer with \curlyquotes{I do not know} with probability at most $1/2$. The class of problems efficiently solvable by these algorithms is referred to as $\mathsf{ZPP}$. We observe that $\mathsf{P} \subseteq \mathsf{ZPP} \subseteq \mathsf{NP} \cap \mathsf{coNP}$.
+Finally, we define one last class that introduces randomized computation \cite{gill_zpp}. Intuitively, a randomized algorithm is an algorithm that is allowed to generate random bits according to a probability distribution, typically set to the uniform distribution over $0$ and $1$. In this work we will be interested in only one particular type of randomized computation, referred to as \textit{zero-error computation}. A randomized algorithm is said to have zero-error when for each sequence of random bits the algorithm never makes mistakes, but it is allowed to answer with \curlyquotes{I do not know} with probability at most $1/2$. The class of problems efficiently solvable by these algorithms is referred to as $\mathsf{ZPP}$. We observe that $\mathsf{P} \subseteq \mathsf{ZPP} \subseteq \mathsf{NP} \cap \mathsf{coNP}$.
 
 \begin{definition}
-  We define $\mathsf{ZPP}$ as the class of decision problems solvable in polynomial time by a zero-sided error algorithm, i.e. in time $O(n^c)$ for some $c > 0$.
+  We define $\mathsf{ZPP}$ as the class of decision problems solvable in polynomial time by a zero-error algorithm, i.e. in time $O(n^c)$ for some $c > 0$.
 \end{definition}
 
-To interact with these classes we often use the concept of reductions between problems \cite{karp,sip_book}. The idea of problem reduction is simple: if there is a reducing function between an initial problem $A$ and a target problem $B$ and $B$ can be solved then $A$ can also be solved by using the reduction as a tunnel. This is due to the fact that if an algorithm for the original problem can simply compute the reduction and then execute the algorithm that solves the new problem.
+To interact with these classes we often use the concept of reductions between problems \cite{karp,sip_book}. The idea of problem reduction is simple: if there is a reducing function between an initial problem $A$ and a target problem $B$ and $B$ can be solved then $A$ can also be solved by using the reduction as a tunnel. This is due to the fact that an algorithm for the original problem can simply compute the reduction and then execute the algorithm that solves the new problem.
 
 \begin{definition}[Many-to-one reduction]
   Let $A$ and $B$ be two decision problems. We say that $A$ many-to-one reduces to $B$, written as $A \leq_m B$ when there is a computable function $f : \Sigma^* \to \Sigma^*$ such that $x \in A$ if and only if $f(x) \in B$. 
 \end{definition}
 
-When $A \leq_m B$ holds, we say that $B$ is \curlyquotes{at least as hard as} $A$ since solving $B$ implies solving $A$. If the reduction is computable in polynomial time, we say that $A$ \textit{p-reduces} to $B$, written as $A \leq_p B$. In two seminal papers, Cook and Levin \cite{cook_sat,levin_fsat} independently showed that the \textit{satisfiability problem} $\mathrm{SAT} = \{\abk{\varphi} \mid \varphi \text{ a satisfiable CNF}\}$, where $\abk{\cdot}$ denotes binary encoding, is $\mathsf{NP}$-hard, meaning that every problem that lies in $\mathsf{NP}$ is many-to-one reducible to it. Under the assumption that $\mathsf{P} \neq \mathsf{NP}$, this makes this problem unsolvable in polynomial time.
+When $A \leq_m B$ holds, we say that $B$ is \curlyquotes{at least as hard as} $A$ since solving $B$ implies solving $A$. If the reduction is computable in polynomial time, we say that $A$ \textit{p-reduces} to $B$, written as $A \leq_p B$. In two seminal papers, Cook and Levin \cite{cook_sat,levin_fsat} independently showed that the \textit{satisfiability problem} $\mathrm{SAT} = \{\abk{\varphi} \mid \varphi \text{ a satisfiable CNF}\}$, where $\abk{\cdot}$ denotes binary encoding, is $\mathsf{NP}$-hard, meaning that every problem that lies in $\mathsf{NP}$ is polynomial-time reducible to it. Under the assumption that $\mathsf{P} \neq \mathsf{NP}$, this makes this problem unsolvable in polynomial time.
 
 \section{Decision trees}
 
@@ -265,9 +265,9 @@ When $A \leq_m B$ holds, we say that $B$ is \curlyquotes{at least as hard as} $A
  A decision tree is a rooted directed binary tree whose nodes are associated with either an output value or an input Boolean variable. Each internal node is labeled by a variable and the two outgoing edges are labeled by the two possible values. Each leaf is labeled with an output $o \in O$, for a set of outputs $O$.
 \end{definition}
 
-A Boolean function $f$ is said to be computed by a decision tree $\mathcal{T}$ when for each input $x$ it holds that $f(x) = \mathcal{T}(x)$. For this computation model we are interested in two main complexity measures: depth and size \cite{jukna, dt_survey}. The \textit{depth} of a decision tree is the number of edges in a longest path from the root to a leaf, or equivalently, the maximum number of bits tested on such a path. The \textit{size} of a decision tree, instead, is the number of nodes in the tree. Generally, for a Boolean function $f$ we denote with $D(f)$ the minimum depth across all decision trees computing $f$.
+A Boolean function $f$ is said to be computed by a decision tree $\mathcal{T}$ when for each input $x$ it holds that $f(x) = \mathcal{T}(x)$. For this computation model we are interested in two main complexity measures: depth and size \cite{jukna, dt_survey}. The \textit{depth} of a decision tree is the number of edges in a longest path from the root to a leaf, or equivalently, the maximum number of bits tested on such a path. The \textit{size} of a decision tree, instead, is the number of nodes in the tree. Generally, for a Boolean function $f$ we denote by $D(f)$ the minimum depth across all decision trees computing $f$.
 
-An interesting property of decision trees is their possibility to be represented as propositional formulas. In particular, a depth-$d$ decision tree $\mathcal{T}$ computing $f$ gives rise to both a $d$-DNF and a $d$-CNF representation for $f$.
+An interesting property of decision trees is that they can be represented as propositional formulas. In particular, a depth-$d$ decision tree $\mathcal{T}$ computing $f$ gives rise to both a $d$-DNF and a $d$-CNF representation for $f$.
 
 Let $\mathrm{Leaves}(\mathcal{T})$ be the set of all leaves in $\mathcal{T}$ and let $\mathrm{out}(\ell)$ be the output value associated with a leaf $\ell \in \mathcal{T}$. Then, the associated $d$-DNF $\mathrm{DNF}(\mathcal{T})$ is given by
 
@@ -301,12 +301,12 @@ or as the CNF formula obtained by negating the DNF of the inverted tree
         \node[circle, draw] (6) [below left of=3, ]{$x_2$};
         \node[rectangle, draw] (7) [below right of=3]{$o_7$};
 
-        \node[rectangle, draw] (8) [below left of=4, xshift=10]{$o_1$};
-        \node[rectangle, draw] (9) [below right of=4, xshift=-10]{$o_2$};
-        \node[rectangle, draw] (10) [below left of=5, xshift=10]{$o_3$};
-        \node[rectangle, draw] (11) [below right of=5, xshift=-10]{$o_4$};
-        \node[rectangle, draw] (12) [below left of=6, xshift=10]{$o_5$};
-        \node[rectangle, draw] (13) [below right of=6, xshift=-10]{$o_6$};
+        \node[rectangle, draw] (8) [below left of=4, xshift=10]{$0$};
+        \node[rectangle, draw] (9) [below right of=4, xshift=-10]{$0$};
+        \node[rectangle, draw] (10) [below left of=5, xshift=10]{$1$};
+        \node[rectangle, draw] (11) [below right of=5, xshift=-10]{$1$};
+        \node[rectangle, draw] (12) [below left of=6, xshift=10]{$0$};
+        \node[rectangle, draw] (13) [below right of=6, xshift=-10]{$1$};
 
         \path[every node/.style={font=\sffamily\small}]
         (1) edge[swap, color=Green]  node{0} (2)
@@ -329,7 +329,7 @@ or as the CNF formula obtained by negating the DNF of the inverted tree
         ;
     \end{tikzpicture}
 
-    \caption{An example of a decision tree of size 13 and depth 3. The green path shows the computation made for the input $x = 011$.}
+    \caption{An example of a decision tree of size 13 and depth 3 with Boolean outputs. The green path shows the computation made for the input $x = 011$.}
     \label{fig:decision_tree}
 \end{figure}
 
