@@ -138,7 +138,7 @@ However, this algorithm is essentially the best we can hope for. \textcite{res_w
 The framework used in this intractability result is similar to the one used in \Cref{sec:weak_systems} to prove that Resolution is not automatable under $\mathsf{P} \neq \mathsf{NP}$.
 
 \begin{theorem}
-    Tree-like Resolution cannot be automated in time $n^{o(\log s)}$, unless the rETH is false.\footnote{on the 25th of October 2026, one week after submission of this thesis, \textcite{openai,anthropic} released two attempts at disproving the ETH, both found by powerful internal AI models. While scientific community has not yet confirmed their correctness, both seem to be flawless. This implies that tree-like Resolution may have sub-quasi-polynomial automating algorithms.}
+    Tree-like Resolution cannot be automated in time $n^{o(\log s)}$, unless the rETH is false.\footnote{on the 25th of October 2026, one week after submission of this thesis, \textcite{openai,anthropic} released two attempts at disproving the ETH, both found by powerful internal AI models. While scientific community has not yet confirmed their correctness, both seem to be flawless. Nonetheless, the argument still holds under weaker conjectures.}
 \end{theorem}
 
 \begin{proof}
@@ -309,7 +309,7 @@ Moreover, we also observe that the weakening variables $\text{weak}_A^B$ are def
 The axiom clauses of $\mathrm{Ref}_s(\Phi)$ have been written as implications for the sake of readability. This encoding of $\mathrm{Ref}_s(\Phi)$ is defined over $N = \Theta(s^2 + sm + sn + nm)$ variables and $M = \Theta(s^2n^2 + smn)$ clauses, meaning that $\abs{\mathrm{Ref}_s(\Phi)} = \mathrm{poly}(s,n,m)$. The maximum width of the clauses is $O(s+m+n)$.
 
 \begin{proposition}
-    $\varphi$ has a Resolution refutation of length at most $s$ if and only if $\mathrm{Ref}_s(\varphi)$ is satisfiable.
+    The formula $\varphi$ has a Resolution refutation of length at most $s$ if and only if $\mathrm{Ref}_s(\varphi)$ is satisfiable.
 \end{proposition}
 
 \begin{proof}
@@ -762,7 +762,7 @@ By combining this with \Cref{lem:tradeoff_bw_size} applied to $s \geq 2n^2$, we 
 \end{theorem}
 \addtocounter{theorem}{15}
 
-Analogous results have been obtained for other weak proof systems. In particular, various results \cite{alg_nphard,resk_nphard,cp_nphard,obdd_nphard,ac0f_nphard} extended them by considering variants of the refutation formula, either by imposing more structure, such as forcing the encoded refutation to be tree-like, or by lifting its complexity by composing it with gadget formulas. To this day, $\mathsf{NP}$-hardness of automatability has been extended with this meta-complexity approach up to the highest weak proof systems commonly studied: Cutting Planes \cite{cp_nphard}, Polynomial Calculus \cite{alg_nphard} and $\mathrm{AC}^0$-Frege \cite{ac0f_nphard}. However, some weak proof systems (Parity Resolution \cite{res_parity}, Sherali-Adams \cite{sherali_adams}, Sum-of-Squares \cite{sos},  $\ldots$) still resist this argument, mainly because suitable lower-bound techniques are missing. In particular, the original version of \cite{alg_nphard} claimed the non-automatability of Sherali-Adams, but this statement was later retracted in a revised version.
+Analogous results have been obtained for other weak proof systems. In particular, various results \cite{alg_nphard,resk_nphard,cp_nphard,obdd_nphard,ac0f_nphard} extended them by considering variants of the refutation formula, either by imposing more structure, such as forcing the encoded refutation to be tree-like, or by lifting its complexity by composing it with gadget formulas. To this day, $\mathsf{NP}$-hardness of automatability has been extended with this meta-complexity approach up to the highest weak proof systems commonly studied: Cutting Planes \cite{cp_nphard}, Polynomial Calculus \cite{alg_nphard} and $\mathrm{AC}^0$-Frege \cite{ac0f_nphard}. However, some weak proof systems (Parity Resolution \cite{res_parity}, Sherali-Adams \cite{sherali_adams}, Sum-of-Squares \cite{sos},  $\ldots$) still resist this argument, mainly because suitable lower-bound techniques are missing. In particular, the original version of \cite{alg_nphard} claimed the non-automatability of Sherali-Adams, but this statement was later retracted in a revised version\footnote{on the 30th of October 2026, one week and a half after submission of this thesis, \textcite{sa_nphard} settled the question for Sherali-Adams by using a different lifting.}.
 
 Recently, \textcite{pap} proved that refutation statements are actually \textit{universal} for automatability. In particular, they proved that any reasonably strong proof system (at least above $\mathsf{EF}$) is (weakly) automatable if and only if it is (weakly) automatable on refutation statements. This shows that the results showing that systems from $\mathsf{EF}$ upwards are not weakly automatable can, in some way, be simplified by restricting them to $\mathrm{Ref}_s(\varphi)$. 
 

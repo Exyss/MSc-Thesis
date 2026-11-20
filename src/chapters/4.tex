@@ -78,7 +78,7 @@ Another important property to observe is that analyzability is downward closed u
     Let $P,Q$ be two proof systems such that $Q \leq_p P$. Then, if $P$ is (search-)analyzable, so is $Q$.
 \end{proposition}
 
-we will use this to conclude that every proof system below PCR is analyzable. Notice that this does not imply a simplified proof of the $\mathsf{NP}$-hardness of automating NS and PC since they are incomparable with Resolution.
+We will use this to conclude that every proof system below PCR is analyzable. Notice that this does not imply a simplified proof of the $\mathsf{NP}$-hardness of automating NS and PC since they are incomparable with Resolution.
 
 In the very same article, \textcite{pap} point out that analyzability fails in the context of strong proof systems. In particular, they prove that Extended Frege is $\mathsf{NP}$-hard to analyze, even in the decisional version, through the fact that $\mathsf{EF}$ can prove \cite{cook_pitassi} Haken's Resolution lower bound for the pigeonhole principle \cite{haken}. In particular, they extend this by showing that for every $\varphi$ the system $\mathrm{EF}$ always has a proof $\pi_\varphi$ of $\lnot \mathrm{Ref_s}(\varphi \lor \mathrm{PHP}_n)$ constructible in polynomial time $n^c$. The $\mathsf{NP}$-hardness follows by mapping $\varphi \mapsto (\varphi \lor \PHP_n, \pi_\varphi, 1^{n^c})$, since $\varphi \lor \PHP_n$ is satisfiable if and only if $\varphi$ is. In a more recent article \cite{pap_2}, they extended this result by proving that $\mathrm{AC}^0$-Frege is not analyzable in quasi-polynomial time. These non-analyzability results show that the technique of proving non-automatability results through upper and lower bounds on $\mathrm{Ref}_s(\varphi)$ fails for Frege systems and above.
 
@@ -368,11 +368,11 @@ In the following algorithm, we will denote the variables of $\mathrm{Ref}_s(\var
     In the second case, instead, the algorithm failed to find an axiom $\mathscr{A}$ of $\varphi$ that was a weakening of the clause $\mathscr{C}$ described in $\alpha$ for a block $\mathfrak{B}$ on the last layer $n$. Since $\mathscr{C}$ contains $n$ literals by condition (iii) of the invariant and since it is not a weakening of any axiom of $\varphi$, it must hold that $\lnot \mathscr{C}$ is a total assignment for $\varphi$ that satisfies it. This concludes the proof of the lemma.
 \end{proof}
 
-We are now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}[n^3]$.
+We are now ready to put the two phases together. Since the bound of the randomized restriction is slightly better, it can be used to work with $\mathrm{FPAP}_{\mathrm{Res}}[n^2]$, while the deterministic restriction suffices only for $\mathrm{FPAP}_{\mathrm{Res}}[n^3]$.
 
 \begin{theorem}
     \label{thm:fpap_res}
-    $\mathrm{FPAP}[n^3] \in \mathsf{FP}$ and $\mathrm{FPAP}[n^2] \in \mathsf{FZPP}$.
+    $\mathrm{FPAP}_{\mathrm{Res}}[n^3] \in \mathsf{FP}$ and $\mathrm{FPAP}_{\mathrm{Res}}[n^2] \in \mathsf{FZPP}$.
 \end{theorem}
 
 \begin{proof}
@@ -500,7 +500,7 @@ Therefore, an extraction algorithm for PCR needs a constructive version of the R
 \section{Is analyzability linked to feasible interpolation?}
 \label{sec:fis_an}
 
-Due to the tight relations between (weak) automatability and feasible interpolation (\Cref{thm:waut_fi}, \Cref{thm:fi_waut}, \Cref{thm:resk_fi}) and between automatability and analyzability (\Cref{prop:aut_an}), investigating whether analyzability and feasible interpolation are connected to each other follows as a natural question. Moreover, both analyzability and feasible interpolation are \textit{extraction properties}: the former extracts information from proofs of $\mathrm{Ref}_s(\varphi)$, while the latter can extract information from unsatisfiable split formulas $A(x,y) \land B(x,z)$. In this section, we investigate both directions.
+Due to the tight relations between (weak) automatability and feasible interpolation (\Cref{thm:waut_fi}, \Cref{thm:fi_waut}, \Cref{thm:resk_fi}) and between automatability and analyzability (\Cref{prop:aut_an}), investigating whether analyzability and feasible interpolation are connected to each other is a natural question. Moreover, both analyzability and feasible interpolation are \textit{extraction properties}: the former extracts information from proofs of $\mathrm{Ref}_s(\varphi)$, while the latter can extract information from unsatisfiable split formulas $A(x,y) \land B(x,z)$. In this section, we investigate both directions.
 
 First of all, we start by observing that analyzability and feasible interpolation indeed seem to be related to each other. In particular, all proof systems that are known to be analyzable, i.e. those below $\mathrm{PCR}$ (\Cref{thm:pcr_an}), also have feasible interpolation \cite{kraj_fi, hak_fi}. However, not all proof systems that possess feasible interpolation are known to be analyzable (Cutting Planes \cite{pud_fi}, Sum-of-Squares \cite{hak_fi}, $\ldots$). Nonetheless, all proof systems that are known to not be analyzable ($\mathrm{AC}^0$-Frege, Frege and Extended Frege \cite{pap, pap_2}) do not possess feasible interpolation under cryptographic assumptions \cite{kraj_fi,no_fis_int,fis_int_weak_aut,ac0_crypto}. For $\mathrm{Res}(k)$, neither analyzability nor feasible interpolation has been proven. This analysis raises two main questions: (i) does feasible interpolation imply analyzability? (ii) does the converse hold?
 
@@ -602,13 +602,6 @@ When $t$ is a polynomial function, we say that the pair is simply separable. The
                 (Res) edge[out=0, in=270] (PCR)
                 (Res) edge[out=180, in=270] (CP)
                 (CP) edge[out=90, in=180] (F);
-
-            % ---------- Non Cook--Reckhow boundary ----------
-            \draw[-, thick, dashed, postaction={decorate, decoration={text along path,
-                    text align={left indent=4pt}, raise=5pt,
-                    text={|\sffamily\Large|Non Cook{\textendash}Reckhow}}}]
-                (-4.3,11.9) .. controls (-2.0,8.6) and (2.0,8.6) .. (4.3,11.9);
-
         \end{tikzpicture}%
     }
     \caption{The current status of all properties. Systems that are (quasi-)automatable are represented in the \textcolor{txtGreen}{green} region. Systems that are not automatable unless $\mathsf{P} = \mathsf{NP}$ are represented in the \textcolor{txtBlue}{blue} region (for $\mathrm{Res}^*$, unless ETH fails). Systems that are not automatable due to lack of feasible interpolation, unless the Diffie--Hellman key exchange fails, are represented in the \textcolor{txtYellow}{yellow} region. Systems that are not analyzable unless $\mathsf{P} = \mathsf{NP}$ are represented in the \textcolor{txtOrange}{orange} region (for $\mathrm{AC}^0$-Frege, unless $\mathsf{NP} \subseteq \mathsf{QP}$). Analyzable systems are represented in the \textcolor{txtPurple}{purple} region.}
@@ -625,7 +618,7 @@ When $t$ is a polynomial function, we say that the pair is simply separable. The
     Vice versa, suppose that $Q$ is weakly automatable and let $\mathcal{A}$ be an algorithm automating $P \geq_p Q$. Then, we can build a separator $\mathcal{B}$ that on input $(\varphi, 1^t)$ runs $\mathcal{A}(\varphi)$ for at most $p(|\varphi| + t)$ steps, where $p$ is the running time of $A$, accepting if and only if the computation does not return a refutation within this bound
 \end{proof}
 
-We shall use the above equivalence to prove that if analyzability were to imply feasible interpolation then every proof system would be weakly automatable. In particular, we prove something much stronger: under those assumptions, every $\mathsf{NP}$-pair becomes separable. In particular, starting from an arbitrary disjoint $\mathsf{NP}$-pair, we build an analyzable system that fails to interpolate unless the pair is separable. The idea is to give the system a single superpower that only works in a private corner of the variable space, making sure that refutation statements never enter that corner.
+We shall use the above equivalence to prove that if analyzability were to imply feasible interpolation then every proof system would be weakly automatable. In particular, we prove that, under those assumptions, every $\mathsf{NP}$-pair becomes separable. In particular, starting from an arbitrary disjoint $\mathsf{NP}$-pair, we build an analyzable system that fails to interpolate unless the pair is separable. The idea is to give the system a single superpower that only works in a private corner of the variable space, making sure that refutation statements never enter that corner.
 
 Let $(U,V)$ be a disjoint $\mathsf{NP}$-pair. By the Cook-Levin theorem \cite{cook_sat,levin_fsat,arora_barak}, we know that there are two polynomial-time constructible CNFs $A_n(x,y)$ and $B_n(x,z)$, with $\abs{x}=n$, such that for every $a \in\{0,1\}^n$ it holds that $a \in U$ iff $A_n(a,\cdot)$ is satisfiable and $a \in V$ iff $B_n(a,\cdot)$ is satisfiable. Since $U\cap V=\emptyset$, the formula $F_n:=A_n\land B_n$ is a split unsatisfiable CNF formula and this also holds for every restriction ${F_n}_{\upharpoonright_\rho}$. For each $n$, we fix a set of \emph{reserved} variables $r_{n,1}, \ldots, r_{n,k}$, with $k = |\Vars(F_n)|$, that never occur in a refutation statement $\mathrm{Ref}_s(\varphi)$, and we write every $F_n$ over reserved variables only.
 
@@ -633,7 +626,7 @@ We define a proof system $Q_{U,V}$ extending Resolution as follows. This constru
 
 A $Q_{U,V}$-refutation is a sequence of clauses $\pi = (C_1, \ldots, C_t)$ where each clause is either an axiom or is obtained through an application of the resolution rule, the weakening rule or a new rule referred to as the \textit{$F$-rule}. Whenever the disjunction $C \lor D$ has been derived for every clause $C$ of some restriction of $F_n$ under some partial assignment $\rho$, the $F$-rule allows the system to derive $D$.
 \[\begin{array}{ccr}
-    \dfrac{C \lor D \quad \forall C \in {F_n}_{\upharpoonright_\rho}}{D} & \qquad & (F\text{-rule})
+    \dfrac{C_1 \lor D \quad C_2 \lor D \quad \cdots \quad C_r \lor D}{D} &  \quad C_1, C_2, \ldots, C_h \in {F_n}_{\upharpoonright_\rho}\qquad & (F\text{-rule})
 \end{array}\]
 
 Each use of the $F$-rule is represented by a triple $(n,\rho,D)$, where $n$ is written in binary, $\rho$ is written as a string over $\{0,1,*\}^{|\mathrm{Vars}(F_n)|}$. We argue that this rule is sound: since ${F_n}_{\upharpoonright_\rho}$ is unsatisfiable, $\bigwedge_{C}(C\lor D)\equiv({F_n}_{\upharpoonright_\rho})\lor D$ implies $D$. Checking an application of the $F$-rule means computing ${F_n}_{\upharpoonright_\rho}$ and looking up its clauses among earlier lines. Since $\rho$ is encoded with $\abs{\mathrm{Vars}(F_n)} \geq n$ symbols, computing $F_n$ (time poly(n)) is polynomial in the length of the step, so $Q_{U,V}$ is a valid Cook--Reckhow system. Moreover, because $\rho$ has a fixed-length encoding, restricting each application does not change the size of its representation.
